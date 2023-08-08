@@ -18,5 +18,5 @@
 
 ### Algorithm
 
-### ETC"Creating an Entertaining Readme"
+### ETC
 * 
