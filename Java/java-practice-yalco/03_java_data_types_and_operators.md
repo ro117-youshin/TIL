@@ -1,5 +1,5 @@
 # Section 3. 자바의 자료형과 연산자
-> '제대로 파는 자바 - 얄코' 섹션3 학습 (인프런)
+> '제대로 파는 자바 - 얄코' 섹션3 학습 [(인프런)](https://www.inflearn.com/course/%EC%A0%9C%EB%8C%80%EB%A1%9C-%ED%8C%8C%EB%8A%94-%EC%9E%90%EB%B0%94/dashboard)
 > 1. 정수 자료형들과 관련 연산자
 > 2. 실수 자료형들
 > 3. 문자 자료형
@@ -395,4 +395,100 @@ boolean bool5 = 'A' > 66f;  // false
 //  사전순 상 먼저 오는 쪽이 작음
 boolean bool6 = 'A' < 'B';  // true
 boolean bool7 = '가' > '나'; // false
+```
+
+## 4. 불리언 자료형과 관련 연산자
+### 📌 boolean 자료형
+* 1바이트 (8비트) 공간 차지
+  * 하드웨어 구조와의 호환성 - CPU가 수월히 다룰 수 있는 최소 단위
+* 리터럴보다는 반환값으로 많이 사용됨
+### 📌 부정 연산자
+```java
+boolean bool3 = !true;    // false
+boolean bool4 = !false;   // true
+boolean bool5 = !!bool3;  // false
+boolean bool6 = !!!bool3; // true
+
+boolean bool7 = !(1 > 2);                          // true
+boolean bool8 = !((5 / 2) == 2.5);                 // true
+boolean bool9 = !((3f + 4.0 == 7) != ('A' < 'B')); // true
+```
+### 📌 논리 연산자
+|a && b| AND | a와 b 모두가 true일때만 ture 반환 |
+| ---- | --- | ---------------------------- |
+|a \|\| b | OR | a와 b 중 하나만 true면 true 반환 |
+
+```java
+boolean bool1 = true && true;   // true
+boolean bool2 = true && false;  // false
+boolean bool3 = false && true;  // false
+boolean bool4 = false && false; // false
+
+boolean bool5 = true || true;   // ture
+boolean bool6 = true || false;  // true
+boolean bool7 = false || true;  // true
+boolean bool8 = false || false; // false
+
+int num = 4;
+
+boolean isPositiveAndOdd = num >= 0 && num % 2 == 1;  // false
+boolean isPositiveOrOdd = num >= 0 || num % 2 == 1;   // true
+boolean isPositiveAndEven = num >= 0 && num % 2 == 0; // true
+boolean isPositiveOrEven = num >= 0 || num % 2 == 0;  // true
+```
+#### 💡 &&가 ||보다 우선순위 높음
+```java
+num = 6;
+
+boolean boolA = (num % 3 == 0) && (num % 2 == 0) || (num > 0) && (num > 10);
+boolean boolB = (num % 3 == 0) && ((num % 2 == 0) || (num > 0)) && (num > 10);
+```
+### 📌 단축평가 short circuit
+* &&: 앞의 것이 false면 뒤의 것을 평가할 필요 없음
+* ||: 앞의 것이 true면 뒤의 것 평가할 필요 없음
+* 평가는 곧 실행 - 이 점을 이용한 간결한 코드
+* 💡 연산 부하가 적은 코드를 앞에 - 리소스 절약
+
+```java
+int a = 1, b = 2, c = 0, d = 0, e = 0, f = 0;
+
+boolean bool1 = a < b && c++ < (d += 3); // true
+boolean bool2 = a < b || e++ < (f += 3); // true
+
+boolean bool3 = a > b && c++ < (d += 3); // 🔴
+boolean bool4 = a > b || e++ < (f += 3);
+```
+
+### 📌 삼항 연산자
+```java
+int num1 = 3, num2 = 4;
+
+char num1OE = num1 % 2 == 1 ? '홀' : '짝';
+char num2OE = num2 % 2 == 1 ? '홀' : '짝';
+```
+```java
+int num = 3;
+        
+boolean mult2 = true;
+//mult2 = false;
+        
+boolean plus5 = true;
+//plus5 = false;
+
+System.out.println(
+    (!mult2 && !plus5) ? num
+    : (mult2 && plus5) ? num * 2 + 5
+    : mult2 ? num * 2
+    : num + 5
+);
+```
+```java
+int x = 1, y = 2;
+
+//  💡 단축평가 적용됨
+int changed1 = x < y ? (x += 2) : (y += 2);
+int changed2 = x < y ? (x += 2) : (y += 2); // 🔴
+int changed3 = x < y ? (x += 2) : (y += 2);
+int changed4 = x < y ? (x += 2) : (y += 2);
+int changed5 = x < y ? (x += 2) : (y += 2);
 ```
