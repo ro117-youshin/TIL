@@ -3,7 +3,8 @@
 > 1. 정수 자료형들과 관련 연산자
 > 2. 실수 자료형들
 > 3. 문자 자료형
-> 4. 
+> 4. 불리언 자료형과 관련 연산자
+> 5. 
 
 ## 1. 정수 자료형들과 관련 연산자
 
@@ -322,4 +323,76 @@ boolean bool3 = int1 == dbl2;
 boolean bool4 = int1 > dbl2;
 boolean bool5 = flt1 >= dbl2;
 boolean bool6 = dbl1 < dbl2;
+```
+
+## 3. 문자 자료형
+
+### 📌 char - 문자 character 자료형
+* 2바이트 사용 - short와 동일
+* 유니코드상 문자 - 🍿 https://youtu.be/1jo6q4dihoU
+* 빈 문자 불가
+
+#### 각 문자는 상응하는 정수를 가짐
+```java
+char ch1 = 'A';      // 65
+char ch2 = 'B';      // 66
+char ch3 = 'a';      // 97
+char ch4 = 'a' + 1;  // ch4: 'b' 98 
+char ch5 = '가';
+char ch6 = '가' + 1;
+char ch7 = '가' + 2;
+char ch8 = '가' + 3;
+char ch9 = '나';
+
+int ch1Int = (int) ch1; // ch1: 'A' 65 ch1Int: 65
+int ch9Int = (int) ch9; // ch9: '나' 45208 ch9Int: 45208
+```
+#### 문자 리터럴과 숫자, 유니코드로 표현 가능
+```java
+char ch10 = 'A';      // 65
+char ch11 = 65;       // 65
+char ch12 = '\u0041'; // 65
+```
+* 문자별 유니코드 정보: [List of Unicode characters - Wikipedia](https://en.wikipedia.org/wiki/List_of_Unicode_characters)
+
+```java
+char ch_a1 = 'A';
+int int_a1 = (int) ch_a1;
+
+//  정수값을 얻는 다른 방법들 - 정수값과 연산하기
+int int_a2 = ch_a1 + 0;
+int int_a3 = ch_a1 - 0;
+
+//  💡 리터럴에 더할 때와 변수에 더할 때 반환 자료형이 다름
+char ch_a2 = 'A' + 1;
+//char ch_a3 = ch_a1 + 1; // ⚠️ 불가
+int int_a4 = ch_a1 + 1;
+
+//  💡 int 1과 char '1'은 다름! - 문자로서의 '1'
+//  - 해당 문자의 정수값 확인
+char ch_b1 = '1'; // 49
+char ch_b2 = '2'; // 50
+
+//  ⚠️ 숫자 문자에 사칙연산 - 문자 번호 기준 결과 반환
+char ch_b3 = '1' + '2';      // ch_b3: 'c' 99
+int int_b4 = ch_b1 + ch_b2;  // ch_b1: '1' 49  ch_b2: '2' 50  int_b4: 99
+
+//  ⚠️ 빈 문자는 사용 불가, 공백(space)는 가능
+char empty = ''; // error
+char space = ' ';
+```
+### 📌 비교 연산자
+```java
+//  같은 문자열인지 여부 반환
+boolean bool1 = 'A' == 'A'; // true
+boolean bool2 = 'A' == '가'; // false
+
+//  숫자와 비교할 시 해당 정수값 기준으로
+boolean bool3 = 'A' == 65;  // true
+boolean bool4 = 'A' > 64.0; // true
+boolean bool5 = 'A' > 66f;  // false
+
+//  사전순 상 먼저 오는 쪽이 작음
+boolean bool6 = 'A' < 'B';  // true
+boolean bool7 = '가' > '나'; // false
 ```
