@@ -347,3 +347,108 @@ for (int i = 0; i < 10; i++) {
     }
 }
 ```
+## 4. while & do while
+### 📌 while : 조건이 true일 동안 반복 수행
+* 의도적인 무한 루프에 널리 쓰이는 코드
+#### Ex01
+```java
+double popInBillion = 7.837;
+
+//  ⭐️ break 를 통한 반복 탈출
+while (true) {
+    System.out.println("세계인구: " + (popInBillion -= 0.1));
+    if (popInBillion <= 0) break;
+
+    System.out.println("인간의 욕심은 끝이 없고");
+    System.out.println("같은 실수를 반복한다.");
+}
+
+System.out.println("인류 멸종");
+```
+#### Ex02 100보다 작은 3의 배수들 출력
+```java
+int i = 1;
+
+// ⚠️ 의도대로 작동하지 않음. 이유는?
+// continue로 while문 안에 continue까지 무한루프로 빠짐. 그 아래 코드는 실행x
+while (true) {
+    if (i % 3 != 0) continue;  // 🔴
+    System.out.println(i);
+
+    if (i++ == 100) break;
+}
+```
+#### Ex02-1 무한루프 해결
+```java
+int i = 1;
+
+while (true) {
+    if (i++ == 100) break;
+    if ((i - 1) % 3 != 0) continue;
+
+    System.out.println(i - 1);
+}
+```
+#### Ex02-2 보다 가독성을 높이고 의도를 잘 드러낸 코드
+```java
+int i = 1;
+
+while (true) {
+    int cur = i++;
+
+    if (cur == 100) break;
+    if (cur % 3 != 0) continue;
+            
+    System.out.println(cur);
+}
+```
+### 📌 do ... while : 일단 수행하고 조건을 봄
+#### Ex03
+```java
+int enemies = 0;
+
+System.out.println("일단 사격");
+
+do {
+    System.out.println("탕");
+    if (enemies > 0) enemies--;
+} while (enemies > 0);
+
+System.out.println("사격중지 아군이다");
+```
+```java
+int x = 1; // 10 이상으로 바꿔서 다시 실행해 볼 것
+int y = x;
+
+while (x < 10) {
+    System.out.println("while 문: " + x++);
+}
+
+do {
+    System.out.println("do ... while 문: " + y++);
+} while (y < 10);
+```
+### 📌 중첩 예제
+#### Ex04
+```java
+final int LINE_WIDTH = 5;
+
+int lineWidth = LINE_WIDTH;
+
+while (lineWidth > 0) {
+    int starsToPrint = lineWidth--;
+    while (starsToPrint-- > 0) {
+        System.out.print("*");
+    }
+System.out.println();
+}
+```
+#### Ex04-1 for문으로 작성
+```java
+for (int i = LINE_WIDTH; i > 0; i--) {
+    for (int j = i; j > 0; j--) {
+        System.out.print("@");
+    }
+    System.out.println();
+}
+```
