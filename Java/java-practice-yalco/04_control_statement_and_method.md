@@ -5,7 +5,7 @@
 > 3. for & for-each
 > 4. while & do while
 > 5. 메소드
-> 6. 
+> 6. 메소드 더 알아보기
 
 ## 1. if / else
 #### Ex01
@@ -452,3 +452,214 @@ for (int i = LINE_WIDTH; i > 0; i--) {
     System.out.println();
 }
 ```
+## 5. 메소드
+* 타 언어의 함수 function과 같은 개념
+* 자바는 모든 것이 클래스의 요소이므로 메소드 method라 부름
+
+### 📌 메소드의 의미 1. 반복을 최소화
+* 한 번 이상 실행될 수 있는 일련의 작업들을 묶어두는 것
+#### Ex01 계산 출력 코드 반복
+```java
+double x = 3, y = 4;
+
+System.out.printf("%f + %f = %f%n", x, y, x + y);
+System.out.printf("%f - %f = %f%n", x, y, x - y);
+System.out.printf("%f * %f = %f%n", x, y, x * y);
+System.out.printf("%f / %f = %f%n", x, y, x / y);
+
+x = 10; y = 2;
+
+System.out.printf("%f + %f = %f%n", x, y, x + y);
+System.out.printf("%f - %f = %f%n", x, y, x - y);
+System.out.printf("%f * %f = %f%n", x, y, x * y);
+System.out.printf("%f / %f = %f%n", x, y, x / y);
+
+x = 7; y = 5;
+
+System.out.printf("%f + %f = %f%n", x, y, x + y);
+System.out.printf("%f - %f = %f%n", x, y, x - y);
+System.out.printf("%f * %f = %f%n", x, y, x * y);
+System.out.printf("%f / %f = %f%n", x, y, x / y);
+```
+#### Ex01-1 계산 출력 최소화
+```java
+    //  ⭐️ 메인 메소드 외부에 선언할 것
+    static void addSubtMultDiv (double a, double b) {
+        System.out.printf("%f + %f = %f%n", a, b, a + b);
+        System.out.printf("%f - %f = %f%n", a, b, a - b);
+        System.out.printf("%f * %f = %f%n", a, b, a * b);
+        System.out.printf("%f / %f = %f%n", a, b, a / b);
+    }
+```
+```java
+    double xx = 3, yy = 4;
+    addSubtMultDiv(xx, yy);
+
+    xx = 10; yy = 2;
+    addSubtMultDiv(xx, yy);
+
+    xx = 7; yy = 5;
+    addSubtMultDiv(xx, yy);
+```
+
+### 📌 메소드의 의미 2. 값을 받고 연산하여 결과값을 반환 - 함수
+
+#### Ex02
+```java
+static int add (int num1, int num2) {
+    return num1 + num2;
+}
+```
+```java
+//  ⭐️ 반환한다는 것: 바꿔 쓸 수 있다는 것
+//  메서드 실행문을 메서드의 반환값으로 치환
+int int1 = add(2, 3);
+System.out.println(int1);
+
+System.out.println(add(4, 5));
+
+int int2 = add(add(6, 7), add(8, 9));
+System.out.println(int2);
+```
+#### Ex02-1 boolean값 리턴
+```java
+static boolean checkIfContain (String text, String token) {
+    return text.toLowerCase().contains(token.toLowerCase());
+}
+```
+```java
+if (
+    checkIfContain(
+        "Hello World",
+        "hello"
+    )
+) {
+    System.out.println("포함됨");
+} else {
+    System.out.println("포함 안 됨");
+}
+```
+```java
+System.out.println(
+    checkIfContain(
+        "Hello World",
+        "hello"
+    ) ? "포함됨" : "포함 안 됨"
+);
+```
+![대지 9 사본](https://github.com/ro117-youshin/TIL/assets/86038910/47d7b325-7046-4bd8-b083-ec60eece044d)
+
+* static: 정적 메소드(클래스 메소드)에서 호출하려면(main등) 붙어야 함
+  * 정적이 아닌 메소드 (인스턴스 메소드)는 객체지향 섹션에서 배울 것
+* 매개변수 parameter: 각각 자료형과 변수명을 적음, 없을 시 빈 괄호
+  * 호출할 때 넣는 값 ( add(3, 4)의 3과 4 )을 인자 argument라고 함
+
+### 📌 다양한 용례
+#### Ex03 매개변수도, 반환값도 없는 메소드
+```java
+static void sayHello () {
+    System.out.println("안녕하세요!");
+}
+```
+```java
+sayHello();
+```
+#### Ex03-1 매개변수 없이 값만 반환하는 메소드
+* 외부 변수 값을 변화시킴 (int count)
+
+```java
+static int count = 0;
+
+static int getCount() {
+    System.out.println("카운트 증가");
+    return ++count;
+}
+```
+```java
+int count1 = getCount();    // count1: 1
+int count2 = getCount();    // count2: 2
+int count3 = getCount();    // count3: 3
+int count4 = getCount();    // count4: 4
+```
+* ⚠️ 외부의 변수 값을 바꾸는 것은 좋은 메서드가 아님
+
+#### Ex04
+
+```java
+static double getAverage (int[] nums) {
+
+    double sum = 0;
+    for (int num : nums) {
+        sum += num;
+}
+
+    return sum / nums.length;
+}
+
+```
+```java
+public static void main(String[] args) {
+    double ave = getAverage(new int[] {3, 5, 4, 13, 7});
+}
+```
+#### Ex04-1
+* 자바의 메소드는 하나의 값만 반환 가능
+* 여러 값을 반환하려면 배열 또는 객체를 활용
+```java
+     static int[] getMaxAndMin (int[] nums) {
+
+        int max = nums[0];
+        int min = nums[0];
+        for (int num : nums) {
+            max = max > num ? max : num;
+            min = min < num ? min : num;
+        }
+
+        return new int[] {max, min};
+    }
+```
+```java
+public static void main(String[] args) {
+    int[] numbers = {3, 5, 9, 2, 8, 1, 4};
+
+    //  변수에 담아 보다 효율적으로 바꿔볼 것
+    int maxOfNumbers = getMaxAndMin(numbers)[0];
+    int minOfNumbers = getMaxAndMin(numbers)[1];
+}
+```
+### 📌 매개변수의 개수가 정해지지 않은 메소드
+* 💡 ...연산자: 해당 위치 뒤로 오는 연산자들을 배열로 묶음
+* int[] (배열 자체를 받음)과는 다름!
+#### Ex05 
+```java
+static double getAverage(int... nums) {
+    double result = 0.0;
+    for (int num : nums) {
+        result += num;
+    }
+    return result / nums.length;
+}
+```
+```java
+public static void main(String[] args) {
+    double avg = getAverage(3, 91, 14, 27, 4);
+}
+```
+
+#### Ex05-1 다른(정해진) 인자들과 사용시 맨 마지막에 놓을 것
+```java
+static String descClass (int classNo, String teacher, String ... kids) {
+    return
+}
+```
+```java
+public static void main(String[] args) {
+    String class3Desc = descClass(3, "목아진", "짱구", "철수", "훈이");
+
+    String[] kids = {"짱구", "철수", "훈이"};
+    String class3DescByArr = descClass(3, "목아진", kids);
+}
+```
+<img width="508" alt="image" src="https://github.com/ro117-youshin/TIL/assets/86038910/dfbb5625-0e68-4d25-9333-4a1b46fa2711">
+
+
