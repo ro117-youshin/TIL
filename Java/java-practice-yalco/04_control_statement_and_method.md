@@ -662,4 +662,138 @@ public static void main(String[] args) {
 ```
 <img width="508" alt="image" src="https://github.com/ro117-youshin/TIL/assets/86038910/dfbb5625-0e68-4d25-9333-4a1b46fa2711">
 
+## 6. 메소드 더 알아보기
+### 📌 메소드 오버로딩
+* 같은 메소드 이름, 다른 매개변수
+* 다른 자료형의 값들로 같은 성질의 작업을 정의할 때
+
+```java
+    static int add(int a, int b) { return a + b; }
+
+    //  매개변수의 개수가 다름
+    static int add(int a, int b, int c) { return a + b + c; }
+
+    //  매개변수의 자료형이 다름
+    static double add(double a, double b) { return a + b; }
+
+    //  매개변수의 자료형 순서가 다름
+    static String add(String a, char b) { return a + b; }
+    static String add(char a, String b) { return a + b; }
+
+    //  ⚠️ 반환 자료형이 다른 것은 오버로딩 안 됨 - 다른 함수명 사용
+    //  static double add(int a, int b) { return (double) (a + b); }
+```
+```java
+public static void main(String[] args) {
+    int res1 = add(1, 2); // 🔴 스텝인투로 들어가 볼 것, 각 호출되는 메소드로 이동.
+    int res2 = add(3, 4, 5);
+    double res3 = add(1.2, 3.4);
+    String res4 = add("로보트 태권", 'V');
+    String res5 = add('X', "Men");
+}
+```
+### 📌 원시형 매개변수 vs 참조형 매개변수
+#### Ex02
+* 원시값은 '복사해서' 가져옴
+* 메소드 내부에서 값을 변경해도 원본에 영향을 끼치지 않음
+```java
+static void modifyIntArg (int num) {
+    System.out.printf("원시값 수정 전: %d%n", num++);
+    System.out.printf("원시값 수정 후: %d%n", num);
+}
+```
+```java
+static  void modifyAryElem (int[] ary) {
+    System.out.printf("참조값 수정 전: %d%n", ary[1]++);
+    System.out.printf("참조값 수정 후: %d%n", ary[1]);
+}
+```
+```java
+    int intNum = 3;        // intNum: 3
+    modifyIntArg(intNum);  // intNum: 3
+
+    int[] intNums = {1, 2, 3};
+
+    //  배열은 참조형이지만 그 안의 값들은 원시형
+    modifyIntArg(intNums[0]);
+
+    //  참조형인 배열 자체를 인자로 사용
+    modifyAryElem(intNums); // intNums: [1, 3, 3]
+```
+```java
+원시값 수정 전: 3
+원시값 수정 후: 4
+원시값 수정 전: 1
+원시값 수정 후: 2
+참조값 수정 전: 2
+참조값 수정 후: 3
+```
+[Call By Value / Call By Reference 블로그 정리](https://livebyfaith117.tistory.com/130)
+
+### 📌 재귀 메소드
+* 스스로를 호출하는 메소드
+* 호출시마다 메모리에 스택이 축적 - 초과시 스택오버플로우 stack overflow 에러
+
+#### Ex03
+```java
+    static void upTo5 (int start) {
+        System.out.println(start);
+        if (start < 5) {
+            upTo5(++start);
+        } else {
+            System.out.println("-- 종료 --");
+        }
+    }
+```
+```java
+    upTo5(0);
+    upTo5(2);
+    upTo5(4);
+```
+```java
+0
+1
+2
+3
+4
+5
+-- 종료 --
+2
+3
+4
+5
+-- 종료 --
+4
+5
+-- 종료 --
+```
+![Untitled](https://github.com/ro117-youshin/TIL/assets/86038910/e64d4cca-7cbf-4e0f-90b3-4b88f8d80ba5)
+* 다른 메소드를 호출한 메소드는 호출된 메소드가 종료될 때까지 메모리에 남아 있음
+  * 호출이 반복될수록 위와 같이 메소드들이 쌓이게 됨
+
+#### Ex03-1
+```java
+    static int factorial (int num) {
+        return num == 0 ? 1 : num * factorial(--num);
+    }
+```
+```java
+    int fact1 = factorial(1);
+    int fact2 = factorial(2);
+    int fact3 = factorial(3);
+    int fact4 = factorial(4);
+    int fact5 = factorial(5);
+```
+![Untitled (1)](https://github.com/ro117-youshin/TIL/assets/86038910/53403e76-a3ac-4639-baef-d0166804f1d8)
+
+### 📌 꼬리 재귀 최적화
+* 재귀 코드를 내부적으로 루프 형태로 바꿔서 스택이 쌓이지 않도록 함
+* ⚠️ 자바에서는 현재 기본적으로 제공하지 않음 (보안 등 문제 ...)
+* 반복 횟수가 너무 많아지는 작업에는 사용하지 말 것!
+
+
+
+
+
+
 
