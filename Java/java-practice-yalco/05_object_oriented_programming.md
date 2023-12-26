@@ -142,3 +142,34 @@ public static void main(String[] args) {
     buttonClear.place();
 }
 ```
+
+## 2. 기초 활용예제들
+### 📌 슬라임 클래스
+* 생성자를 필요로 하지 않음
+* 필드들이 기본 값을 가짐
+* 인스턴스를 인자로 받는 메소드
+
+###### ☕️Slime.java
+```java
+public class Slime {
+    double hp = 50;
+    int attack = 8;
+    double defense = 0.2;
+
+    void attack (Slime enemy) { // 💡 다른 슬라임의 인스턴스를 인자로 받음
+        enemy.hp -= attack * (1 - enemy.defense);
+    }
+}
+```
+###### ☕️Main.java
+```java
+public static void main(String[] args) {
+
+	Slime slime1 = new Slime();
+	Slime slime2 = new Slime();
+
+	slime1.attack(slime2);
+}
+```
+* ⭐️ 객체는 참조형 - 인자로 전달될 시 내용이 변경될 수 있음
+* 같은 클래스의 인스턴스지만, 필드의 값은 각기 별개임 주목
