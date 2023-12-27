@@ -148,7 +148,7 @@ public static void main(String[] args) {
 * 생성자를 필요로 하지 않음
 * 필드들이 기본 값을 가짐
 * 인스턴스를 인자로 받는 메소드
-
+#### ex01
 ###### ☕️Slime.java
 ```java
 public class Slime {
@@ -168,8 +168,152 @@ public static void main(String[] args) {
 	Slime slime1 = new Slime();
 	Slime slime2 = new Slime();
 
-	slime1.attack(slime2);
+	slime1.attack(slime2);	// 🔴
 }
 ```
+<img width="219" alt="스크린샷 2023-12-27 오전 10 13 04" src="https://github.com/ro117-youshin/TIL/assets/86038910/c0ea0dd8-ba3f-44b8-9418-cb0ccdc103c6">
+
 * ⭐️ 객체는 참조형 - 인자로 전달될 시 내용이 변경될 수 있음
 * 같은 클래스의 인스턴스지만, 필드의 값은 각기 별개임 주목
+
+### 📌 정수배열 정보 클래스 (복잡한 과정을 거치는 생성자의 예시)
+* (main 메소드의) 배열을 생성자 인자로 받아, 그것의 정보를 필드들로 저장
+
+#### ex02
+###### ☕️IntArrayInfo.java
+```java
+public class IntArrayInfo {
+    int count;
+    int max;
+    int min;
+    int sum; // 기본 0
+    double average;
+
+    IntArrayInfo(int[] nums) {
+        count = nums.length;
+        max = nums[0];
+        min = nums[0];
+
+        for (int num : nums) {
+            max = max > num ? max : num;
+            min = min < num ? min : num;
+            sum += num;
+        }
+        // 소수부를 잃지 않도록 먼저 1.0을 곱하여 double로 만듦
+        average = 1.0 * sum / nums.length;
+    }
+}
+```
+###### ☕️Main.java
+```java
+public static void main(Stinrg[] args) {
+    	int[] ary1 = {3, 5, 9, 2, 8, 1, 4};
+	int[] ary2 = {382, 194, 27, 915, 138};
+
+        IntArrayInfo aryInf1 = new IntArrayInfo(ary1);
+        IntArrayInfo aryInf2 = new IntArrayInfo(ary2);
+
+        int ary1Max = aryInf1.max;
+        double ary2Avg = aryInf2.average;
+        int ary1n2Sum = aryInf1.sum + aryInf2.sum;
+}
+```
+
+### 📌 치킨과 치킨메뉴 클래스
+* 클래스의 필드로 다른 클래스의 인스턴스를 담은 배열을 가짐
+  * 클래스가 인스턴스가 배열 등 다른 자료형에도, 그 반대로도 포함될 수 있음
+* 클래스는 둘 이상의 생성자를 가질 수 있음
+* 클래스의 인스턴스를 반환하는 메소드
+
+#### ex03
+###### ☕️Chicken.java
+```java
+public class Chicken {
+    int no;
+    String name;
+    ChickenMenu[] menus;
+
+    Chicken (int no, String name, ChickenMenu[] menus) {
+        this.no = no;
+        this.name = name;
+        this.menus = menus;
+    }
+
+    ChickenMenu orderMenu (String name) {
+        for (ChickenMenu menu : menus) {
+            if (menu.name.equals(name)) { // 🔴
+                return menu;
+            }
+        }
+        return null;
+    }
+}
+```
+###### ☕️ChickenMenu.java
+```java
+public class ChickenMenu {
+    String name;
+    int price;
+    String cook = "fry";
+
+    ChickenMenu (String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    ChickenMenu (String name, int price, String cook) {
+        this.name = name;
+        this.price = price;
+        this.cook = cook;
+    }
+}
+```
+###### ☕️Main.java
+```java
+public static void main(String[] args) {
+	ChickenMenu[] menus = {
+                new ChickenMenu("후라이드", 10000),
+                new ChickenMenu("양념치킨", 12000),
+                new ChickenMenu("화덕구이", 15000, "bake")
+        };
+        YalcoChicken store1 = new YalcoChicken(3, "판교", menus);
+
+        ChickenMenu order1 = store1.orderMenu("양념치킨");
+        ChickenMenu order2 = store1.orderMenu("오븐구이");
+}
+```
+
+<img width="256" alt="image" src="https://github.com/ro117-youshin/TIL/assets/86038910/f1760f73-691c-4610-b41f-13b31b683348">
+
+### 📌 클래스의 인스턴스도 참조 자료형
+###### ☕️Main.java (ex03 Main.java에 코드 추가)
+```java
+public static void main(String[] args) {
+	int int1 = 1;
+        int int2 = int1;
+        int1 = 2;
+
+        String str1 = "헬로";
+        String str2 = str1;
+        str2 = "월드";
+
+        ChickenMenu menu1 = new ChickenMenu("후라이드", 1000);
+        ChickenMenu menu2 = menu1;
+        menu1.price = 1200;
+}
+```
+```java
+public static void raisePrice (int avg, ChickenMenu menu, int amount) {
+    avg += amount;
+    menu.price += amount;
+}
+```
+```java
+	int avgChickenPrice = 12000;
+        ChickenMenu chickenMenu1 = new ChickenMenu("양념치킨", 12000);
+
+        raisePrice(avgChickenPrice, chickenMenu1, 1000);
+```
+* 배열과 같이, 인스턴스도 필드로 들어간 데이터들을 포함하는 객체
+* 메소드에 인자로 들어갈 시, 인스턴스의 주소값이 복사되어 들어감
+  * 복사된 주소지만 같은 객체를 가리키므로...
