@@ -390,6 +390,7 @@ public static void main(String[] args) {
   * 인스턴스 변수를 사용하지 않는다고 해서 반드시 클래스 메서드로 정의해야하는 것은 아니지만 특별한 이유가 없는 한 그렇게 하는 것이 일반적이다.
 
 ### 📌 static을 언제 붙여야 할까?
+> 자바의 정석 CHAPTER 6 참조
 1. 클래스를 설계할 때, 멤버변수 중 모든 인스턴스에 공통으로 사용하는 것에 static을 붙인다.
    - 생성된 각 인스턴스는 서로 독립적이기 때문에 각 인스턴스의 변수는 서로 다른 값을 유지한다. 그러나 모든 인스턴스에서 같은 값이 유지되어야 하는 변수는 static을 붙여서 클래스변수로 정의해야 한다.
 2. 클래스 변수(static변수)는 인스턴스를 생성하지 않아도 사용할 수 있다.
@@ -401,3 +402,89 @@ public static void main(String[] args) {
    - 메서드 작업내용 중에서 인스턴스 변수를 필요로 한다면, static을 붙일 수 없다. 반대로 인스턴스 변수를 필요로 하지 않는다면 static을 붙이자. 메서드 호출시간이 짧아지므로 성능이 향상된다. static을 안 붙인 메서드(인스턴스 메서드)는 실행 시 호출되어야할 메서드를 찾는 과정이 추가적으로 필요하기 때문에 시간이 더 걸린다.
 * 멤버변수 중 모든 인스턴스에 공통된 값을 유지해야하는 것이 있는지 살펴보고 있으면, static을 붙여준다.
 * 작성한 메서드 중에서 인스턴스 변수나 인스턴스 메서드를 사용하지 않는 메서드에 static을 붙일 것을 고려한다.
+---
+### 📌 매장 번호 자동 생성
+#### ex02
+###### ☕️YalcoChicken.java
+```java
+public class YalcoChicken {
+
+    static String brand = "얄코치킨";
+    static String contact () {
+        return "%s입니다. 무엇을 도와드릴까요?".formatted(brand);
+    }
+    static int lastNo = 0; // ⭐️
+
+    int no;
+    //int no = ++lastNo; // 이렇게 해도 됨
+
+    String name;
+
+    YalcoChicken(String name) {
+        // 클래스 변수를 활용하여 생성마다 새 번호 부여 (또는 위처럼)
+        no = ++lastNo;
+        this.name = name;
+    }
+
+    String intro () {
+        return "안녕하세요, %s %d호 %s호점입니다." // 🔴
+                .formatted(brand, no, name);
+    }
+}
+```
+###### ☕️Main.java
+```java
+public static void main(String[] args) {
+	YalcoChicken store1 = new YalcoChicken("판교");
+        YalcoChicken store2 = new YalcoChicken("강남");
+        YalcoChicken store3 = new YalcoChicken("제주");
+}
+```
+---
+#### ex03
+###### ☕️Button.java
+```java
+public class Button {
+    static String mode = "LIGHT";
+    static void switchMode () {
+        mode = mode.equals("LIGHT") ? "DARK" : "LIGHT";
+    }
+
+    char print;
+    int space;
+
+    Button (char print, int space) {
+        this.print = print;
+        this.space = space;
+    }
+
+    void place () {
+        System.out.printf(
+                "표시: %c, 공간: %d, 모드: %s%n",
+                print, space, mode
+        );
+    }
+}
+```
+###### ☕️Main.java
+```java
+public static void main(String[] args) {
+
+	/* --- 1 --- */
+	Button button1 = new Button('1', 1);
+        Button buttonPlus = new Button('+', 3);
+        Button buttonClear = new Button('C', 2);
+
+        Button[] buttons = {button1, buttonPlus, buttonClear};
+
+        System.out.println(Button.mode);
+        for (Button button : buttons) { button.place(); }
+
+	/* --- 2 --- */
+	//  연속으로 붙여넣어 실행해볼 것
+        Button.switchMode();
+        
+        System.out.println(Button.mode);
+        for (Button button : buttons) { button.place(); }
+}
+```
