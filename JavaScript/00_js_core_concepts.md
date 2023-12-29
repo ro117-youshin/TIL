@@ -1,5 +1,5 @@
 ## 00. 자바스크립트(JavaScript)
-> 인사이드 자바스크립트 ([namjunemy](JavaScript/01_js_core_concepts.md) 님의 TIL)
+> 인사이드 자바스크립트 ([namjunemy](https://github.com/namjunemy/TIL.git) 님의 TIL)
 
 ### 📌 객체 
 자바스크립트의 거의 모든 것은 객체이다. 여기서 '거의'라는 표현을 쓰는 이유는 몇 가지가 제외되기 때문이다. 바로 기본 데이터 타입인 boolean, number, string 이다. 그리고 특별한 값인 null, undefined도 해당된다. 이를 제외한 나머지는 모두 객체이다. 앞의 세가지 기본 데이터 타입은 모두 객체처럼 다룰 수도 있다. 그렇기 때문에 자바스크립트에서는 null과 undifined를 제외한 모든 것을 객체로 다룰 수도 있다.
