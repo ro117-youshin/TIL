@@ -38,3 +38,67 @@
 #### 4. text node (텍스트 노드)
 * HTML 문서의 모든 텍스트는 이 텍스트 노드라 해도 과언이 아니다.
 * 텍스트 노드는 정보를 표현하며, 가장 마지막에 위치하는 자식 노드이기 때문에 잎사귀를 닮았다 해 리프 노드라고 불리기도 한다.
+
+### DOM의 정적 생성과 동적 생성
+* 지금 현재 브라우저에 내장되어 있는 언어는 자바스크립트이고, 자바스크립트는 가장 간편하고 빠르게 DOM으로 구조화된 웹 문서에 접근하여 노드(웹 컨텐츠를 이루는 기본 요소)들을 조작할 수 있다.
+* 자바스크립트를 이용해 **HTML 문서에 없는 노드를 만들어 이어 붙여 웹 페이지에 렌더링되게 만드는 모든 과정**이 동적으로 구현하는 것이라 볼 수 있다. 또는 **자바스크립트를 이용해 있던 노드에 없는 노드를 만들어 이어 붙이는 것**도 동적으로 구현한다고 볼 수 있다.
+* 정적으로 생성되는 과정은 **이미 HTML 파일에 적혀 있는 코드를 위에서부터 아래로 읽어내려가며 생성하는 과정**만을 뜻한다. 즉 **HTML 문서에 직접 태그로 작성하는 것**만을 정적으로 생성한다고 보기 때문에, 이런 부분에서 차이가 날 수밖에 없다.
+
+![image](https://github.com/ro117-youshin/TIL/assets/86038910/260e4ad3-d54d-42c6-aa7e-1f897f983e6a)
+###### *위의 코드를 읽어내려 웹페이지의 콘텐츠를 띄우는 과정은 정적 생성 과정이다. 여기에는 자바스크립트가 접근하여 DOM을 조작한 흔적이 없다.*
+![image](https://github.com/ro117-youshin/TIL/assets/86038910/9ae79f76-0cbd-4417-b5e8-68544c68e05f)
+###### *위의 스크립트 태그를 달아 외부의 자바스크립트 파일을 연결하고, h2 태그에 id를 달아 일련의 작업(예를 들어 h2 태그를 클릭하면 밑에 사진이 나타나는 등의 동작)을 하게 된다면 이것은 동적으로 노드를 생성한다고 보는 것이다.*
+
+### DOM의 데이터타입(Datatype)
+#### DOM 객체의 구성 요소
+* **프로퍼티(property)** : DOM 객체의 멤버 변수이다. HTML 태그의 속성을 반영한다.
+* **메소드(Method)** : DOM 객체의 멤버 함수이다. HTML 태그를 제어한다.
+* **컬렉션(collection)** : 정보를 집합적으로 표현하는 일종의 배열이다. 예를 들어 children 컬랙션은 DOM 객체의 모든 자식 DOM 객체에 대한 주소를 가진다.
+* **이벤트 리스너(event listener)** : HTML 태그에 작성된 이벤트 리스너(onclick, onchange 등)들을 그대로 가진다.
+* **스타일(style)** : 이 프로퍼티를 통해 HTML 태그에 적용된 CSS 스타일 시트에 접근 가능하다.
+
+#### DOM의 중요한 데이터 타입들
+##### 데이터 타입에는 여러 개가 있는데, 데이터타입은 객체이기 때문에 각각 프로퍼티와 메소드를 가지고 있다.
+
+#### document
+```text
+member(프로퍼티 혹은 메서드)가 document 타입의 object를 리턴할 때, 이 object는 root document object 자체이다.
+예를 들어 element의 ownerDocument property(ex. document.getElementById("myP").ownerDocument)는 해당 프로퍼티가 속해 있는 document를 return 한다.
+```
+#### element
+```text
+element는 DOM API의 member에 의해 return된 element 또는 element 타입의 노드를 의미한다.
+document.createElement() method가 node를 참조하는 object를 리턴한다고 말하는 대신,
+이 method가 DOM 안에서 생성되는 element를 리턴한다고 좀 더 단순하게 말할 수 있다.
+element 객체들은 DOM Element 인터페이스와 함께, 좀 더 기본적인 Node 인터페이스를 구현한 것이기 때문에
+이 참조(reference)에는 두 가지가 모두 포함되었다고 생각하면 된다.
+```
+[DOM Element Reference](https://developer.mozilla.org/en-US/docs/Web/API/Element)
+
+#### nodeList
+```text
+nodeList 는 element의 배열이다.
+(document.getElementsByTagName() method에 의해 return 된 것 같다.)
+nodeList의 Items는 index를 통해 접근 가능하며, 다음과 같이 두 가지 방식이 있다.
+
+1. list.item(1)
+2. list[1]
+
+위의 방식들은 동일하다.
+1번의 item() method는 nodeList object의 단일 method.
+2은 list에서 두 번째 item을 가져오는(fetch) 전형적인 array 문법.
+```
+[DOM NodeList Reference](https://developer.mozilla.org/en-US/docs/Web/API/NodeList)
+
+#### namedNodeMap
+```text
+namedNodeMap는 배열과 유사하지만 안의 요소에 접근할 때 name 또는 index로 접근한다.
+리스트는 특별한 정렬이 적용되지 않았기 때문에 열거(enumeration)할 때 index를 주로 사용한다.
+namedNodeMap은 이를 위해 item() method가 있으며, namedNodeMap에 item을 추가하거나 삭제할 수 있다.
+```
+[DOM NamedNodeMap Reference](https://developer.mozilla.org/en-US/docs/Web/API/NamedNodeMap)
+
+
+
+
+
