@@ -14,9 +14,15 @@
 ## 분류
 ### Java
 * [제대로 파는 자바 - 얄코 (ing)](https://github.com/ro117-youshin/TIL/tree/master/Java/java-practice-yalco)
+
+### JavaScript
+* [문서 객체 모델 DOM과 자바스크립트 | 생성 방식 및 접근 방법](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/js_insight_dom.md)
+
+### React
+* [[모던 리액트 Deep Dive] 01장 리액트 개발을 위해 꼭 알아야 할 자바스크립트](https://github.com/ro117-youshin/TIL/blob/master/React/01_js_need_to_know_for_react_development.md)
+
 ### Database
 
 ### Algorithm
 
 ### ETC
-* 
