@@ -1,0 +1,81 @@
+## 02장 리액트 핵심 요소 깊게 살펴보기
+> '모던 리액트 Deep Dive - 김용찬 02장' 학습
+>
+> 2.1 JSX란?
+>
+> 2.2 가상 DOM과 리액트 파이버
+> 
+> 2.3 클래스형 컴포넌트와 함수형 컴포넌트
+>
+> 2.4 렌더링은 어떻게 일어나는가?
+
+### 2.1 JSX란?
+###### 추후작성
+
+---
+### 2.2 가상 DOM과 리액트 파이버
+###### 추후작성
+
+---
+### 2.3 클래스형 컴포넌트와 함수형 컴포넌트
+#### 2.3.1 클래스형 컴포넌트
+
+###### 추후작성
+
+#### 2.3.2 함수형 컴포넌트
+###### *함수형 컴포넌트는 리액트 16.8 버전 이전에는 단순히 무상태 컴포넌트를 구현하기 위한 하나의 수단에 불과했지만 16.8에서 함수형 컴포넌트에서 사용 가능한 Hook이 등장하면서 리액트 개발자들에게 각광받고 있다.*
+
+#### ex) 아주 간단한 함수형 컴포넌트 예제
+```javascript
+import { useState } from 'react'
+
+type SampleProps = {
+    required?: boolean
+    text: string
+}
+
+exoprt function SampleComponent({ required, text }: SampleProps) {
+    const [count, setCount] = useState<number>(0)
+    const [isLimited, setIsLimited] = useState<boolean>(false)
+
+    fuction handleClick() {
+        const newValue = count + 1
+        setCount(newValue)
+        setIsLimited(newValue >= 10)
+    }
+
+    return (
+        <h2>
+          Sample Component
+          <div>{required ? '필수': '필수 아님'}</div>
+          <div>문자: {text}</div>
+          <div>count: {count}</div>
+          <button onClick={handleClick} disabled={isLimited}>
+            증가
+          </button>
+        </h2>
+    )
+}
+```
+* 클래스 컴포넌트로 동일한 결과물을 구현했을 때보다 여러모로 간결해진 코드
+  * render 내부에서 필요한 함수를 선언할 때 this 바인딩을 조심할 필요가 없다.
+  * state는 객체가 아닌 각각의 원시값으로 관리되어 훨씬 사용하기가 편해졌다. 물론 state는 객체도 관리할 수 있다.
+  * 렌더링하는 코드인 return에서도 굳이 this를 사용하지 않더라도 props와 state에 접근할 수 있게 됐다.
+
+#### 2.3.3 함수형 컴포넌트 vs. 클래스형 컴포넌트
+
+#### 💡 생명주기 메서드의 부재
+* 가장 눈에 띄는 차이점이자 많은 개발자들이 적응하지 못하는 부분, 클래스형 컴포넌트의 생명주기 메서드가 함수형 컴포넌트에 존재하는 않는다는 것.
+  * 그 이유는 함수형 컴포넌트는 props를 받아 단순히 리액트 요소만 반환하는 함수인 반면, 클래스형 컴포넌트는 render 메서드가 있는 React.Component를 상속받아 구현하는 자바스크립트 클래스이기 때문.
+  * 즉, 생명주기 메서드는 React.Component에서 오는 것이기 때문에 클래스형 컴포넌트가 아닌 이상 생명주기 메서드는 더는 사용할 수 없다는 뜻.
+
+#### 💡 함수형 컴포넌트와 렌더링된 값
+###### 추후작성
+
+---
+### 2.4 렌더링은 어떻게 일어나는가?
+###### *리액트에서 렌더링이 무엇을 의미하는지 명확히 정의할 필요가 있다. 렌더링은 브라우저에서도 사용되는 용어이므로 두 가지를 혼동해서 사용해서는 안 된다.*
+#### 2.4.1 리액트의 렌더링이란?
+* 리액트 애플리케이션 트리 안에 있는 모든 컴포넌트들이 현재 자신들이 가지고 있는 props와 state의 값을 기반으로 어떻게 UI를 구성하고 이를 바탕으로 어떤 DOM 결과를 브라우저에 제공할 것인지 계산하는 일련의 과정을 의미.
+* 만약 컴포넌트가 props와 state와 같은 상태값을 가지고 있지 않다면 오직 해당 컴포넌트가 반환하는 JSX 값에 기반해 렌더링이 일어나게 된다. 
+
