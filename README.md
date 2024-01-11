@@ -20,6 +20,7 @@
 
 ### React
 * [[모던 리액트 Deep Dive] 01장 리액트 개발을 위해 꼭 알아야 할 자바스크립트](https://github.com/ro117-youshin/TIL/blob/master/React/01_js_need_to_know_for_react_development.md)
+* [[모던 리액트 Deep Dive] 02장 리액트 핵심 요소 깊게 살펴보기](https://github.com/ro117-youshin/TIL/blob/master/React/02_exploring_core_elements_of_react.md)
 
 ### Database
 
