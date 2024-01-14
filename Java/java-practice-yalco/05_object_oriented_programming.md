@@ -488,6 +488,9 @@ public static void main(String[] args) {
         for (Button button : buttons) { button.place(); }
 }
 ```
+
+---
+
 ## 4. 접근 제어자
 |접근 가능|public|protected|default|private|
 |-----|-----|-----|-----|-----|
@@ -495,3 +498,166 @@ public static void main(String[] args) {
 |동일 패키지 안에서|✅|✅|✅||
 |동일 패키지 또는 자손 클래스 안에서|✅|✅|||
 |다른 패키지 포함 어느 곳에서든|✅||||
+
+---
+
+## 8. 추상 클래스
+> 자바의 정석 CHAPTER 7 참조
+
+클래스를 설계도로 비유한다면, 추상 클래스는 미완성 설계도에 비유할 수 있다. 미완성 설계도란, 단어의 뜻 그대로 완성되지 못한 채로 남겨진 설계도를 말한다. 
+
+클래스가 미완성이라는 것은 멤버의 개수에 관계된 것이 아니라, 단지 미완성 메서드(추상 메서드)를 포함하고 있다는 의미이다.
+
+미완성 설계도로 완성된 제품을 만들 수 없듯이 추상 클래스로 인스턴스는 생성할 수 없다. 추상 클래스는 상속을 통해서 자식 클래스에 의해서만 완성될 수 있다.
+* 스스로는 인스턴스를 만들 수 없음
+* 자식 클래스로 파생되기 위한 클래스
+  * 상속을 통해서 자식 클래스에 의해서만 완성될 수 있음.
+
+
+
+#### ex01
+###### ☕️ JavaGroup.java
+```java
+package sec05.chap08.ex01;
+
+public abstract class JavaGroup {
+    protected static final String CREED = "우리의 %s 얄팍하다";
+
+    //  💡 클래스 메소드는 abstract 불가
+    //  abstract static String getCreed ();
+
+    protected final int no;
+    protected final String name;
+
+    public JavaGroup(int no, String name) {
+        this.no = no;
+        this.name = name;
+    }
+
+    public String intro () {
+        return "%d호 %s점입니다.".formatted(no, name);
+    }
+    //  이후 다른 패키지에서의 실습을 위해 public으로
+    public abstract void takeOrder ();
+}
+```
+###### ☕️ JavaChicken.java
+```java
+package sec05.chap08.ex01;
+
+public class JavaChicken extends JavaGroup {
+    public static String getCreed () {
+        return CREED.formatted("튀김옷은");
+    }
+    protected static int lastNo = 0;
+
+    public JavaChicken(String name) {
+        super(++lastNo, name);
+    }
+
+    //  💡 반드시 구현 - 제거해 볼 것
+    @Override
+    public void takeOrder () {
+        System.out.printf("자바치킨 %s 치킨을 주문해주세요.%n", super.intro());
+    }
+}
+```
+###### ☕️ JavaCafe.java
+```java
+package sec05.chap08.ex01;
+
+public class JavaCafe extends JavaGroup {
+    public static String getCreed () {
+        return CREED.formatted("원두향은");
+    }
+    protected static int lastNo = 0;
+
+    private boolean isTakeout;
+
+    public JavaCafe(String name, boolean isTakeout) {
+        super(++lastNo, name);
+        this.isTakeout = isTakeout;
+    }
+
+    //  💡 반드시 구현 - 제거해 볼 것
+    @Override
+    public void takeOrder () {
+        System.out.printf("자바카페 %s 음료를 주문해주세요.%n", super.intro());
+        if (!isTakeout) System.out.println("매장에서 드시겠어요?");
+    }
+}
+```
+###### ☕️ Main.java
+```java
+package sec05.chap08.ex01;
+
+public class Main {
+    public static void main(String[] args) {
+
+        //  ⚠️ 불가
+//    JavaGroup JavaGroup = new JavaGroup(1, "서울");
+
+        JavaChicken javaStore1 = new JavaChicken("판교");
+        JavaChicken javaStore2 = new JavaChicken("강남");
+
+        JavaCafe javafStore1 = new JavaCafe("울릉", true);
+        JavaCafe javafStore2 = new JavaCafe("강릉", false);
+
+        JavaGroup[] javaStores = {
+                javaStore1, javaStore2,
+                javafStore1, javafStore2
+        };
+
+        for (JavaGroup javaStore : javaStores) {
+            javaStore.takeOrder();
+        }
+
+        System.out.println("\n- - - - -\n");
+
+        System.out.println(JavaChicken.getCreed());
+        System.out.println(JavaCafe.getCreed());
+    }
+}
+```
+### 📌 abstract 클래스
+* 그 자체로 인스턴스 생성 불가
+  * (ex01) 자바그룹에서 매장을 내지는 않음
+* 부모 클래스로서는 일반 클래스와 같음
+  * 다형성 역시 구현됨
+    * 자바치킨과 자바카페의 매장은 얄코그룹 소속
+
+### 📌 abstract 메소드
+* 추상 클래스에서만 사용 가능
+* 스스로는 선언만 하고 구현하지 않음
+  * ⭐️ 자식 클래스에서 반드시 구현
+  * 구현하지 않을 시 컴파일 에러
+    * 메뉴 - 코드 - 메서드 구현 / IDE의 오류 안내 클릭
+  * 접근 제어자 의미 없음
+* 클래스 메소드는 추상 메소드로 작성할 수 없음
+  * 인스턴스를 생성해서 쓰는 것이 아니므로 맞지 않음
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
