@@ -669,12 +669,47 @@ CapsLock 입력 적용
     * 자식 클래스의 생성자는 super 로 시작해야 함
       * 순서 바꿔 볼 것 - ⚠️ Call to 'super()' must be first statement in constructor body
 
+### 부모 클래스에 명시된 생성자가 없는 경우
+* 자식 클래스에서도 작성할 필요 없음
 
+#### ex03
+###### ☕️ Slime.java
+```java
+public class Slime {
+    protected double hp = 50;
+    protected int attack = 8;
+    protected double defense = 0.2;
 
+    public void attack (Slime enemy) {
+        enemy.hp -= this.attack * (1 - enemy.defense);
+    }
+}
+```
+###### ☕️ FireSlime.java
+```java
+public class FireSlime extends Slime {
+    private int fireAttack = 4;
 
+		@Override
+    public void attack (Slime enemy) {
+        enemy.hp -= (attack + fireAttack) * (1 - enemy.defense);
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        Slime slime = new Slime();
+        FireSlime fireSlime = new FireSlime();
 
-
-
+        slime.attack(fireSlime); // ⭐ 클래스가 다른데 가능한 이유 : 다음 강에서
+        fireSlime.attack(slime);
+    }
+}
+```
+### 💡 상속의 또 다른 용도
+* 자신이 만든 것이 아닌 클래스를 커스터마이즈
 
 ---
 
