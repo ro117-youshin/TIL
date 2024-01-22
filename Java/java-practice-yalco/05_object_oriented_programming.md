@@ -568,6 +568,114 @@ public class Main {
   * Main 클래스를 실행해보면 dtStore1.takeHallOrder() 의 값인 "108호 철원점 홀 주문 받음" 을 출력
   * 자식 클래스의 인스턴스를 생성하여 부모 클래스의 함수를 호출하여 사용할 수 있음
 
+### 메소드 오버라이딩
+* 부모가 가진 같은 이름의 메소드를 자식이 다르게 정의
+  * *'저는 제 방식대로 하겠습니다.'*
+* (오버로딩과 혼동하지 말 것) 
+
+#### ex02 
+###### ☕️ Button.java
+```java
+public class Button {
+    private String print;
+
+    public Button(String print) {
+        this.print = print;
+    }
+
+    public void func () {
+        System.out.println(print + " 입력 적용");
+    }
+}
+```
+###### ☕️ ShutDownButton.java
+```java
+public class ShutDownButton extends Button {
+    public ShutDownButton () {
+        super("ShutDown"); // 💡 부모의 생성자 호출
+    }
+
+		//  💡 부모의 메소드를 override
+		@Override
+    public void func () {
+        System.out.println("프로그램 종료");
+    }
+}
+```
+###### ☕️ ToggleButton.java
+```java
+public class ToggleButton extends Button {
+    private boolean on;
+    
+    public ToggleButton(String print, boolean on) {
+        super(print);
+        this.on = on;
+    }
+
+    @Override
+    public void func () {
+        super.func(); // 💡 부모에서 정의한 메소드 호출
+        this.on = !this.on;
+        System.out.println(
+                "대문자입력: " + (this.on ? "ON" : "OFF")
+        );
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public static void main(String[] args) {
+
+	Button entrButton = new Button("Enter");
+        ShutDownButton stdnButton = new ShutDownButton();
+        ToggleButton tglButton = new ToggleButton("CapsLock", false);
+
+        entrButton.func();
+
+        System.out.println("\n- - - - -\n");
+
+        stdnButton.func();
+
+        System.out.println("\n- - - - -\n");
+
+        tglButton.func();
+        tglButton.func();
+        tglButton.func();
+}
+```
+```java
+Enter 입력 적용
+
+- - - - -
+
+프로그램 종료
+
+- - - - -
+
+CapsLock 입력 적용
+대문자입력: ON
+CapsLock 입력 적용
+대문자입력: OFF
+CapsLock 입력 적용
+대문자입력: ON
+```
+### super : 부모의 생성자/메소드 호출
+* 부모 클래스에 생성자가 작성되었을 시
+  * 자식 클래스에도 생성자 작성 필요
+    * 생성자를 제거해 볼 것 - ⚠️ There is no default constructor available in 'sec05.chap05.ex02.Button'
+  * super 를 사용해서 부모의 생성자를 먼저 호출
+    * 이후 추가로 필요한 내용 작성
+    * 즉 부모의 인스턴스부터 생성 후 이를 기반으로 자식 인스턴스 생성
+    * 자식 클래스의 생성자는 super 로 시작해야 함
+      * 순서 바꿔 볼 것 - ⚠️ Call to 'super()' must be first statement in constructor body
+
+
+
+
+
+
+
+
 ---
 
 ## 8. 추상 클래스
