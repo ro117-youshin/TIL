@@ -501,6 +501,75 @@ public static void main(String[] args) {
 
 ---
 
+## 5. 상속
+
+#### ex01 드라이브스루를 갖춘 얄코치킨의 클래스를 만든다면?
+* 기존 YalcoChicken 클래스의 모든 필드와 메소드 포함
+* 드라이브스루 관련 필드와 메소드 추가
+* YalcoChicken 을 부모로 하는 자식 클래스 YalcoChickenDT 만들기 (extends 연산자 사용)
+
+###### ☕️ YalcoChicken.java
+```java
+public class YalcoChicken {
+    protected int no;
+    protected String name;
+
+    public YalcoChicken (int no, String name) {
+        this.no = no;
+        this.name = name;
+    }
+
+    public void takeHallOrder () {
+        System.out.printf("%d호 %s점 홀 주문 받음%n", no, name);
+    }
+}
+```
+###### ☕️ YalcoChickenDT.java
+```java
+public class YalcoChickenDT extends YalcoChicken {
+    private boolean driveThruOpen = true;
+
+    public YalcoChickenDT(int no, String name) {
+        super(no, name);
+    }
+
+    public void setDriveThruOpen(boolean driveThruOpen) {
+        this.driveThruOpen = driveThruOpen;
+    }
+
+    public void takeDTOrder () {
+        System.out.printf(
+                "%d호 %s점 드라이브스루 주문 %s%n",
+                no, name,
+                (driveThruOpen ? "받음" : "불가")
+        );
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        YalcoChickenDT dtStore1 = new YalcoChickenDT(108, "철원");
+
+        dtStore1.takeHallOrder();
+
+        dtStore1.takeDTOrder();
+        dtStore1.setDriveThruOpen(false);
+        dtStore1.takeDTOrder();
+    }
+}
+```
+* 디버그 모드로 dtStore1 인스턴스를 살펴보면, 부모 클래스의 요소들을 갖고 있음을 확인 - *상속 inheritance*
+  * (dtStore1 > driveThruOpen = false, no = 108, name = "철원")
+* 부모 클래스의 protected 필드들을 private 으로 바꿔 볼 것
+  * private 으로 바꾸면 YalcoChickenDT 클래스(자식 클래스) 의 takeDTOrder() 함수 안에서 에러가 발생한다.
+  * 💡 상속이 안 되는 것은 아님 - 자식 클래스의 코드에서 사용하지 못할 뿐
+  * Main 클래스를 실행해보면 dtStore1.takeHallOrder() 의 값인 "108호 철원점 홀 주문 받음" 을 출력
+  * 자식 클래스의 인스턴스를 생성하여 부모 클래스의 함수를 호출하여 사용할 수 있음
+
+---
+
 ## 8. 추상 클래스
 > 자바의 정석 CHAPTER 7 참조
 
