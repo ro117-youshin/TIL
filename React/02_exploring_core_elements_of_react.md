@@ -9,8 +9,97 @@
 >
 > 2.4 렌더링은 어떻게 일어나는가?
 
+---
+
 ### 2.1 JSX란?
-###### 추후작성
+###### JSX는 자바스크립트 표준 코드가 아닌 페이스북이 임의로 만든 새로운 문법이기 때문에 JSX는 반드시 트랜스파일러를 거쳐야 비로소 자바스크립트 런타임이 이해할 수 있는 의미 있는 자바스크립트 코드로 변환된다. 
+* JSX는 HTML이나 XML을 자바스크립트 내부에 표현하는 것이 유일한 목적은 아니다.
+  * 다양한 트랜스파일러에서 다양한 속성을 가진 트리 구조를 토큰화해 ECMAScript로 변환하는 데 초점을 두고 있다.
+  * 쉽게 이야기 하면 JSX 내부에 트리 구조로 표현하고 싶은 다양한 것들을 작성해두고, 이 JSX를 트랜스파일이라는 과정을 거쳐 자바스크립트(ECMAScript)가 이해할 수 있는 코드로 변경하는 것이 목표라고 볼 수 있다.
+* 정리하자면 JSX는 자바스크립트 내부에서 표현하기 까다로웠던 XML 스타일의 트리 구문을 작성하는 데 많은 도움을 주는 새로운 문법.
+
+#### 2.1.1 JSX 정의와 형태
+기본적으로 JSXElement, JSXAttributes, JSXChildren, JSXStrings라는 4가지 컴포넌트를 기반으로 구성돼 있다.
+
+#### *JSXElement*
+: JSX를 구성하는 가장 기본 요소, HTML의 요소(element)와 비슷한 역할.
+* JSXOpeningElement: 일반적으로 볼 수 있는 요소. JSXOpeningElement로 시작했다면 JSXClosingElement가 동일한 요소로 같은 단계에서 선언돼 있어야 올바른 문법으로 간주된다.
+
+ex:
+```JSX
+<JSXElement JSXAttributes(optional)>
+```
+* JSXClosingElement: JSXOpeningElement가 종료됐음을 알리는 요소, 반드시 JSXOpeningElement와 쌍으로 사용돼야 한다. 
+
+ex:
+```JSX
+<JSXElement />
+```
+* JSXSelfClosingElement: 요소가 시작되고, 스스로 종료되는 형태. <sript/>와 동일한 모습. 이는 내부적으로 자식을 포함할 수 없는 형태를 의미한다.
+
+ex:
+```JSX
+<JSXElement JSXAttributes(optional) />
+```
+* JSXFragment: 아무런 요소가 없는 형태로, JSXSelfClosingElement 형태를 띨 수는 없다. </>는 불가능. <></>는 가능.
+
+ex:
+```JSX
+<>JSXChildren(optional)</>
+```
+
+#### *JSXElementName*
+: JSXElement의 요소 이름으로 쓸 수 있는 것을 의미.
+
+* JSXIdentifier: JSX 내부에서 사용할 수 있는 식별자. (자바스크립트 식별자 규칙과 동일) 숫자로 시작하거나 $와 _ 외의 다른 특수문자로 시작할 수 없다.
+```JSX
+function Valid1() {
+    return <$><$/>
+}
+
+function Valid2() {
+    return <_><_/>
+}
+
+// 불가능
+function Invalid() {
+    return <1><1/>
+}
+```
+* JSXNamespacedName: <JSXIdentifier:JSXIdentifier> 의 조합, 즉 :을 통해 서로 다른 식별자를 이어주는 것도 하나의 식별자로 취급.
+```JSX
+function valid() {
+    return <loan:amt><loan:amt/>
+}
+
+// 불가능
+function invalid() {
+    return <loan:amt:usd><loan:amt:usd/>
+}
+```
+* JSXMemberExpression: <JSXIdentifier.JSXIdentifier>의 조합, 즉 .을 통해 서로 다른 식별자를 이어주는 것도 하나의 식별자로 취급. JSXNamespacedName과 다르게 여러 개 이어서 하는 것도 가능. (JSXNamespacedName과 이어서 사용은 불가)
+```JSX
+function valid1() {
+    return <loan.amt><loan.amt/>
+}
+
+function valid2() {
+    return <loan.amt.usd><loan.amt.usd/>
+}
+
+// 불가능
+function valid2() {
+    return <loan:amt.usd><loan:amt.usd/>
+}
+```
+
+#### *JSXAttributes*
+: JSXElement에 부여할 수 있는 속성. 단순히 속성이기 때문에 optional.
+* JSXSpreadAttributes: 자바스크립트의 전개 연산자와 동일한 역할을 한다고 볼 수 있음. 
+* JSXAttributes: 속성을 나타내는 키와 값으로 짝을 이루어서 표현. 키는 JSXAttributeName, 값은 JSXAttributeValue.
+  
+#### *JSXChildren*
+: JSXElement의 자식 값을 나타냄. JSX는 속성을 가진 트리 구조를 나타내기 위해 만들어졌기 때문에 JSX로 부모와 자식관계를 나타낼 수 있으며, 그 자식을 JSXChildren이라고 함.
 
 ---
 ### 2.2 가상 DOM과 리액트 파이버
