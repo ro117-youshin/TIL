@@ -24,26 +24,18 @@
 #### *JSXElement*
 : JSX를 구성하는 가장 기본 요소, HTML의 요소(element)와 비슷한 역할.
 * JSXOpeningElement: 일반적으로 볼 수 있는 요소. JSXOpeningElement로 시작했다면 JSXClosingElement가 동일한 요소로 같은 단계에서 선언돼 있어야 올바른 문법으로 간주된다.
-
-ex:
 ```JSX
 <JSXElement JSXAttributes(optional)>
 ```
 * JSXClosingElement: JSXOpeningElement가 종료됐음을 알리는 요소, 반드시 JSXOpeningElement와 쌍으로 사용돼야 한다. 
-
-ex:
 ```JSX
 <JSXElement />
 ```
 * JSXSelfClosingElement: 요소가 시작되고, 스스로 종료되는 형태. <sript/>와 동일한 모습. 이는 내부적으로 자식을 포함할 수 없는 형태를 의미한다.
-
-ex:
 ```JSX
 <JSXElement JSXAttributes(optional) />
 ```
 * JSXFragment: 아무런 요소가 없는 형태로, JSXSelfClosingElement 형태를 띨 수는 없다. </>는 불가능. <></>는 가능.
-
-ex:
 ```JSX
 <>JSXChildren(optional)</>
 ```
@@ -100,6 +92,22 @@ function valid2() {
   
 #### *JSXChildren*
 : JSXElement의 자식 값을 나타냄. JSX는 속성을 가진 트리 구조를 나타내기 위해 만들어졌기 때문에 JSX로 부모와 자식관계를 나타낼 수 있으며, 그 자식을 JSXChildren이라고 함.
+* JSXText: {, <, >, } 을 제외한 문자열, 이는 다른 JSX 문법과 혼동을 줄 수 있기 때문. 만약 표현하고 싶다면 문자열로 표시.
+```JSX
+function valid() {
+    return <> {'{} <>'} </>
+}
+```
+* JSXElement: 값으로 다른 JSX 요소가 들어갈 수 있음.
+* JSXFragment: 값으로 빈 JSX 요소인 <></>가 들어갈 수 있음.
+* { JSXChildExpression (optional) }: 이 JSXChildExpression은 자바스크립트의 AssignmentExpression을 의미한다.
+```JSX
+// 이러한 JSX 표현식도 있다.
+// 이 함수를 리액트에서 렌더링하면 "LOAN"이라는 문자열을 출력.
+export default function App() {
+    return <>{(() => 'LOAN')()}</>
+}
+``` 
 
 ---
 ### 2.2 가상 DOM과 리액트 파이버
