@@ -713,6 +713,65 @@ public class Main {
 
 ---
 
+## 6. 다형성
+* Polymorphism
+### Button 클래스 상속 관계 (5강의 ex02)
+* Button
+  * ShutDownButton
+  * ToggleButton
+(부모/자식 관계는 범주의 포함 관계로 이어진다.)
+
+#### ex01 (지난 강의 ex02 복사, Main 클래스만 작성)
+###### ☕️ Main.java 
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        //  💡 가능 - 자식 클래스는 부모 클래스에 속함
+        Button button1 = new Button("Enter");
+        Button button2 = new ShutDownButton();
+        Button button3 = new ToggleButton("CapsLock", true);
+
+        //  ⚠️ 불가
+//        ShutDownButton button4 = new Button("Enter");
+//        ToggleButton button5 = new ShutDownButton();
+
+    }
+}
+```
+![image](https://github.com/ro117-youshin/TIL/assets/86038910/cafb0d5c-5b0e-4169-8e52-ae939a120632)
+
+* 자식 클래스의 인스턴스는 부모 클래스 자료형에 속한다. (디버깅)
+  * (모든 ShutDownButton과 ToggleButton은 Button이다.)
+* 다른 방향으로는 불가.
+  * 모든 Button이 ShutDownButton이거나 ToggleButton이 아니다.
+  * ShutDownButton은 ToggleButton이 아니다.  
+
+###### ☕️ Main.java
+```java
+	//  ⭐️ 편의 : 모두 Button이란 범주로 묶어 배열 등에서 사용 가능
+        Button[] buttons = {
+                new Button("Space"),
+                new ToggleButton("NumLock", false),
+                new ShutDownButton()
+        };
+
+        for (Button button : buttons) {
+            //  ⭐️ 모든 Button들은 func 메소드를 가지므로
+            button.func();
+        }
+```
+```java
+Space 입력 적용
+NumLock 입력 적용
+대문자입력: ON
+프로그램 종료
+```
+* 이처럼 특정 자료형의 자리에 여러 종류가 들어올 수 있는 것 (다형성)
+  * 상속, 오버라이딩, 인터페이스 등을 통해 구현 가능 
+
+---
+
 ## 8. 추상 클래스
 > 자바의 정석 CHAPTER 7 참조
 
