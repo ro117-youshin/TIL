@@ -768,7 +768,91 @@ NumLock 입력 적용
 프로그램 종료
 ```
 * 이처럼 특정 자료형의 자리에 여러 종류가 들어올 수 있는 것 (다형성)
-  * 상속, 오버라이딩, 인터페이스 등을 통해 구현 가능 
+  * 상속, 오버라이딩, 인터페이스 등을 통해 구현 가능
+
+#### 5강 ex03
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        Slime slime = new Slime();
+        FireSlime fireSlime = new FireSlime();
+
+        slime.attack(fireSlime); // ⭐ 클래스가 다른데 가능한 이유 : 다음 강에서
+        fireSlime.attack(slime);
+    }
+}
+```
+* FireSlime은 Slime이므로
+  * attack()의 인자로 사용 가능.
+  * hp와 defence필드를 가졌다는 전제.
+
+### 📌 instanceof 연산자
+* 뒤에 오는 클래스의 자료형에 속하는 인스턴스인지 확인
+  * 인터페이스에 대해서도 사용 가능
+* 상속관계가 아닌 클래스끼리는 컴파일 오류
+
+#### ☕️ Main.java
+```java
+	Button button = new Button("버튼");
+        ToggleButton toggleButton = new ToggleButton("토글", true);
+        ShutDownButton shutDownButton = new ShutDownButton();
+
+        //  true
+        boolean typeCheck1 = button instanceof Button;
+        boolean typeCheck2 = toggleButton instanceof Button;
+        boolean typeCheck3 = shutDownButton instanceof Button;
+
+        //  false
+        boolean typeCheck4 = button instanceof ShutDownButton;
+        boolean typeCheck5 = button instanceof ToggleButton;
+
+        //  ⚠️ 컴파일 에러
+//        boolean typeCheck6 = toggleButton instanceof ShutDownButton;
+//        boolean typeCheck7 = shutDownButton instanceof ToggleButton;
+```
+```java
+        Button[] buttons = {
+                new Button("Space"),
+                new ToggleButton("NumLock", false),
+                new ShutDownButton()
+        };
+
+        for (Button btn : buttons) {
+            if (btn instanceof ShutDownButton) continue; // ⭐️
+            btn.func();
+        }
+```
+```java
+Space 입력 적용
+NumLock 입력 적용
+대문자입력: ON
+```
+* shutDownButton이 실행되지 않음.
+
+#### ex02 (지난 강의 ex01 복사)
+
+###### ☕️ Main.java
+```java
+	YalcoChicken ycStores[] = {
+                new YalcoChicken(3, "판교"),
+                new YalcoChicken(17, "강남"),
+                new YalcoChickenDT(108, "철원"),
+
+        };
+
+        for (YalcoChicken store : ycStores) {
+            if (store instanceof YalcoChickenDT) {
+                //  ⭐️ 자식 클래스의 기능을 사용하려면 명시적 타입 변환
+                ((YalcoChickenDT) store).takeDTOrder();
+            } else {
+                store.takeHallOrder();
+            }
+        }
+```
+* ⭐️ 주석 부분의 명시적 타입 변환 필요.
+  * store 인스턴스가 YalcoChicken 클래스로 인식하기 때문.
+  * YalcoChicken 클래스에는 takeDTOrder() 메서드가 없기 때문에 error.
 
 ---
 
