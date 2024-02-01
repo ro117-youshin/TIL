@@ -12,6 +12,9 @@
 * reference를 명시하고, 원작자가 참고를 허용하는 자료만 사용한다.
 
 ## 분류
+### Seminar & Conference
+* [[20240131] 김영한님의 온라인 밋업 Live (and 오프라인 세미나)](https://github.com/ro117-youshin/TIL/blob/master/SeminarAndConference/20240131_kimyeonghan_seminar_in_inflearn.md)
+
 ### Java
 * [제대로 파는 자바 - 얄코 (ing)](https://github.com/ro117-youshin/TIL/tree/master/Java/java-practice-yalco)
 
