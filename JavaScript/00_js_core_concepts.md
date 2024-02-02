@@ -1,5 +1,5 @@
 ## 00. 자바스크립트의 핵심 개념
-> 벨로퍼트와 함께하는 모던 자바스크립트
+> [벨로퍼트와 함께하는 모던 자바스크립트](https://learnjs.vlpt.us/)
 
 
 ### 📌 연산자, 연산 순서
@@ -79,6 +79,7 @@ console.log(name);
 * A && B 연산자를 사용하게 될 때에는 A 가 Truthy 한 값이라면, B 가 결과값이 된다.
 * 반면, A 가 Falsy 한 값이라면 결과는 A가 된다.
 
+#### ex)
 ```JavaScript
 const dog = {
   name: '오트'
@@ -161,3 +162,112 @@ console.log(1 || "hello") // 1
 ```
 
 ---
+
+### 📌 조건문 더 스마트하게 쓰기
+#### 💡 includes 함수: 특정 값이 여러 값중 하나인지 확인해야 할 때
+#### ex)
+```JavaScript
+function isAnimal(text) {
+  return (
+    text === '고양이' || text === '개' || text === '거북이' || text === '너구리'
+  );
+}
+
+console.log(isAnimal('개')); // true
+console.log(isAnimal('노트북')); // false
+```
+배열의 includes 함수를 사용.
+```JavaScript
+function isAnimal(name) {
+  const animals = ['고양이', '개', '거북이', '너구리'];
+  return animals.includes(name);
+}
+
+console.log(isAnimal('개')); // true
+console.log(isAnimal('노트북')); // false
+```
+animals 배열 선언 생략, 화살표 함수 사용.
+```JavaScript
+const isAnimal = name => ['고양이', '개', '거북이', '너구리'].includes(name);
+
+console.log(isAnimal('개')); // true
+console.log(isAnimal('노트북')); // false
+```
+#### 💡 값에 따라 다른 결과물을 반환 해야 할 때
+#### ex)
+```JavaScript
+function getSound(animal) {
+  if (animal === '개') return '멍멍!';
+  if (animal === '고양이') return '야옹~';
+  if (animal === '참새') return '짹짹';
+  if (animal === '비둘기') return '구구 구 구';
+  return '...?';
+}
+
+console.log(getSound('개')); // 멍멍!
+console.log(getSound('비둘기')); // 구구 구 구
+```
+위 코드를 switch case문으로
+```JavaScript
+function getSound(animal) {
+  switch (animal) {
+    case '개':
+      return '멍멍!';
+    case '고양이':
+      return '야옹~';
+    case '참새':
+      return '짹짹';
+    case '비둘기':
+      return '구구 구 구';
+    default:
+      return '...?';
+  }
+}
+
+console.log(getSound('개')); // 멍멍!
+console.log(getSound('비둘기')); // 구구 구 구
+```
+객체를 활용
+```JavaScript
+function getSound(animal) {
+  const sounds = {
+    개: '멍멍!',
+    고양이: '야옹~',
+    참새: '짹짹',
+    비둘기: '구구 구 구'
+  };
+  return sounds[animal] || '...?';
+}
+
+console.log(getSound('개')); // 멍멍!
+console.log(getSound('비둘기')); // 구구 구 구
+```
+반면, 값에 따라 실행해야 하는 코드 구문이 다를 때는 객체에 함수를 넣으면 된다.
+```JavaScript
+function makeSound(animal) {
+  const tasks = {
+    개() {
+      console.log('멍멍');
+    },
+    고양이() {
+      console.log('고양이');
+    },
+    비둘기() {
+      console.log('구구 구 구');
+    }
+  };
+  if (!tasks[animal]) {
+    console.log('...?');
+    return;
+  }
+  tasks[animal]();
+}
+
+makeSound("개");  // 멍멍
+makeSound("비둘기"); // 구구 구 구
+makeSound("하이");  // ...?
+```
+
+---
+
+
