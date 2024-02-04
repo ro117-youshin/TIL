@@ -16,7 +16,8 @@
 * [[20240131] 김영한님의 온라인 밋업 Live (and 오프라인 세미나)](https://github.com/ro117-youshin/TIL/blob/master/SeminarAndConference/20240131_kimyeonghan_seminar_in_inflearn.md)
 
 ### Java
-* [제대로 파는 자바 - 얄코 (ing)](https://github.com/ro117-youshin/TIL/tree/master/Java/java-practice-yalco)
+* [[제대로 파는 자바 (얄코)] Section 4. 제어문과 메소드](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/04_control_statement_and_method.md)
+* [[제대로 파는 자바 (얄코)] Section 5. 객체지향 프로그래밍](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/05_object_oriented_programming.md)
 
 ### JavaScript
 * [문서 객체 모델 DOM과 자바스크립트 | 생성 방식 및 접근 방법](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/js_insight_dom.md)
