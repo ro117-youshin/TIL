@@ -856,6 +856,83 @@ NumLock 입력 적용
 
 ---
 
+## 7. 클래스의 final
+
+#### ex) 필드에 final
+###### ☕️ JavaChicken.java
+```java
+public class JavaChicken {
+    protected static final String CREED = "튀김옷 is Good.";
+
+    private final int no;
+    public String name;
+
+//  ⭐️ 필수 - no가 final이고 초기화되지 않았으므로
+//  생성자에서 no를 지운다면 필드 no에서 error.
+//  만약 생성자에서 초기화를 하지 않는다면 필드에서 초기화를 해줘야 함.
+    public JavaChicken (int no, String name) {
+        this.no = no;
+        this.name = name;
+    }
+
+    public void changeFinalFields() {
+//        ⚠️ 불가
+//        this.no++
+    }
+
+    public final void fryChicken() {
+        System.out.println("염지, 반죽, 튀기기");
+    }
+
+}
+```
+
+#### ex) 메서드의 final
+###### ☕️ JavaChickenDT.java
+```java
+public final class JavaChickenDT extends JavaChicken {
+    public JavaChickenDT (int no, String name) {
+        super(no, name);
+    }
+
+//    ⚠️ 불가 - 부모 JavaChicken 클래스에서 final로 생성되어 있음.
+//    즉, 메서드의 final은 자손 클래스에서 상속되어서 오버라이드를 할 수 없다.
+//    public void fryChicken() {
+//        System.out.println("염지, 반죽, 튀기기, 다시 튀기기");
+//    }
+}
+
+```
+
+#### ex) 인스턴스의 final
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        String ycCreed = JavaChicken.CREED;
+//        JavaChicken.CREED = "우리의 튀김옷은 바삭하다"; // ⚠️ 불가
+
+        // JavaChicken의 인스턴스를 final로 선언
+        final JavaChicken store1 = new JavaChicken(3, "판교");
+
+        //  ⚠️ 불가 - 인스턴스가 final로 선언되었기 때문에 다른 값으로 new 연산자를 통해 선언하는 것은 불가 
+//        store1 = new JavaChicken(17, "강남");
+        //  💡 요소 변경은 가능
+        store1.name = "선릉";
+    }
+}
+```
+
+#### ex) 클래스의 final
+###### ☕️ JavaChickenHighWayDT.java
+
+```java
+// ⚠️ 불가 - 클래스의 final은 자손 클래스가 상속할 수 없음.
+//public class JavaChickenHighWayDT extends JavaChickenDT{
+//}
+```
+
+---
 ## 8. 추상 클래스
 > 자바의 정석 CHAPTER 7 참조
 
