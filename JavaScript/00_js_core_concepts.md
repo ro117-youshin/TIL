@@ -10,6 +10,8 @@
 > 조건문 더 스마트하게 쓰기
 >
 > 비구조화 할당 (구조분해)
+>
+> spread와 rest
 
 ### 📌 연산자, 연산 순서
 * 순서는 NOT -> AND -> OR 이다.
@@ -414,5 +416,58 @@ const {
   },
   value
 } = deepObject;
+```
+
+### 📌 spread와 rest
+#### 💡 Spread
+* 의미: '펼치다', '퍼뜨리다'
+* 객체 혹은 배열을 펼칠 수 있다.
+
+#### ex) 객체 펼치기.
+아래 코드에서 핵심은, 기존의 것은 건들이지 않고, 새로운 객체를 만드는 것이다. 이러한 상황에서 유용한 문법이 spread 이다.
+
+```JavaScript
+const dog = {
+  name: "oat",
+};
+
+const cuteDog = {
+  name: "oat",
+  attribute: "cute",
+};
+
+const whiteCuteDog = {
+  name: "oat",
+  attribute: "cute",
+  color: "white",
+};
+```
+```JavaScript
+const dog = {
+  name: "oat",
+};
+
+const cuteDog = {
+  ...dog
+  attribute: "cute",
+};
+
+const whiteCuteDog = {
+  ...cuteDog
+  color: "white",
+};
+```
+#### ex) 배열 펼치기.
+```JavaScript
+const color = ["red", "green", "blue"];
+const anotherColor = [...color, "yellow"];
+
+console.log(anotherColor); // (4) ['red', 'green', 'blue', 'yellow']
+```
+#### ex) spread 연산자 여러번 사용 가능
+```JavaScript
+const spreadColor = [...color, "yellow", ...color];
+
+console.log(anotherColor); // (7) ['red', 'green', 'blue', 'yellow', 'red', 'green', 'blue']
 ```
 
