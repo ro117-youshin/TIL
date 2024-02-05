@@ -1,6 +1,15 @@
 ## 00. 자바스크립트의 핵심 개념
 > [벨로퍼트와 함께하는 모던 자바스크립트](https://learnjs.vlpt.us/)
 
+> 연산자, 연산 순서
+> 
+> Truthy and Faisy
+> 
+> 단축 평가(short-circuit evaluation) 논리 계산법
+> 
+> 조건문 더 스마트하게 쓰기
+>
+> 비구조화 할당 (구조분해)
 
 ### 📌 연산자, 연산 순서
 * 순서는 NOT -> AND -> OR 이다.
@@ -270,4 +279,140 @@ makeSound("하이");  // ...?
 
 ---
 
+### 📌 비구조화 할당 (구조분해) 
+
+#### 💡 객체 비구조화 할당 (객체 구조 분해)
+```JavaScript
+const ironMan = {
+  name: '토니 스타크',
+  actor: '로버트 다우니 주니어',
+  alias: '아이언맨'
+};
+
+const captainAmerica = {
+  name: '스티븐 로저스',
+  actor: '크리스 에반스',
+  alias: '캡틴 아메리카'
+};
+
+function print(hero) {
+  const text = `${hero.alias}(${hero.name}) 역할을 맡은 배우는 ${
+    hero.actor
+  } 입니다.`;
+  console.log(text);
+}
+
+print(ironMan);
+print(captainAmerica);
+```
+객체에서 값들을 추출해서 새로운 상수로 선언.
+```JavaScript
+function print(hero) {
+  const { alias, name, actor } = hero;
+  const text = `${alias}(${name}) 역할을 맡은 배우는 ${actor} 입니다.`;
+  console.log(text);
+}
+```
+파라미터 단계에서 객체 비구조화 할당.
+```JavaScript
+function print({ alias, name, actor }) {
+  const text = `${alias}(${name}) 역할을 맡은 배우는 ${actor} 입니다.`;
+  console.log(text);
+}
+```
+
+#### 💡 비구조화 할당시 기본값 설정
+파라미터에서.
+```JavaScript
+const object = { a: 1 };
+
+function print({ a, b = 2 }) {
+    console.log(a);
+    console.log(b);
+}
+
+print(object);
+// 1
+// 2
+```
+상수 선언할 때.
+```JavaScript
+const object = { a: 1 };
+
+const { a, b = 2 } = object;
+
+console.log(a); // 1
+console.log(b); // 2
+```
+
+#### 💡 비구조화 할당시 이름 바꾸기
+: 문자를 사용하여 이름 바꾸기.
+```JavaScript
+const animal = {
+    name: 'oat',
+    type: 'dog'  
+};
+
+const nickname = animal.name;
+
+console.log(nickname); // oat
+```
+아래의 코드는 'animal 객체 안에 있는 name 을 nickname 이라고 선언하겠다.' 라는 의미.
+```JavaScript
+const { name: nickname } = animal
+```
+
+#### 💡 배열 비구조화 할당
+배열 안에 있는 원소를 다른 이름으로 새로 선언해주고 싶을 때.
+```JavaScript
+const array = [1, 2];
+const [one, two] = array;
+
+console.log(one);
+console.log(two);
+```
+객체 비구조화 할당과 마찬가지로, 기본값 지정이 가능.
+```JavaScript
+const array = [1];
+const [one, two = 2] = array;
+
+console.log(one);
+console.log(two);
+```
+
+#### 💡 깊은 값 비구조화 할당
+첫 번째, 비구조화 할당 문법을 두 번 사용.
+```JavaScript
+const deepObject = {
+  state: {
+    information: {
+      name: "youshin",
+      languages: ["korean", "english", "chinese"],
+    },
+  },
+  value: 117,
+};
+
+// 비구조화 할당 두 번...
+const { name, languages } = deepObject.state.information;
+const { value } = deepObject;
+
+const extracted = {
+  name,
+  languages,
+  value
+};
+
+console.log(extracted); 
+```
+두 번째, 한 번에 다 추출하기.
+```JavaScript
+// 한번에 추출하기...
+const {
+  state: {
+    information: { name, languages }
+  },
+  value
+} = deepObject;
+```
 
