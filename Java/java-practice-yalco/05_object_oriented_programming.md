@@ -291,6 +291,7 @@ public static void main(String[] args) {
 
 <img width="256" alt="image" src="https://github.com/ro117-youshin/TIL/assets/86038910/f1760f73-691c-4610-b41f-13b31b683348">
 ---
+
 ### 📌 클래스의 인스턴스도 참조 자료형
 ###### ☕️Main.java (ex03 Main.java에 코드 추가)
 ```java
