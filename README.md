@@ -20,6 +20,7 @@
 * [[제대로 파는 자바 (얄코)] Section 5. 객체지향 프로그래밍](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/05_object_oriented_programming.md)
 
 ### JavaScript
+* [자바스크립트의 핵심 개념](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/00_js_core_concepts.md)
 * [문서 객체 모델 DOM과 자바스크립트 | 생성 방식 및 접근 방법](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/js_insight_dom.md)
 
 ### React
