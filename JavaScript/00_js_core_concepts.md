@@ -418,6 +418,8 @@ const {
 } = deepObject;
 ```
 
+---
+
 ### 📌 spread와 rest
 #### 💡 Spread
 * 의미: '펼치다', '퍼뜨리다'
@@ -471,3 +473,101 @@ const spreadColor = [...color, "yellow", ...color];
 console.log(anotherColor); // (7) ['red', 'green', 'blue', 'yellow', 'red', 'green', 'blue']
 ```
 
+#### 💡 rest
+* 객체, 배열, 함수의 파라미터에서 사용 가능.
+* 객체와 배열에서 사용 할 때는 비구조화 할당 문법과 함께 사용된다.
+* 주로 rest 라는 키워드를 사용하게 되는데, 추출한 값의 이름이 꼭 rest 일 필요는 없다.
+
+#### ex) 객체에서의 rest
+```JavaScript
+const whiteCuteDog = {
+  name: "oat",
+  attribute: "cute",
+  color: "white",
+};
+
+const { color, ...rest } = whiteCuteDog;
+
+console.log(color); // white
+console.log(rest);  // { name: "oat", attribute: "cute" }
+```
+attribute 를 없앤 새로운 객체를 만들고 싶다면
+```JavaScript
+const { attribute, ...rest } = whiteCuteDog;
+
+console.log(attribute); // cute
+console.log(rest);  // { name: "oat", color: "white" }
+```
+
+#### ex) 배열에서의 rest
+* 파라미터로 넣어준 모든 값들을 합해주는 함수를 만든다.
+* 아래의 sum 함수는 7개의 파라미터를 받아오는데, 실제 사용할 때는 6개만 넣어줬다. 그러면, g 값이 undefined 가 되기 때문에 더하는 과정에서 += undefined 를 하게 되면 결과는 NaN 이 되버린다.
+* 함수의 파라미터가 몇개가 될 지 모르는 상황에서 rest 파라미터를 사용하면 매우 유용하다.
+
+```JavaScript
+function sum(a, b, c, d, e, f, g) {
+  let sum = 0;
+  if (a) sum += a;
+  if (b) sum += b;
+  if (c) sum += c;
+  if (d) sum += d;
+  if (e) sum += e;
+  if (f) sum += f;
+  if (g) sum += g;
+  return sum;
+}
+
+const result = sum(1, 2, 3, 4, 5, 6);
+console.log(result);
+```
+
+```JavaScript
+function sum(...rest) {
+  return rest;
+}
+
+const result = sum(1, 2, 3, 4, 5, 6);
+console.log(result);  // [1, 2, 3, 4, 5, 6]
+```
+ex) reduce 함수 사용.
+```JavaScript
+function sum(...rest) {
+  return rest.reduce((acc, current) => acc + current, 0);
+}
+
+const result = sum(1, 2, 3, 4, 5, 6);
+console.log(result); // 21
+```
+
+#### 💡 함수 인자와 spread
+* 위의 함수파라미터와 rest 를 사용한 것과 비슷한데, 반대의 역할.
+
+#### ex) 배열 안에 있는 원소들을 모두 파라미터로 넣어주고 싶을 때
+```JavaScript
+function sum(...rest) {
+  return rest.reduce((acc, current) => acc + current, 0);
+}
+
+const numbers = [1, 2, 3, 4, 5, 6];
+const result = sum(
+  numbers[0],
+  numbers[1],
+  numbers[2],
+  numbers[3],
+  numbers[4],
+  numbers[5]
+);
+console.log(result);
+```
+sum 함수를 사용 할 때 인자 부분에 spread 를 사용하면
+```JavaScript
+function sum(...rest) {
+  return rest.reduce((acc, current) => acc + current, 0);
+}
+
+const numbers = [1, 2, 3, 4, 5, 6];
+const result = sum(...numbers);
+console.log(result);
+```
+
+---
