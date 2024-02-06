@@ -112,7 +112,8 @@ public static void main (String[] args) {
     String[] intros = {store1.intro(), store2.intro(), store3.intro()};
 }
 ```
----
+
+
 #### ex01
 ###### ☕️Button.java
 ```java
@@ -148,7 +149,9 @@ public static void main(String[] args) {
     buttonClear.place();
 }
 ```
+
 ---
+
 ## 2. 기초 활용예제들
 ### 📌 슬라임 클래스
 * 생성자를 필요로 하지 않음
@@ -181,7 +184,7 @@ public static void main(String[] args) {
 
 * ⭐️ 객체는 참조형 - 인자로 전달될 시 내용이 변경될 수 있음
 * 같은 클래스의 인스턴스지만, 필드의 값은 각기 별개임 주목
----
+
 ### 📌 정수배열 정보 클래스 (복잡한 과정을 거치는 생성자의 예시)
 * (main 메소드의) 배열을 생성자 인자로 받아, 그것의 정보를 필드들로 저장
 
@@ -224,7 +227,7 @@ public static void main(Stinrg[] args) {
         int ary1n2Sum = aryInf1.sum + aryInf2.sum;
 }
 ```
----
+
 ### 📌 치킨과 치킨메뉴 클래스
 * 클래스의 필드로 다른 클래스의 인스턴스를 담은 배열을 가짐
   * 클래스가 인스턴스가 배열 등 다른 자료형에도, 그 반대로도 포함될 수 있음
@@ -290,7 +293,6 @@ public static void main(String[] args) {
 ```
 
 <img width="256" alt="image" src="https://github.com/ro117-youshin/TIL/assets/86038910/f1760f73-691c-4610-b41f-13b31b683348">
----
 
 ### 📌 클래스의 인스턴스도 참조 자료형
 ###### ☕️Main.java (ex03 Main.java에 코드 추가)
@@ -324,7 +326,9 @@ public static void raisePrice (int avg, ChickenMenu menu, int amount) {
 * 배열과 같이, 인스턴스도 필드로 들어간 데이터들을 포함하는 객체
 * 메소드에 인자로 들어갈 시, 인스턴스의 주소값이 복사되어 들어감
   * 복사된 주소지만 같은 객체를 가리키므로...
+
 ---
+
 ## 3. 클래스(정적) 필드와 메소드
 #### ex01
 ###### ☕️YalcoChicken.java
@@ -403,7 +407,8 @@ public static void main(String[] args) {
    - 메서드 작업내용 중에서 인스턴스 변수를 필요로 한다면, static을 붙일 수 없다. 반대로 인스턴스 변수를 필요로 하지 않는다면 static을 붙이자. 메서드 호출시간이 짧아지므로 성능이 향상된다. static을 안 붙인 메서드(인스턴스 메서드)는 실행 시 호출되어야할 메서드를 찾는 과정이 추가적으로 필요하기 때문에 시간이 더 걸린다.
 * 멤버변수 중 모든 인스턴스에 공통된 값을 유지해야하는 것이 있는지 살펴보고 있으면, static을 붙여준다.
 * 작성한 메서드 중에서 인스턴스 변수나 인스턴스 메서드를 사용하지 않는 메서드에 static을 붙일 것을 고려한다.
----
+
+
 ### 📌 매장 번호 자동 생성
 #### ex02
 ###### ☕️YalcoChicken.java
@@ -441,7 +446,8 @@ public static void main(String[] args) {
         YalcoChicken store3 = new YalcoChicken("제주");
 }
 ```
----
+
+
 #### ex03
 ###### ☕️Button.java
 ```java
@@ -934,6 +940,7 @@ public class Main {
 ```
 
 ---
+
 ## 8. 추상 클래스
 > 자바의 정석 CHAPTER 7 참조
 
@@ -1057,7 +1064,7 @@ public class Main {
   * (ex01) 자바그룹에서 매장을 내지는 않음
 * 부모 클래스로서는 일반 클래스와 같음
   * 다형성 역시 구현됨
-    * 자바치킨과 자바카페의 매장은 얄코그룹 소속
+    * 자바치킨과 자바카페의 매장은 자바그룹 소속
 
 ### 📌 abstract 메소드
 * 추상 클래스에서만 사용 가능
