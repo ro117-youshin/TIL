@@ -943,17 +943,11 @@ public class Main {
 
 ## 8. 추상 클래스
 > 자바의 정석 CHAPTER 7 참조
-
-클래스를 설계도로 비유한다면, 추상 클래스는 미완성 설계도에 비유할 수 있다. 미완성 설계도란, 단어의 뜻 그대로 완성되지 못한 채로 남겨진 설계도를 말한다. 
-
-클래스가 미완성이라는 것은 멤버의 개수에 관계된 것이 아니라, 단지 미완성 메서드(추상 메서드)를 포함하고 있다는 의미이다.
-
-미완성 설계도로 완성된 제품을 만들 수 없듯이 추상 클래스로 인스턴스는 생성할 수 없다. 추상 클래스는 상속을 통해서 자식 클래스에 의해서만 완성될 수 있다.
-* 스스로는 인스턴스를 만들 수 없음
-* 자식 클래스로 파생되기 위한 클래스
+* 클래스를 설계도로 비유한다면, 추상 클래스는 미완성 설계도에 비유할 수 있다. (미완성 설계도란, 단어의 뜻 그대로 완성되지 못한 채로 남겨진 설계도를 말한다.) 
+* 클래스가 미완성이라는 것은 멤버의 개수에 관계된 것이 아니라, 단지 미완성 메서드(추상 메서드)를 포함하고 있다는 의미이다.
+* 미완성 설계도로 완성된 제품을 만들 수 없듯이 <u>추상 클래스로 인스턴스는 생성할 수 없다.</u>
+* 추상 클래스는 상속을 통해서 자식 클래스에 의해서만 완성될 수 있다. (자식 클래스로 파생되기 위한 클래스)
   * 상속을 통해서 자식 클래스에 의해서만 완성될 수 있음.
-
-
 
 #### ex01
 ###### ☕️ JavaGroup.java
@@ -1059,6 +1053,7 @@ public class Main {
     }
 }
 ```
+
 ### 📌 abstract 클래스
 * 그 자체로 인스턴스 생성 불가
   * (ex01) 자바그룹에서 매장을 내지는 않음
@@ -1076,9 +1071,106 @@ public class Main {
 * 클래스 메소드는 추상 메소드로 작성할 수 없음
   * 인스턴스를 생성해서 쓰는 것이 아니므로 맞지 않음
 
+#### ex02 웹 사이트 UI/UX 요소들 FormElement 자바로 구현.
+###### ☕️ FormElement.java
+```java
+public abstract class FormElement {
+    protected int space;
 
+    public FormElement(int space){
+        this.space = space;
+    }
 
+    abstract void func();
+}
+```
+###### ☕️ Button.java
+```java
+public class Button extends FormElement {
+    private String print;
 
+    public Button(int space, String print) {
+        super(space);
+        this.print = print;
+    }
+
+    @Override
+    void func() {
+        System.out.println(print + "입력 적용");
+    }
+}
+```
+###### ☕️ Switch.java
+```java
+public class Switch extends FormElement {
+
+    private boolean on;
+
+    public Switch(int space, boolean on) {
+        super(space);
+        this.on = on;
+    }
+
+    @Override
+    void func() {
+        on = !on;
+        System.out.println((on ? "ON" : "OFF") + " 으로 전환");
+    }
+}
+```
+###### ☕️ Dropdown.java
+```java
+public class DropDown extends FormElement {
+    String[] menus;
+
+    public DropDown(int space, String[] menus) {
+        super(space);
+        this.menus = menus;
+    }
+
+    @Override
+    void func() {
+        System.out.println(" 메뉴 선택 \n ------- ");
+        for(String menu: menus) {
+            System.out.printf(" - %s%n", menu);
+        }
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        Button button01 = new Button(2, "Enter");
+        Switch switch01 = new Switch(3, true);
+        DropDown dropdown01 = new DropDown(5, new String[] {
+                "이름 오름차순", "이름 내림차순",
+                "크기 오름차순", "크기 내림차순",
+                "날짜 오름차순", "날짜 내림차순"
+        });
+
+        // 💡 다형성 적용 확인
+        clickFormElement(button01);
+
+        clickFormElement(switch01);
+        clickFormElement(switch01);
+        clickFormElement(switch01);
+
+        clickFormElement(dropdown01);
+    }
+
+    public static void clickFormElement (FormElement fe) {
+        fe.func();
+    }
+}
+```
+* clickFormElement 메서드의 파라미터 값 (FormElement fe)
+  * 인자로 FormElement 값을 받는다.
+  * FormElement 를 구현한, FormElement 를 부터 상속 받은 클래스의 인스턴스를 받는다. 
+
+---
 
 
 
