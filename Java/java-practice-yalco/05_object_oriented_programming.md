@@ -1180,8 +1180,8 @@ public class Main {
 * 오직 추상메서드와 상수만을 멤버로 가질 수 있다. (그 외의 다른 어떠한 요소도 허용하지 않음)
 * 추상클래스를 부분적으로만 완성된 '미완성 설계도'라고 한다면, 인터페이스는 구현된 것은 아무 것도 없고 밑그림만 그려져 있는 '기본 설계도'라 할 수 있다.
 * 인터페이스의 멤버들은 다음과 같은 제약사항이 있다.
-  * 모든 멤버변수는 public static final 이어야 하며, 이를 생략할 수 있다.
-  * 모든 메서드는 public abstract 이어야 하며, 이를 생략할 수 있다.
+  * 모든 멤버변수는 public static final 이어야 하며, **이를 생략할 수 있다.**
+  * 모든 메서드는 public abstract 이어야 하며, **이를 생략할 수 있다.**
     * 단, static 메서드와 default 메서드는 예외 (JDK1.8부터)
 
 #### 💡 추상 클래스와의 차이
@@ -1207,14 +1207,196 @@ public class Main {
 |필드|모두 가능|상수만 가능 (final 명시 불필요)|
 |적용 연산자|extends|implements|
 
+#### ex01 위의 '💡 추상 클래스와의 차이'를 코드로 구현.
 
+* 추상 클래스
 
+<details markdown = "1">
+<summary>Mamal.java</summary>
+	
+###### ☕️ Mamal.java
+```java
+public abstract class Mamal {
 
+    // 겨울잠
+    public boolean hibernation;
 
+    public Mamal(boolean hibernation) {
+        this.hibernation = hibernation;
+    }
+}
+```
+</details>
 
+<details markdown = "1">
+<summary>Reptile.java</summary>
+	
+###### ☕️ Reptile .java
+```java
+public abstract class Reptile {
+    public boolean isColdBlooded() {
+        return true;
+    }
+}
+```
+</details>
 
+<details markdown = "1">
+<summary>Bird.java</summary>
 
+###### ☕️ Bird.java
+```java
+public abstract class Bird {
 
+    // 번식
+    public void reproduce() {
+        System.out.println("알 낳기");
+    }
+}
+```
+</details>
+
+* 인터페이스
+
+<details markdown = "1">
+<summary>Hunter.java</summary>
+
+###### ☕️ Hunter.java
+```java
+public interface Hunter {
+    String position = "포식자";
+    void hunt();
+}
+```
+</details>
+
+<details markdown = "1">
+<summary>Flyer.java</summary>
+
+###### ☕️ Flyer.java
+```java
+public interface Flyer {
+    String aka = "날짐승";
+    void fly();
+}
+```
+</details>
+
+<details markdown = "1">
+<summary>Swimmer.java</summary>
+
+###### ☕️ Swimmer.java
+```java
+public interface Swimmer {
+    void swim();
+}
+```
+</details>
+
+* 구현 클래스
+
+<details markdown = "1">
+<summary>PolarBear.java</summary>
+
+###### ☕️ PolarBear.java
+```java
+public class PolarBear extends Mamal implements Hunter, Swimmer {
+    public PolarBear() {
+        super(false);
+    }
+
+    @Override
+    public void hunt() {
+        System.out.println(position + ": 물범 사냥");
+    }
+
+    @Override
+    public void swim() {
+        System.out.println("앞발로 수영");
+    }
+}
+```
+</details>
+
+<details markdown = "1">
+<summary>GlidingLizard.java</summary>
+
+###### ☕️ GlidingLizard.java
+```java
+public class GlidingLizard extends Reptile implements Hunter, Swimmer, Flyer {
+    @Override
+    public void fly() {
+        System.out.println("날개막으로 활강");
+    }
+
+    @Override
+    public void hunt() {
+        System.out.println(position + ": 벌레 사냥");
+    }
+
+    @Override
+    public void swim() {
+        System.out.println("꼬리로 수영");
+    }
+}
+```
+</details>
+
+<details markdown = "1">
+<summary>Eagle.java</summary>
+
+###### ☕️ Eagle.java
+```java
+public class Eagle extends Bird implements Hunter, Flyer{
+    @Override
+    public void fly() {
+        System.out.println("날개로 비행");
+    }
+
+    @Override
+    public void hunt() {
+        System.out.println(position + ": 토끼 사냥");
+    }
+}
+```
+</details>
+
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        // ⭐ 다형성
+        PolarBear polarBear = new PolarBear();
+        Mamal mamal = polarBear;
+        Swimmer swimmer = polarBear;
+
+        GlidingLizard glidingLizard = new GlidingLizard();
+        Eagle eagle = new Eagle();
+
+        Hunter[] hunters = {
+                polarBear, glidingLizard, eagle
+        };
+
+        // ⭐️ 인터페이스 역시 다형성에 의해 자료형으로 작용 가능
+        for(Hunter hunter: hunters) {
+            hunter.hunt();
+        }
+    }
+}
+```
+```java
+포식자: 물범 사냥
+포식자: 벌레 사냥
+포식자: 토끼 사냥
+```
+
+* (예제를 통해) 인터페이스는 다수 적용할 수 있음을 확인.
+* 필드는 public static final
+  * 명시할 필요 없음.
+  * 초기화 필수 (생성자가 없으므로)
+* 메소드는 public abstract
+  * 명시할 필요 없음.
+  * 메소드는 구현 클래스에서 구현 필수.
 
 
 
