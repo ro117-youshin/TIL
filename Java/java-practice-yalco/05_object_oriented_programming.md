@@ -1462,6 +1462,121 @@ public class Main {
 }
 ```
 
+#### 💡 새로 추가된 default 메서드가 기존의 메서드와 충돌 발생.
+* 새로 추가된 default 메서드가 기존의 메서드와 이름이 중복되어 충돌하는 경우가 발생한다.
+* 해결하는 규칙은 아래와 같다.
+
+1. 여러 인터페이스의 default 메서드 간의 충돌
+  -> 인터페이스를 구현한 클래스에서 default 메서드를 오버라이딩해야 한다.
+2. default 메서드와 조상 클래스의 메서드 간의 충돌
+  -> 조상 클래스의 메서드가 상속되고, default 메서드는 무시된다.
+
+#### ex03 추상 클래스(정부)와 다른 인터페이스(시설공단)으로 충동 경우 구현.
+###### ex02 예제에서 추상 클래스와 인터페이스를 추가하여 예제 구현.
+* 해결 규칙 1. 여러 인터페이스의 default 메서드 간의 충돌
+  * 식약청(FoodSafety)와 시설공단(FacilitySafety)의 default 메서드 regularInspection 충돌.
+  * FacilitySafety.super.regularInspection(); -> 어느 인터페이스의 default 메서드를 사용할 것인지 오버라이딩.
+* 해결 규칙 2. default 메서드와 조상 클래스의 메서드 간의 충돌
+  * 정부(Government)의 supportFund와 시설공단(FacilitySafety)의 default 메서드 supportFund 충돌.
+  * 조상 클래스의 메서드가 상속되고, 인터페이스의 default 메서드는 무시됨을 확인.
+
+###### ☕️ Government.java
+```java
+public abstract class Government {
+    public boolean domesticCompany;
+
+    public Government(boolean domesticCompany) {
+        this.domesticCompany = domesticCompany;
+    }
+
+    public void supportFund() {
+        System.out.println("정부 지원금");
+    }
+}
+```
+###### ☕️ FacilitySafety.java
+```java
+public interface FacilitySafety {
+
+    default void regularInspection () {
+        System.out.println("시설 정기 체크");
+    }
+
+    default void supportFund() {
+        System.out.println("시설 공단 지원금");
+    }
+}
+```
+###### ☕️ FoodSafety.java
+```java
+public interface FoodSafety {
+
+    //  ⭐️
+    //  static 제거해 볼 것 -> 구현 클래스인 JavaCafe 에서 오버라이드 메서드를 구현해야 하고 이 인터페이스에서는 메서드의 바디를 지워야 함.
+    //  static abstract는 역시 불가 (추상 클래스처럼)
+    static void announcement () {
+        System.out.println("식품안전 관련 공지");
+    }
+
+    //  ⭐️
+    //  default 제거해 볼 것 -> interface의 추상 메서드는 바디를 갖을 수 없다.
+    default void regularInspection () {
+        System.out.println("식품 정기 체크");
+    }
+
+    void cleanKitchen ();
+    void employeeEducation ();
+}
+
+```
+###### ☕️ JavaCafe.java
+```java
+public class JavaCafe extends Government implements FoodSafety, FacilitySafety {
+
+    public JavaCafe() {
+        super(true);
+    }
+
+    @Override
+    public void cleanKitchen() {
+        System.out.println("매일 주방 청소");
+    }
+
+    @Override
+    public void employeeEducation() {
+        System.out.println("직원 위생 교육");
+    }
+
+    @Override
+    public void regularInspection() {
+        FacilitySafety.super.regularInspection();
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        FoodSafety.announcement();
+
+        JavaCafe store = new JavaCafe();
+
+        store.regularInspection();
+        store.employeeEducation();
+        store.cleanKitchen();
+        store.supportFund();
+    }
+}
+```
+```java
+식품안전 관련 공지
+시설 정기 체크
+직원 위생 교육
+매일 주방 청소
+정부 지원금
+```
+
 
 
 
