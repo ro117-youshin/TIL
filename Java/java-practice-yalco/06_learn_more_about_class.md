@@ -4,6 +4,8 @@
 > 2. 패키지
 > 3. 내부 클래스
 > 4. 익명 클래스
+> 5. 메인 메소드
+> 6. 열거형
 
 ---
 
@@ -242,6 +244,86 @@ public static void main(String[] args) {
         }
 }
 ```
+
+---
+
+## 6. 열거형
+
+* 지정된 선택지 내의 값을 받을 변수 사용시
+
+```java
+//  문자열로 설정: 불안정함
+String mode = "LIGHT";
+mode = "DARK";
+        
+mode = "lite"; // 실수를 간편히 방지할 방법이 없음
+```
+
+```java
+//  1: LIGHT, 2: DARK
+//  위 정보를 숙지해야 함 - 가독성 현저히 떨어짐
+int mode = 1;
+mode = 2;
+        
+//  타 변수에 사용되는 값들과 구분되지 않음
+//  잘못된 범위의 값 입력에 대응하기 번거로움
+int spaces = 3;
+        
+mode = spaces; // 이러한 실수를 방지하기 어려움
+```
+
+#### ex01
+###### ☕️ ButtonMode.java
+```java
+public enum ButtonMode {
+    LIGHT, DARK
+}
+```
+###### ☕️ ButtonSpace.java
+```java
+public enum ButtonSpace {
+    SINGLE, DOUBLE, TRIPLE
+}
+```
+###### ☕️ Button.java
+```java
+public class Button {
+    private ButtonMode buttonMode = ButtonMode.LIGHT;
+    private ButtonSpace buttonSpace = ButtonSpace.SINGLE;
+
+    public void setButtonMode(ButtonMode buttonMode) {
+        this.buttonMode = buttonMode;
+    }
+
+    public void setButtonSpace(ButtonSpace buttonSpace) {
+        this.buttonSpace = buttonSpace;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        Button button1 = new Button();
+
+        button1.setButtonMode(ButtonMode.DARK);
+        button1.setButtonSpace(ButtonSpace.TRIPLE);
+
+        //  ⚠️ 아래와 같은 오용이 방지됨
+//        button1.setButtonMode(ButtonSpace.DOUBLE);
+    }
+}
+```
+
+### 클래스 내부에 작성하여 오용 여지 제거하기
+#### ex02
+
+### enum 추가 기능들
+#### ex03
+
+
+
+
 
 
 
