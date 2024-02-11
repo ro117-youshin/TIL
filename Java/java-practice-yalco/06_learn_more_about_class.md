@@ -315,8 +315,42 @@ public class Main {
 }
 ```
 
-### 클래스 내부에 작성하여 오용 여지 제거하기
+### 📌 클래스 내부에 작성하여 오용 여지 제거하기
+* 한 클래스 내에서 사용할 경우.
+* enum을 사용하는 클래스와 응집도가 더 높아짐.
+
 #### ex02
+###### ☕️ Button.java
+```java
+public class Button {
+
+    enum Mode { LIGHT, DARK }
+    enum Space { SINGLE, DOUBLE, TRIPLE }
+
+    private Mode mode = Mode.LIGHT;
+    private Space space = Space.SINGLE;
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public void setSpace(Space space) {
+        this.space = space;
+    }
+}
+```
+
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        Button button1 = new Button();
+
+        button1.setMode(Button.Mode.DARK);
+        button1.setSpace(Button.Space.DOUBLE);
+    } // 🔴 디버깅
+}
+```
 
 ### enum 추가 기능들
 #### ex03
