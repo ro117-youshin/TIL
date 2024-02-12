@@ -353,9 +353,128 @@ public class Main {
 ```
 
 ### enum 추가 기능들
+* 클래스처럼 필드, 생성자, 메소드를 가질 수 있음.
 #### ex03
+###### ☕️ YalcoChickenMenu.java
+```java
+public enum YalcoChickenMenu {
+    FR("후라이드", 10000, 0),
+    YN("양념치킨", 12000, 1),
+    GJ("간장치킨", 12000, 0),
+    RS("로제치킨", 14000, 0),
+    PP("땡초치킨", 13000, 2),
+    XX("폭렬치킨", 13000, 3);
+
+    private String name;
+    private int price;
+    private int spicyLevel;
+
+    YalcoChickenMenu(String name, int price, int spicyLevel) {
+        this.name = name;
+        this.price = price;
+        this.spicyLevel = spicyLevel;
+    }
+
+    public String getName() { return name; }
+    public int getPrice() { return price; }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getDesc () {
+        String peppers = "";
+        if (spicyLevel > 0) {
+            peppers = "🌶️".repeat(spicyLevel);
+        }
+
+        return "%s %s원 %s"
+                .formatted(name, price, peppers);
+    }
+}
+```
+
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        YalcoChickenMenu menu1 = YalcoChickenMenu.YN;
+        YalcoChickenMenu menu2 = YalcoChickenMenu.RS;
+        YalcoChickenMenu menu3 = YalcoChickenMenu.XX;
 
 
+        String menu1Name = menu1.getName();
+        int menu2Price = menu2.getPrice();
+        String menu3Desc = menu3.getDesc();
+
+        // setter
+        menu2.setPrice(16000);
+        int menu2NewPrice = menu2.getPrice();
+
+        //  ⭐️ 열거형의 메소드들
+
+        YalcoChickenMenu[] byNames = new YalcoChickenMenu[] {
+                YalcoChickenMenu.valueOf("FR"),
+                YalcoChickenMenu.valueOf("PP"),
+                YalcoChickenMenu.valueOf("GJ"),
+                //  YalcoChickenMenu.valueOf("NN"), // ⚠️ 런다임 에러
+        };
+
+        //  💡 name 메소드 : 각 항목의 이름 반환
+        String[] names = new String[] {
+                menu1.name(), menu2.name(), menu3.name()
+        };
+
+        //  💡 ordinal 메소드 : 순번 반환
+        int[] orders = new int[] {
+                menu1.ordinal(), menu2.ordinal(), menu3.ordinal()
+        };
+
+        //  💡 values 메소드 : 전체 포함된 배열 반환
+        //  YalcoChickenMenu[] 자료형
+        YalcoChickenMenu[] menus = YalcoChickenMenu.values();
+
+        for (YalcoChickenMenu menu : menus) {
+            System.out.println(menu.getDesc());
+        }
+    }
+}
+```
+###### ☕️ YalcoChicken.java
+```java
+public class YalcoChicken {
+
+    static YalcoChickenMenu[] menus = YalcoChickenMenu.values();
+
+    public void takeOrder (String menuName) {
+
+        YalcoChickenMenu ordered = null;
+
+        for (YalcoChickenMenu menu : menus) {
+            if (menu.getName().equals(menuName)) {
+                ordered = menu;
+            }
+        }
+
+        if (ordered == null) {
+            System.out.println("해당 메뉴가 없습니다.");
+            return;
+        }
+
+        System.out.println(ordered.getPrice() + "원 입니다.");
+    }
+}
+```
+#### ☕️ Main.java
+```java
+	System.out.println("\n- - - - -\n");
+
+        YalcoChicken store1 = new YalcoChicken();
+
+        for (String menuName : "양념치킨,능이백숙,땡초치킨".split(",")) {
+            store1.takeOrder(menuName);
+        }
+```
 
 
 
