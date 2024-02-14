@@ -21,7 +21,7 @@
 * [[제대로 파는 자바 (얄코)] Section 6. 클래스 더 알아보기](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/06_learn_more_about_class.md)
 
 ### JavaScript
-* [자바스크립트의 핵심 개념](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/00_js_core_concepts.md)
+* [[벨로퍼트와 함께하는 모던 자바스크립트] 자바스크립트의 핵심 개념](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/00_js_core_concepts.md)
 * [문서 객체 모델 DOM과 자바스크립트 | 생성 방식 및 접근 방법](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/js_insight_dom.md)
 
 ### React
@@ -32,4 +32,4 @@
 
 ### Algorithm
 
-### ETC
+### Etc
