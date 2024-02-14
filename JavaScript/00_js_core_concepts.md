@@ -1,17 +1,25 @@
 ## 00. 자바스크립트의 핵심 개념
 > [벨로퍼트와 함께하는 모던 자바스크립트](https://learnjs.vlpt.us/)
 
-> 연산자, 연산 순서
-> 
-> Truthy and Faisy
-> 
-> 단축 평가(short-circuit evaluation) 논리 계산법
-> 
-> 조건문 더 스마트하게 쓰기
->
-> 비구조화 할당 (구조분해)
->
-> spread와 rest
+> 알고 있으면 유용한 자바스크립트 문법
+>> 연산자, 연산 순서
+>> 
+>> Truthy and Faisy
+>> 
+>> 단축 평가(short-circuit evaluation) 논리 계산법
+>> 
+>> 조건문 더 스마트하게 쓰기
+>>
+>> 비구조화 할당 (구조분해)
+>>
+>> spread와 rest
+>>
+> 자바스크립트에서 비동기 처리 다루기
+>> Promise
+>>
+>> async/await
+
+## 알고 있으면 유용한 자바스크립트 문법
 
 ### 📌 연산자, 연산 순서
 * 순서는 NOT -> AND -> OR 이다.
@@ -571,3 +579,183 @@ console.log(result);
 ```
 
 ---
+
+## 자바스크립트에서 비동기 처리 다루기 
+### 📌 Promise
+* 비동기 작업을 조금 더 편하게 처리 할 수 있도록 ES6 에 도입된 기능이다.
+* 이전에는 비동기 작업을 처리 할 때에는 콜백 함수로 처리를 해야 했었다. 콜백 함수로 처리를 하게 되면 비동기 작업이 많아질 경우 코드가 난잡해지게 된다.
+
+#### ex) Callback Hell
+###### 한 번 숫자 n을 파라미터로 받아와서 다섯번에 걸쳐 1초마다 1씩 더해 출력하는 작업을 setTimeout으로 구현.
+```javascript
+function increaseAndPrint(n, callback) {
+  setTimeout(() => {
+    const increased = n + 1;
+    console.log(increased);
+    if (callback) {
+      callback(increased);
+    }
+  }, 1000);
+}
+
+increaseAndPrint(0, n => {
+  increaseAndPrint(n, n => {
+    increaseAndPrint(n, n => {
+      increaseAndPrint(n, n => {
+        increaseAndPrint(n, n => {
+          console.log('끝!');
+        });
+      });
+    });
+  });
+});
+```
+* 비동기적으로 처리해야 하는 일이 많아질수록, 코드의 깊이가 계속 깊어지는 현상.
+* Promise를 사용하면 위와 같이 코드의 깊이가 깊어지는 현상을 방지할 수 있다.
+
+#### Promise 만들기
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  // 구현...
+});
+```
+
+* Promise는 성공할 수도, 실패할 수도 있다.
+  * 성공할 때에는 resolve 를 호출하고, 실패할 때에는 reject 를 호출한다.
+
+#### ex) 1초 뒤에 성공시키는 상황을 구현.
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(1);
+  }, 1000);
+});
+
+myPromise.then(n => {
+  console.log(n);
+});
+```
+* resolve 를 호출할 때 특정값을 파라미터로 넣어주면, 이 값을 작업이 끝나고 나서 사용할 수 있다.
+* 작업이 끝나고 나서 또 다른 작업을 해야할 때에는 Promise 뒤에 *.ther(...)* 을 붙여 사용한다.
+
+#### ex) 1초 뒤에 실패시키는 상황을 구현.
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    reject(new Error());
+  }, 1000);
+});
+
+myPromise
+  .then(n => {
+    console.log(n);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+```
+* 실패하는 상황에서는 reject 를 사용하고, *.catch* 를 통하여 실패했을시 수행할 작업을 설정할 수 있다.
+
+#### ex) Promise 를 만드는 함수 작성.
+```javascript
+function increaseAndPrint(n) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const value = n + 1;
+      if (value === 5) {
+        const error = new Error();
+        error.name = 'ValueIsFiveError';
+        reject(error);
+        return;
+      }
+      console.log(value);
+      resolve(value);
+    }, 1000);
+  });
+}
+
+increaseAndPrint(0).then((n) => {
+  console.log('result: ', n);
+})
+```
+```javascript
+1
+result: 1
+```
+* 결국 함수를 전달하는 것으로 뭐가 다른가?
+* 하지만, Promise 의 속성 중에는, 만약 then 내부에 넣은 함수에서 또 Promise 를 리턴하게 된다면, 연달아서 사용할 수 있다.
+* 아래의 코드로 살펴보자.
+
+```javascript
+function increaseAndPrint(n) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const value = n + 1;
+      if (value === 5) {
+        const error = new Error();
+        error.name = 'ValueIsFiveError';
+        reject(error);
+        return;
+      }
+      console.log(value);
+      resolve(value);
+    }, 1000);
+  });
+}
+
+increaseAndPrint(0)
+  .then(n => {
+    return increaseAndPrint(n);
+  })
+  .then(n => {
+    return increaseAndPrint(n);
+  })
+  .then(n => {
+    return increaseAndPrint(n);
+  })
+  .then(n => {
+    return increaseAndPrint(n);
+  })
+  .then(n => {
+    return increaseAndPrint(n);
+  })
+  .catch(e => {
+    console.error(e);
+  });
+```
+
+#### 위 코드를 다시 정리하면.
+* .then 에서 새로 함수를 선언하지 않고 increaseAndPrint 를 넣어주면 앞서 호출한 increaseAndPrint 의 결과값을 다시 increaseAndPrint 의 인자로 넣어서 호출하게 된다.
+
+```javascript
+function increaseAndPrint(n) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const value = n + 1;
+      if (value === 5) {
+        const error = new Error();
+        error.name = 'ValueIsFiveError';
+        reject(error);
+        return;
+      }
+      console.log(value);
+      resolve(value);
+    }, 1000);
+  });
+}
+
+increaseAndPrint(0)
+  .then(increaseAndPrint)
+  .then(increaseAndPrint)
+  .then(increaseAndPrint)
+  .then(increaseAndPrint)
+  .then(increaseAndPrint)
+  .catch(e => {
+    console.error(e);
+  });
+```
+
+* 하지만 이것도 불편한 점이 있다. 에러를 잡을 때 몇 번째에서 발생했는지 알아내기도 어렵고 특정 조건에 따라 분기를 나누는 작업도 어렵고 특정 값을 공유해가면서 작업을 처리하기도 까다롭다.
+* async/await 을 사용하면 위와 같은 문제점을 깔끔하게 해결할 수 있다.
+
+
