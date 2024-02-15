@@ -581,6 +581,80 @@ console.log(result);
 ---
 
 ## 자바스크립트에서 비동기 처리 다루기 
+### 📌 자바스크립트의 동기적 처리와 비동기 처리
+![img_1](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/img/sync_async_img.png)
+
+* 만약 작업을 동기적으로 처리한다면 작업이 끝날 때까지 기다리는 동안 중지 상태가 되기 때문에 다른 작업을 할 수 없다.
+* 작업이 끝나야 비로소 다음 예정된 작업을 할 수 있다.
+* 하지만 비동기적으로 처리를 한다면 흐름이 멈추지 않기 때문에 동시에 여러 가지 작업을 처리할 수도 있고, 기다리는 과정에서 다른 함수도 호출할 수 있다.
+* 아래의 코드를 통해 이해해보자.
+
+#### ex) 연산량 많은 작업을 처리하는 함수 ```work()``` 
+```javascript
+function work() {
+  const start = Date.now();
+  for (let i = 0; i < 1000000000; i++) {}
+  const end = Date.now();
+  console.log(end - start + "ms");
+}
+
+work();
+console.log("다음 작업");
+```
+![img_2](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/img/work_01.jpeg)
+* 위 코드는 ```work()``` 함수가 호출되면, for문이 돌아가는 동안 다른 작업은 처리하지 않고 온전히 for문만 실행한다.
+* 만약 이 작업이 진행되는 동안 다른 작업도 하고 싶다면 함수를 비동기 형태로 전환을 해주어야 한다. 그렇게 하기 위해서 ```setTimeout``` 이라는 함수를 사용해 주어야 한다.
+
+#### ex) ```setTimeout``` 함수 사용
+```javascript
+function work() {
+  setTimeout(() => {
+    const start = Date.now();
+    for (let i = 0; i < 1000000000; i++) {}
+    const end = Date.now();
+    console.log(end - start + 'ms');
+  }, 0);
+}
+
+console.log('작업 시작!');
+work();
+console.log('다음 작업');
+```
+* ```setTimeout``` 함수는 첫 번째 파라미터에 넣는 함수를 두 번째 파라미터에 넣은 시간(ms 단위)이 흐른 후 호출해준다.
+* 위 ```work()``` 함수는 바로 실행이 되는데 실제로는 4ms 이후에 실행된다. [setTimeout() - 딜레이가 지정한 값보다 더 긴 이유](https://developer.mozilla.org/ko/docs/Web/API/setTimeout#%EB%94%9C%EB%A0%88%EC%9D%B4%EA%B0%80_%EC%A7%80%EC%A0%95%ED%95%9C_%EA%B0%92%EB%B3%B4%EB%8B%A4_%EB%8D%94_%EA%B8%B4_%EC%9D%B4%EC%9C%A0)
+* 이렇게 ```setTimeout``` 을 이용하면 개발자가 정한 작업이 백그라운드에서 수행되기 때문에 기존의 코드 흐름을 막지 않고 동시에 다른 작업들을 진행할 수 있다.
+
+![img_03](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/img/work_02.jpeg)
+* 결과를 보면 작업이 시작되고 나서 for 문이 돌아가는 동안 다음 작업도 실행되고, for 문이 끝나고 몇 ms 가 걸렸는지 나타나고 있다.
+* 만약에 ```work()``` 함수가 끝난 다음에 어떤 작업을 처리하고 싶다면 콜백 함수를 파라미터로 전달해주면 된다.
+* 콜백 함수란, 함수 타입의 값을 파라미터로 넘겨줘서 파라미터로 받은 함수를 특정 작업이 끝나고 호출을 해주는 것을 의미한다.
+
+#### ex) 동기 처리
+```javascript
+function work(callback) {
+  setTimeout(() => {
+    const start = Date.now();
+    for (let i = 0; i < 1000000000; i++) {}
+    const end = Date.now();
+    console.log(end - start + 'ms');
+    callback();
+  }, 0);
+}
+
+console.log('작업 시작!');
+work(() => {
+  console.log('작업이 끝났어요!')
+});
+console.log('다음 작업');
+```
+![img_4](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/img/work_03.jpeg)
+
+#### 💡 비동기적으로 처리하는 작업의 예시
+* Ajax Web API 요청: 만약 서버쪽에서 데이터를 받아와야 할 때에는 요청을 하고 서버에서 응답을 할 때까지 대기를 해야 되기 때문에 작업을 비동기로 처리한다.
+* 파일 읽기: 주로 서버 쪽에서 파일을 읽어야 하는 상황에는 비동기로 처리한다.
+* 암호화/복호화: 암/복호화를 할 때에도 바로 처리가 되지 않고, 시간이 어느정도 걸리는 경우가 있기 때문에 비동기로 처리한다.
+* 작업 예약: 단순히 어떤 작업을 몇 초 후에 스케줄링 해야 하는 상황에는 ```setTimeout``` 을 사용하여 비동기로 처리한다.
+
 ### 📌 Promise
 * 비동기 작업을 조금 더 편하게 처리 할 수 있도록 ES6 에 도입된 기능이다.
 * 이전에는 비동기 작업을 처리 할 때에는 콜백 함수로 처리를 해야 했었다. 콜백 함수로 처리를 하게 되면 비동기 작업이 많아질 경우 코드가 난잡해지게 된다.
