@@ -125,8 +125,12 @@ public class Main {
 }
 ```
 #### ex02 basic한 ```equals``` 
+![img_1](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/img/basic_equals.png)
+* 같은 인스턴스의 비교만 ```true```를 반환, 매개변수의 값이 전부 동일하다하더라도 ```false```
+* 즉, 주소값이 틀리면 무조건 ```false```
 
 #### ex02 오버라이딩한 ```equals``` 
-
-
+![img_2](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/img/override_equals.png)
+* ```==```는 레퍼런스 비교이기 때문에 basic한 ```equals```의 결과와 동일.
+* 위 오버라이딩한 ```equals```에서는 ```x```와 ```y``` 값을 비교하도록 했기 때문에 ```boolA```, ```boolB```, ```boolC```는 ```true```
 
