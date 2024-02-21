@@ -135,7 +135,7 @@ public class Main {
 * 위 오버라이딩한 ```equals```에서는 ```x```와 ```y``` 값을 비교하도록 했기 때문에 ```boolA```, ```boolB```, ```boolC```는 ```true```
 
 ## 2. Wrapper 클래스들
-![img_3]()
+![img_3](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/img/wrapper.png)
 
 * 각 원시 자료형에는 그에 해당하는 래퍼 클래스가 있다.
   * 해당 자료형에 관련된 클래스/인스턴스 기능들을 제공한다.
