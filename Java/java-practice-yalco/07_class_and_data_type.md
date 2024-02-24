@@ -176,7 +176,7 @@ Boolean bln3 = Boolean.valueOf(true);
 #### Ex02
 ###### ☕️ Ex02.java
 ```java
-				//  💡 박싱 : 원시값을 래퍼 클래스의 인스턴스로
+	//  💡 박싱 : 원시값을 래퍼 클래스의 인스턴스로
         //  ⭐ 과거에는 생성자를 사용했으나 deprecated
         int intPrim1 = 123;
         Integer intInst1 = Integer.valueOf(intPrim1);
@@ -197,10 +197,10 @@ Boolean bln3 = Boolean.valueOf(true);
 * 성능상으로는 떨어지므로 자주 사용하지는 말 것(반복문 안에서 등). 조금만 생각하면 될 수준..
 
 ```java
-		static int add(Integer a, Integer b) { return a + b; }
+	static int add(Integer a, Integer b) { return a + b; }
 ```
 ```java
-				//  💡 오토박싱
+	//  💡 오토박싱
         Integer intInst2 = 234;
         Double dblInst2 = 1.414213;
 
@@ -221,7 +221,7 @@ Boolean bln3 = Boolean.valueOf(true);
 #### Ex03
 ###### Ex03.java
 ```java
-				//  💡 숫자 클래스 메소드들
+	//  💡 숫자 클래스 메소드들
 
         //  CharSequence로부터 인스턴스 반환
         //  ⭐ CharSequence : String 등이 구현하는 인터페이스
@@ -242,7 +242,7 @@ Boolean bln3 = Boolean.valueOf(true);
         int int3 = Integer.parseInt("1234567", 3, 5, 10);
 ```
 ```java
-				//  💡 문자 클래스 메소드들
+	//  💡 문자 클래스 메소드들
 
         String strSample = "Ab가1 .";
         for (int i = 0; i < strSample.length(); i++) {
@@ -259,7 +259,7 @@ Boolean bln3 = Boolean.valueOf(true);
         }
 ```
 ```java
-				//  💡 인스턴스 메소드들
+	//  💡 인스턴스 메소드들
 
         //  문자열 반환 (Object에서 오버라이드)
         String intStr = int1.toString();
@@ -268,7 +268,7 @@ Boolean bln3 = Boolean.valueOf(true);
         String chrStr = new Character('A').toString();
 ```
 ```java
-				//  인스턴스끼리의 value 비교
+	//  인스턴스끼리의 value 비교
         Integer intA = 12345;
         Integer intB = 12345;
 
@@ -281,9 +281,9 @@ Boolean bln3 = Boolean.valueOf(true);
         boolean compByOp2 = intA.equals(srtA);
 ```
 ```java
-				//  숫자 자료형 간 변환 - Number의 추상 메소드들
+	//  숫자 자료형 간 변환 - Number의 추상 메소드들
 
-				Byte int1Byt = int1.byteValue();
+	Byte int1Byt = int1.byteValue();
         Double int1Dbl = int1.doubleValue();
 
         Integer int4 = 123456789;
@@ -294,9 +294,62 @@ Boolean bln3 = Boolean.valueOf(true);
         Short int1DblSrt = int1Dbl.shortValue();
 ```
 
+## 3. 제네릭
 
+### 📌 제네릭 메소드 
+#### ex01
+###### ☕️ Main.java
+```java
+//  제네릭 메소드
+//  T : 타입변수. 원하는 어떤 이름으로든 명명 가능
+public static <T> T pickRandom (T a, T b) {
+	return Math.random() > 0.5 ? a : b;
+}
+```
+```java
+	int randNum = pickRandom(123, 456);
+        boolean randBool = pickRandom(true, false);
+        String randStr = pickRandom("마루치", "아라치");
 
+	//  import sec05.chap08.ex01.YalcoChicken;
+        JavaChicken store1 = new JavaChicken("판교");
+        JavaChicken store2 = new JavaChicken("역삼");
+        JavaChicken randStore = pickRandom(store1, store2);
 
+        //  ⚠️ 타입이 일관되지 않고 묵시적 변환 불가하면 오류
+        //  double randFlt = pickRandom("hello", "world");
+        double randDbl = pickRandom(12, 34);
+```
+```java
+public static <T> void arraySwap (T[] array, int a, int b) {
+	if (array.length <= Math.max(a, b)) return;
+        T temp = array[a];
+        array[a] = array[b];
+        array[b] = temp;
+}
+```
+```java
+	//  원시값 배열(double[])을 쓰면 오류 - 배열로는 오토박싱이 안 되므로
+        Double[] array1 = new Double[] {
+                1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8
+        };
+        Character[] array2 = new Character[] {
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'
+        };
+
+        arraySwap(array1, 3, 5);
+        arraySwap(array2, 2, 7);
+```
+```java
+	// 셔플
+        for (int i = 0; i < 100; i++) {
+            arraySwap(
+                    array2,
+                    (int) Math.floor(Math.random() * array2.length),
+                    (int) Math.floor(Math.random() * array2.length)
+            );
+        }
+```
 
 
 
