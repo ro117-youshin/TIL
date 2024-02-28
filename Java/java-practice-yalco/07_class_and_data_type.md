@@ -459,6 +459,115 @@ public class Main {
 }
 ```
 
+### 📌 실무에서 사용할만한 간단한 예제
+#### 📁 ex04
+###### ☕️ FormElement.java
+```java
+public abstract class FormElement {
+    public enum MODE { LIGHT, DARK }
+
+    private static MODE mode = MODE.LIGHT;
+
+    public void printMode () {
+        System.out.println(mode);
+    }
+
+    abstract void func ();
+}
+```
+###### ☕️ Clickable.java
+```java
+public interface Clickable {
+    void onClick();
+}
+
+```
+###### ☕️ Button.java
+```java
+public class Button extends FormElement implements Clickable {
+    @Override
+    public void onClick() { func(); }
+
+    @Override
+    void func() { System.out.println("버튼 클릭");}
+}
+```
+###### ☕️ Switch.java
+```java
+public class Switch extends FormElement implements Clickable {
+    private boolean isOn;
+
+    public Switch(boolean isOn) {
+        this.isOn = isOn;
+    }
+
+    @Override
+    public void onClick() { func(); }
+
+    @Override
+    void func() {
+        isOn = !isOn;
+        System.out.printf("%s(으)로 전환%n", isOn ? "ON" : "OFF");
+    }
+}
+```
+###### ☕️ TextInput.java
+```java
+public class TextInput extends FormElement {
+    @Override
+    void func() {
+        System.out.println("텍스트 입력 받음");
+    }
+}
+```
+###### ☕️ HyperLink.java
+```java
+public class HyperLink implements Clickable {
+    @Override
+    public void onClick() {
+        System.out.println("링크로 이동");
+    }
+}
+```
+###### ☕️ FormClicker.java
+```java
+public class FormClicker<T extends FormElement & Clickable> {
+    private T formClicker;
+
+    public FormClicker(T formClicker) {
+        this.formClicker = formClicker;
+    }
+
+    //  ⭐️ 조건의 클래스와 인터페이스의 기능 사용 가능
+    //  - 자료형의 범위를 특정해주므로
+    public void printElemMode () {
+        formClicker.printMode();
+    }
+
+    public void clickElem () {
+        formClicker.onClick();
+    }
+}
+```
+* ```printElemMode()``` 함수와 ```clickElem()``` 함수가 핵심
+
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        FormClicker<Button> fc1 = new FormClicker<>(new Button());
+        FormClicker<Switch> fc2 = new FormClicker<>(new Switch(true));
+
+        fc1.printElemMode();
+        fc2.clickElem();
+
+        //  ⚠️ 조건에 부합하지 않는 클래스 사용 불가
+//        FormClicker<TextInput> fc3 = new FormClicker<>(new TextInput());
+//        FormClicker<HyperLink> fc4 = new FormClicker<>(new HyperLink());
+    }
+}
+```
+
 
 
 
