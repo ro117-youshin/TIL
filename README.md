@@ -19,6 +19,7 @@
 * [[제대로 파는 자바 (얄코)] Section 4. 제어문과 메소드](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/04_control_statement_and_method.md)
 * [[제대로 파는 자바 (얄코)] Section 5. 객체지향 프로그래밍](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/05_object_oriented_programming.md)
 * [[제대로 파는 자바 (얄코)] Section 6. 클래스 더 알아보기](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/06_learn_more_about_class.md)
+* [[제대로 파는 자바 (얄코)] Section 7. 클래스와 자료형](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md)
 
 ### JavaScript
 * [[벨로퍼트와 함께하는 모던 자바스크립트] 자바스크립트의 핵심 개념](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/00_js_core_concepts.md)
