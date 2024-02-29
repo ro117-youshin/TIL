@@ -1,11 +1,12 @@
 # Section 6. 클래스 더 알아보기
 > '재대로 파는 자바 - 얄코' 섹션6 학습 [(인프런)](https://www.inflearn.com/course/%EC%A0%9C%EB%8C%80%EB%A1%9C-%ED%8C%8C%EB%8A%94-%EC%9E%90%EB%B0%94/dashboard)
-> 1. 블록과 스코프
-> 2. 패키지
+> 1. 블록과 스코프 (skip)
+> 2. 패키지 (skip)
 > 3. 내부 클래스
 > 4. 익명 클래스
 > 5. 메인 메소드
 > 6. 열거형
+> 7. 레코드 (Java 16+)
 
 ---
 
@@ -476,11 +477,95 @@ public class YalcoChicken {
         }
 ```
 
+## 7. 레코드 (Java 16+)
+* Java 14 에서 Preview로 추가, 16에서 정식으로 등록
+* 데이터의 묶음을 저장하기 위한, 단순한 형태의 클래스
 
+#### 📁 ex01
+###### ☕️ Gender.java
+```java
+public enum Gender {
 
+    MALE("👦🏻"), FEMALE("👧🏼");
 
+    private String emoji;
 
+    Gender(String emoji) {
+        this.emoji = emoji;
+    }
 
+    public String getEmoji() {
+        return emoji;
+    }
+}
+```
+###### ☕️ ChildClass.java
+```java
+public class ChildClass {
+
+    private final String name;
+    private final int birthYear;
+    private final Gender gender;
+
+    public ChildClass(String name, int birthYear, Gender gender) {
+        this.name = name;
+        this.birthYear = birthYear;
+        this.gender = gender;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public int getBirthYear() {
+        return birthYear;
+    }
+    public Gender getGender() {
+        return gender;
+    }
+}
+```
+###### ☕️ Child.java
+```java
+public record Child(
+    String name,
+    int birthYear,
+    Gender gender
+) {}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    
+    public static void main(String[] args) {
+
+        Child child1 = new Child("홍길동", 2020, Gender.MALE);
+        //  💡 toString 메소드 구현 (이후 배울 Object에서 상속받아 오버라이드)
+        String childStr = child1.toString();
+
+        Child[] children = new Child[] {
+                new Child("김순이", 2021, Gender.FEMALE),
+                new Child("이돌이", 2019, Gender.MALE),
+                new Child("박철수", 2020, Gender.MALE),
+                new Child("최영희", 2019, Gender.FEMALE),
+        };
+
+        for (Child child : children) {
+            System.out.printf(
+                    "%s %d년생 %s 어린이%n",
+                    child.gender().getEmoji(),
+                    child.birthYear(),
+                    child.name()
+            );
+        }
+    }
+}
+```
+```java
+👧🏼 2021년생 김순이 어린이
+👦🏻 2019년생 이돌이 어린이
+👦🏻 2020년생 박철수 어린이
+👧🏼 2019년생 최영희 어린이
+```
 
 
 
