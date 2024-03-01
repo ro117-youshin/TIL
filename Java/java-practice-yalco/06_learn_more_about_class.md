@@ -28,7 +28,7 @@
 | 지역 클래스 (local class) | 외부 클래스의 메서드나 초기화블럭 안에 선언하며, 선언된 영역 내부에서만 사용될 수 있다. |
 | 익명 클래스 (anonymous class) | 클래스의 선언과 객체의 생성을 동시에 하는 이름없는 클래스(일회용) |
 
-#### ex01
+#### 📁 ex01
 ###### ☕️ Outer.java
 ```java
 public class Outer {
@@ -137,7 +137,7 @@ public class Main {
   * 이후 다시 인스턴스를 생성할 필요가 없으므로
 * 이후 배울 람다식이 나오기 전 널리 사용
 
-#### ex01
+#### 📁 ex01
 ###### ☕️ Main.java
 ```java
 package sec06.chap04.ex01;
@@ -183,7 +183,7 @@ public class Main {
 *  익명클래스의 자체적인 메서드(*dryFish()*)는 호출하여 사용할 수 없다.
 
 ### 📌 안드로이드 자바로 개발시 볼 수 있던 코드
-#### ex02
+#### 📁 ex02
 ###### ☕️ OnClickListener.java
 ```java
 public interface OnClickListener {
@@ -193,12 +193,13 @@ public interface OnClickListener {
 ###### ☕️ Button.java
 ```java
 public class Button {
+
     String name;
     public Button(String name) {
         this.name = name;
     }
 
-		//  ⭐️ 인터페이스를 상속한 클래스 자료형
+    //  ⭐️ 인터페이스를 상속한 클래스 자료형
     private OnClickListener onClickListener;
     public void setOnClickListener(OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
@@ -212,37 +213,39 @@ public class Button {
 ###### ☕️ Main.java
 ```java
 public static void main(String[] args) {
-        Button button1 = new Button("Enter");
-        Button button2 = new Button("CapsLock");
-        Button button3 = new Button("ShutDown");
 
-				//  ⭐️ IDE에서 회색으로 표시 : 이후 배울 람다로 대체
-        button1.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick() {
-                System.out.println("줄바꿈");
-                System.out.println("커서를 다음 줄에 위치");
-            }
-        });
+    Button button1 = new Button("Enter");
+    Button button2 = new Button("CapsLock");
+    Button button3 = new Button("ShutDown");
 
-        button2.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick() {
-                System.out.println("기본입력 대소문자 전환");
-            }
-        });
+    //  ⭐️ IDE에서 회색으로 표시 : 이후 배울 람다로 대체
+    button1.setOnClickListener(new OnClickListener() {
 
-        button3.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick() {
-                System.out.println("작업 자동 저장");
-                System.out.println("프로그램 종료");
-            }
-        });
+        @Override
+        public void onClick() {
+	    System.out.println("줄바꿈");
+	    System.out.println("커서를 다음 줄에 위치");
+	}
+    });
 
-        for (Button button : new Button[] {button1, button2, button3}) {
-            button.func();
-        }
+    button2.setOnClickListener(new OnClickListener() {
+	@Override
+	public void onClick() {
+	    System.out.println("기본입력 대소문자 전환");
+	}
+    });
+
+    button3.setOnClickListener(new OnClickListener() {
+	@Override
+	public void onClick() {
+	    System.out.println("작업 자동 저장");
+	    System.out.println("프로그램 종료");
+	}
+    });
+
+    for (Button button : new Button[] {button1, button2, button3}) {
+	button.func();
+    }
 }
 ```
 
@@ -273,7 +276,7 @@ int spaces = 3;
 mode = spaces; // 이러한 실수를 방지하기 어려움
 ```
 
-#### ex01
+#### 📁 ex01
 ###### ☕️ ButtonMode.java
 ```java
 public enum ButtonMode {
@@ -320,7 +323,7 @@ public class Main {
 * 한 클래스 내에서 사용할 경우.
 * enum을 사용하는 클래스와 응집도가 더 높아짐.
 
-#### ex02
+#### 📁 ex02
 ###### ☕️ Button.java
 ```java
 public class Button {
@@ -353,9 +356,9 @@ public class Main {
 }
 ```
 
-### enum 추가 기능들
+### 📌 enum 추가 기능들
 * 클래스처럼 필드, 생성자, 메소드를 가질 수 있음.
-#### ex03
+#### 📁 ex03
 ###### ☕️ YalcoChickenMenu.java
 ```java
 public enum YalcoChickenMenu {
@@ -482,8 +485,10 @@ public class YalcoChicken {
 * 데이터의 묶음을 저장하기 위한, 단순한 형태의 클래스
 * 레코드는 ```final```
   * 다른 클래스로 상속되거나 ```abstract``` 로 선언 불가
-* 레코드의 각 항목들은 ```private``` , ```final```
-  * 각각 같은 이름의 getter가 기본으로 만들어짐
+* 레코드의 각 필드들은 ```private``` , ```final```
+  * ```String name``` 으로 선언하면 ```private final String name``` 이다.
+  * 각각 같은 이름의 getter가 자동으로 생성됨.
+  * ```ChildClass.java``` 를 사용하던 것을 레코드로 사용하면 ```Child.java``` 가 됨.
 * 인스턴스 필드를 가질 수 없음
   * 클래스 필드는 가능 (```ex02``` 에서 확인)
   
@@ -572,6 +577,130 @@ public class Main {
 👦🏻 2020년생 박철수 어린이
 👧🏼 2019년생 최영희 어린이
 ```
+
+### 📌 레코드의 더 많은 기능들
+#### 📁 ex02
+* 레코드는 다른 클래스 안에서 사용 가능.
+* 인터페이스를 구현 가능하며 클래스 상속은 불가능.
+* 그래서 예제에서 ```printInfo()``` 인스턴스 메서드를 가질 수 있음.
+
+###### ☕️ InfoPrinter.java
+```java
+public interface InfoPrinter {
+    
+    void printInfo();
+}
+```
+###### ☕️ Button.java
+```java
+package sec06.chap07.ex02;
+
+public class Button {
+
+    public enum ClickedBy {
+
+        LEFT('좌'), RIGHT('우') ;
+        private char indicator;
+        ClickedBy(char indicator) {
+            this.indicator = indicator;
+        }
+        public char getIndicator() {
+            return indicator;
+        }
+    }
+
+    //  ⭐️
+    //  다른 클래스에 내부로 포함 가능
+    //  인터페이스 구현 가능 (클래스 상속은 불가)
+    public record ClickInfo(
+            int x, int y, ClickedBy clickedBy
+    ) implements InfoPrinter {
+
+        //  💡 클래스 필드를 가질 수 있음 (인스턴스 필드는 불가)
+        static String desc = "버튼 클릭 정보";
+
+        //  💡 인스턴스/클래스 메소드를 가질 수 있음
+        @Override
+        public void printInfo() {
+            
+            System.out.printf(
+                    "%c클릭 (%d, %d)%n",
+                    clickedBy.indicator, x, y
+            );
+        }
+    }
+
+    public ClickInfo func (int x, int y, ClickedBy clickedBy) {
+
+        System.out.println("버튼 동작");
+        return new ClickInfo(x, y, clickedBy);
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    
+    public static void main(String[] args) {
+
+        Button button = new Button();
+
+        Button.ClickInfo click1 = button.func(123, 456, Button.ClickedBy.LEFT);
+        Button.ClickInfo click2 = button.func(492, 97, Button.ClickedBy.LEFT);
+        Button.ClickInfo click3 = button.func(12, 36, Button.ClickedBy.RIGHT);
+
+        for (Button.ClickInfo click : new Button.ClickInfo [] { click1, click2, click3 }) {
+            click.printInfo();
+        }
+    }
+}
+```
+```java
+버튼 동작
+버튼 동작
+버튼 동작
+좌클릭 (123, 456)
+좌클릭 (492, 97)
+우클릭 (12, 36)
+```
+
+#### ⭐️ 레코드 역시 참조형
+###### ☕️ Main.java (+)
+
+```java
+package sec06.chap07.ex02;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        // ...
+
+        System.out.println("\n- - - - -\n");
+
+        Button.ClickInfo click4 = button.func(111, 222, Button.ClickedBy.LEFT);
+        Button.ClickInfo click5 = button.func(111, 222, Button.ClickedBy.LEFT);
+
+        //  내용이 같은지 여부는 equals 메소드로 확인
+        boolean click4n5Same = click4 == click5;
+        boolean click4n5Equal = click4.equals(click5);
+        boolean click4n1Equal = click4.equals(click1);
+    }
+}
+
+```
+* ```System.out.println("\n- - - - -\n");``` 코드 아래로 보면 레코드가 참조형임을 확인.
+
+#### ⭐️ 추가사항
+* 클래스 내부에 정의된 record는 내부 정적 클래스처럼 사용할 수 있다.
+
+```java
+Button.ClickInfo click6 = new Button.ClickInfo(111, 222, Button.ClickedBy.LEFT);
+```
+
+
+
+
 
 
 
