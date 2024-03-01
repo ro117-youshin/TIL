@@ -1577,7 +1577,229 @@ public class Main {
 정부 지원금
 ```
 
+## 10. 싱글턴
+* 프로그램 상에서 특정 인스턴스가 딱 하나만 있어야 할 때
+* EX
+  * 본사직영매장 하나만 운영하는 회사
+  * 프로그램상 여러 곳에서 공유되는 설정
+  * 멀티쓰레딩 환경에서 공유되는 리소스
+  * 기타 전역으로 공유되는 인스턴스가 필요한 경우
 
+### 📌 각 인스턴스는 서로 다른 인스턴스
+#### 📁 ex01
+##### ☕️ Setting.java
+```java
+public class Setting {
 
+    private int volume = 5;
 
+    public int getVolume() {
+        return volume;
+    }
+    public void incVolume() {
+        volume++;
+    }
+    public void decVolume() {
+        volume--;
+    }
+}
+```
+###### ☕️ Tab.java
+```java
+public class Tab {
+
+    private Setting setting = new Setting();
+
+    public Setting getSetting() {
+        return setting;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        Tab tab1 = new Tab();
+        Tab tab2 = new Tab();
+        Tab tab3 = new Tab();
+
+        System.out.println(tab1.getSetting().getVolume());
+
+        System.out.println("\n- - - - -\n");
+
+        tab1.getSetting().incVolume();
+        tab1.getSetting().incVolume();
+
+        System.out.println(tab1.getSetting().getVolume());
+
+        //  ⚠️ 각 인스턴스는 서로 다른 Setting 인스턴스를 가짐
+        //  - 설정값이 공유되지 못함
+        System.out.println(tab2.getSetting().getVolume());
+        System.out.println(tab3.getSetting().getVolume());
+    }
+}
+```
+
+### 📌 생성자, setter로 인스턴스 공유
+* 번거로움
+* 협업하는 모든 개발자가 인지하고 사용해야 함, 불가능.
+
+#### 📁 ex02
+##### ☕️ Setting.java
+```java
+public class Setting {
+
+    private int volume = 5;
+
+    public int getVolume() {
+        return volume;
+    }
+    public void incVolume() {
+        volume++;
+    }
+    public void decVolume() {
+        volume--;
+    }
+}
+```
+###### ☕️ Tab.java
+```java
+public class Tab {
+
+    private Setting setting = null;
+
+    public Tab() {}
+
+    //  ⭐️ 두 번째 생성자
+    public Tab(Setting setting) {
+        this.setting = setting;
+    }
+
+    //  ⭐️ 세터
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
+
+    public Setting getSetting() {
+        return setting;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        //  공유시킬 인스턴스
+        Setting setting = new Setting();
+
+        //  💡 방법 1 : 생성자로 주입
+        Tab tab1 = new Tab(setting);
+        Tab tab2 = new Tab(setting);
+
+        //  💡 방법 2 : setter로 주입
+        Tab tab3 = new Tab();
+        tab3.setSetting(setting);
+
+        System.out.println(tab1.getSetting().getVolume());
+        System.out.println(tab2.getSetting().getVolume());
+        System.out.println(tab3.getSetting().getVolume());
+
+        System.out.println("\n- - - - -\n");
+
+        tab1.getSetting().incVolume();
+        tab1.getSetting().incVolume();
+
+        System.out.println(tab1.getSetting().getVolume());
+        System.out.println(tab2.getSetting().getVolume());
+        System.out.println(tab3.getSetting().getVolume());
+
+        //  🤔 인스턴스를 공유할 수 있게 되었지만 번거로움이 남음
+        //  - 해당 인스턴스를 외부에서 주입해주어야 함
+        //    - 협업 등의 경우 잘못 사용될 여지가 있음
+        //  - 더 편리하고 안전한 방법은 없을까?
+    }
+}
+```
+
+### 📌 싱글톤 적용
+#### 📁 ex03
+##### ☕️ Setting.java
+```java
+public class Setting {
+
+    //  ⭐️ 이 클래스를 싱글턴으로 만들기
+
+    // 클래스(정적) 필드
+    // - 프로그램에서 메모리에 하나만 존재
+    private static Setting setting;
+
+    //  ⭐️ 생성자를 private으로!
+    // - 외부에서 생성자로 생성하지 못하도록
+    private Setting () {}
+
+    //  💡 공유되는 인스턴스를 받아가는 public 클래스 메소드
+    public static Setting getInstance() {
+        //  ⭐️ 아직 인스턴스가 만들어지지 않았다면 생성
+        //  - 프로그램에서 처음 호출시 실행됨
+        if (setting == null) {
+            setting = new Setting();
+        }
+        return setting;
+    }
+
+    private int volume = 5;
+
+    public int getVolume() {
+        return volume;
+    }
+    public void incVolume() {
+	volume++;
+    }
+    public void decVolume() {
+	volume--; 
+    }
+}
+```
+###### ☕️ Tab.java
+```java
+public class Tab {
+
+    //  ⭐️ 공유되는 유일한 인스턴스를 받아옴
+    private Setting setting = Setting.getInstance();
+
+    public Setting getSetting() {
+        return setting;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    
+    public static void main(String[] args) {
+
+        Tab tab1 = new Tab();
+        Tab tab2 = new Tab();
+        Tab tab3 = new Tab();
+
+        System.out.println(tab1.getSetting().getVolume());
+        System.out.println(tab2.getSetting().getVolume());
+        System.out.println(tab3.getSetting().getVolume());
+
+        System.out.println("\n- - - - -\n");
+
+        tab1.getSetting().incVolume();
+        tab1.getSetting().incVolume();
+
+        System.out.println(tab1.getSetting().getVolume());
+        System.out.println(tab2.getSetting().getVolume());
+        System.out.println(tab3.getSetting().getVolume());
+
+        //  🎉 외부에서 각 사용처들을 신경쓸 필요 없음
+    }
+}
+```
 
