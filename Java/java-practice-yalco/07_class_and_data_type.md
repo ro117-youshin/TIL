@@ -456,6 +456,8 @@ public class Main {
 ```
 
 ### 📌 제한된 제네릭
+* 아무 타입이 아니라 특정 자료형만을 사용하는 경우
+
 #### 📁 ex03
 ###### ☕️ Main.java
 ```java
@@ -612,6 +614,205 @@ public class Main {
 }
 ```
 
+### 📌 와일드 카드
+* 제네릭 클래스에 대한 다형성을 위함.
 
+#### 📁 ex05
+* ```Horse``` 클래스를 통한 제네릭 다형성 이해
+
+###### ☕️ Unit.java
+```java
+public class Unit {
+}
+```
+###### ☕️ Knight.java
+```java
+public class Knight extends Unit {
+}
+```
+###### ☕️ MasicKnight.java
+```java
+public class MasicKnight extends Knight {
+}
+```
+###### ☕️ Horse.java
+```java
+public class Horse<T extends Unit> {
+    private T rider;
+
+    public void setRider(T rider) {
+	this.rider = rider; 
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        //  아무 유닛이나 태우는 말
+        Horse<Unit> avante = new Horse<>(); // ⭐️ Horse<Unit>에서 Unit 생략
+        avante.setRider(new Unit());
+        avante.setRider(new Knight());
+        avante.setRider(new MagicKnight());
+
+        //  기사 계급 이상을 태우는 말
+        Horse<Knight> sonata = new Horse<>(); // Knight 생략
+//        sonata.setRider(new Unit()); // ⚠️ 불가
+        sonata.setRider(new Knight());
+        sonata.setRider(new MagicKnight());
+
+        //  마법기사만 태우는 말
+        Horse<MagicKnight> grandeur = new Horse<>();
+//        grandeur.setRider(new Unit()); // ⚠️ 불가
+//        grandeur.setRider(new Knight()); // ⚠️ 불가
+        grandeur.setRider(new MagicKnight());
+    }
+}
+
+```
+#### ⭐️ 제네릭 클래스의 다형성 문제
+* ⚠️ 자료형과 제네릭 타입이 일치하지 않으면 대입 불가
+* 제네릭 타입이 상속관계에 있어도 마찬가지
+  * 위의 예제는 제네릭을 지정해줘서 ```rider``` 타입을 결정해준다.
+  * 그런데 아래의 코드는 ```Horse``` 클래스 자체의 다형성 문제이다.
+* ```Horse<Unit>``` 와 ```new Horse<Knight>``` 는 서로 상속관계가 아니다.
+  * 그냥 서로 다른 ```Horse``` 클래스이다. 
+
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+	// error ‼️
+        Horse<Unit> wrongHorse1 = new Horse<Knight>();
+        Horse<Knight> wrongHorse2 = new Horse<Unit>();
+        avante = sonata;
+        sonata = grandeur;
+    }
+}
+```
+
+#### ⭐️ 와일드카드 - 제네릭 타입의 다형성을 위함
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+        //  💡 Knight과 그 자식 클래스만 받을 수 있음
+        //  기사 계급 이상을 태우는 말 이상만 대입할 받을 수 있는 변수
+        Horse<? extends Knight> knightHorse;
+//        knightHorse = new Horse<Unit>(); // ⚠️ 불가
+        knightHorse = new Horse<Knight>();
+        knightHorse = new Horse<MagicKnight>();
+//        knightHorse = avante; // ⚠️ 불가
+        knightHorse = sonata;
+        knightHorse = grandeur;
+    }
+}
+```
+
+#### ⭐️ 와일드카드2 - extends의 반대개념 super
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+	//  💡 Knight과 그 조상 클래스만 받을 수 있음
+        //  마법기사만 태우는 말은 받지 않는 변수
+        Horse <? super Knight> nonLuxuryHorse;
+        nonLuxuryHorse = avante;
+        nonLuxuryHorse = sonata;
+        nonLuxuryHorse = grandeur; // 불가
+    }
+}
+```
+
+#### ⭐️ 와일드카드3 - <?>
+* 💡 제한 없음 - ```<? extends Object>``` 와 동일
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+        //  어떤 말이든 받는 변수
+        Horse<?> anyHorse;
+        anyHorse = avante;
+        anyHorse = sonata;
+        anyHorse = grandeur;
+    }
+}
+```
+#### ⭐️ ```Horse``` 클래스로 제네릭 클래스 활용 예제
+###### ☕️ HorseShop.java
+```java
+public class HorseShop {
+
+    public static void intoBestSellers (Horse<? extends Unit> horse) {
+        System.out.println("베스트셀러 라인에 추가 - " + horse);
+    }
+
+    public static void intoPremiums (Horse<? extends Knight> horse) {
+        System.out.println("프리미엄 라인에 추가 - " + horse);
+    }
+
+    public static void intoEntryLevels (Horse<? super Knight> horse) {
+        System.out.println("보급형 라인에 추가 - " + horse);
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+	HorseShop.intoBestSellers(avante);
+        HorseShop.intoBestSellers(sonata);
+        HorseShop.intoBestSellers(grandeur);
+        
+//        HorseShop.intoPremiums(avante); // ⚠️ 불가
+        HorseShop.intoPremiums(sonata);
+        HorseShop.intoPremiums(grandeur);
+
+        HorseShop.intoEntryLevels(avante);
+        HorseShop.intoEntryLevels(sonata);
+//        HorseShop.intoEntryLevels(grandeur); // ⚠️ 불가
+    }
+}
+```
+
+#### 💡 배열로 선언하여 사용할 경우
+* 이건 또 가능.
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+	...
+
+	//  ⭐️ 제네릭은 변수에 들어올 값에 대한 제한
+	//  - 데이터 그 자체에 대함이 아님
+        Horse[] horses = { avante, sonata, grandeur };
+        for (Horse horse : horses) {
+            horse.setRider(new Unit());
+        } // ⁉️ 에러 발생하지 않음
+    }
+}
+```
 
 
