@@ -135,6 +135,8 @@ public class Main {
 * ```==```는 레퍼런스 비교이기 때문에 basic한 ```equals```의 결과와 동일.
 * 위 오버라이딩한 ```equals```에서는 ```x```와 ```y``` 값을 비교하도록 했기 때문에 ```boolA```, ```boolB```, ```boolC```는 ```true```
 
+---
+
 ## 2. Wrapper 클래스들
 ![img_3](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/img/wrapper.png)
 
@@ -294,6 +296,8 @@ Boolean bln3 = Boolean.valueOf(true);
         Integer flt1Int = flt1.intValue(); // ⚠️ 소수점 이하 버림
         Short int1DblSrt = int1Dbl.shortValue();
 ```
+
+---
 
 ## 3. 제네릭
 > 자바의 정석 CHAPTER 12 참조
@@ -842,7 +846,7 @@ public class Main {
 │                  * (target이 마법기사일 경우) 이 공격에 대해 면역
 │                  * 마나 모두 소진시 사용불가
 ├── Horse (class)
-│    └── extraHp : 탑승한 Unit 추가 체력 효과
+│    * extraHp : 탑승한 Unit 추가 체력 효과
 ```
 
 ###### ☕️ Side.java
