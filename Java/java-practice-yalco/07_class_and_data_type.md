@@ -1,8 +1,9 @@
 # Section 7. 클래스와 자료형
-'재대로 파는 자바 - 얄코' 섹션6 학습 [(인프런)](https://www.inflearn.com/course/%EC%A0%9C%EB%8C%80%EB%A1%9C-%ED%8C%8C%EB%8A%94-%EC%9E%90%EB%B0%94/dashboard)
+'재대로 파는 자바 - 얄코' 섹션7 학습 [(인프런)](https://www.inflearn.com/course/%EC%A0%9C%EB%8C%80%EB%A1%9C-%ED%8C%8C%EB%8A%94-%EC%9E%90%EB%B0%94/dashboard)
 > 1. Object
 > 2. Wrapper 클래스들
 > 3. 제네릭
+> 4. 다음 섹션을 위한 게임예제
 
 ## 1. Object
 
@@ -815,4 +816,223 @@ public class Main {
 }
 ```
 
+---
+
+## 4. 다음 섹션을 위한 게임예제
+* 객체지향 개념 예제로 이해하기.
+
+###### 🎯 게임예제 정보
+```bash
+├── Side (enum)
+│    * 레드, 블루
+├── Attacker (interface)
+│    * defaultAttack : 기본 공격 메소드
+├── Unit (abstract class)
+│    * 진영(Side), 체력(hp)를 갖고 있는 유닛
+│    └── Swordman (class)
+│        * hp: 80,
+│        * defaultAttack : swordAttack 검 공격 -10
+│        └── Knight (class)
+│            * hp: Swordman 체력 + 40
+│            * switchWeapon : 무기변경 가능 (검, 창)
+│            * defaultAttack 기본공격(무기에 따라 공격력 다름) : swordAttack 검 -10, spearAttack 창 -14
+│            └── MagicKnight (class)
+│                * mana : 60
+│                * lighteningAttack : 번개 공격 범위 공격 -8, 마나소모(MANA_USAGE) -4
+│                  * (target이 마법기사일 경우) 이 공격에 대해 면역
+│                  * 마나 모두 소진시 사용불가
+├── Horse (class)
+│    └── extraHp : 탑승한 Unit 추가 체력 효과
+```
+
+###### ☕️ Side.java
+```java
+public enum Side {
+
+    RED("레드"), BLUE("블루");
+
+    private String name;
+
+    Side(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+```
+###### ☕️ Unit.java
+```java
+public abstract class Unit {
+
+    // ⚠️ 이후 실습의 편의를 위해 일부 필드를 public으로 선언
+    // 실무에서는 private로 만들고 getter/setter 권장
+    public Side side;
+    public int hp;
+
+    public Unit(Side side, int hp) {
+        this.side = side;
+        this.hp = hp;
+    }
+
+    public Side getSide() {
+        return side;
+    }
+}
+```
+###### ☕️ Attacker.java
+```java
+public interface Attacker {
+    void defaultAttack(Unit Target);
+}
+```
+
+###### ☕️ Swordman.java
+```java
+public class Swordman extends Unit implements Attacker {
+
+    public Swordman(Side side) {
+        super(side, 80);
+    }
+
+    private void swordAttack(Unit target) {
+        target.hp -= 10;
+    }
+
+    @Override
+    public void defaultAttack(Unit target) {
+        swordAttack(target);
+    }
+
+    @Override
+    public String toString() {
+        return side.toString() + " 진영 검사";
+    }
+}
+```
+
+###### ☕️ Knight.java
+```java
+public class Knight extends Swordman {
+
+    private enum Weapon {SWORD, SPEAR}
+    private Weapon weapon = Weapon.SWORD;
+
+    public Knight(Side side) {
+        super(side);
+        hp += 40;
+    }
+
+    public void switchWeapon() {
+        weapon = weapon == Weapon.SWORD ? Weapon.SPEAR : Weapon.SWORD;
+    }
+
+    public void spearAttack(Unit target) {
+        target.hp -= 14;
+    }
+
+    @Override
+    public void defaultAttack(Unit target) {
+
+        if(weapon == Weapon.SWORD) {
+            super.defaultAttack(target);
+        } else {
+            spearAttack(target);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return side.toString() + " 진영 기사";
+    }
+}
+```
+
+###### ☕️ MagicKnight.java
+```java
+public class MagicKnight extends Knight {
+    public int mana = 60;
+    public final int MANA_USAGE = 4;
+
+    public MagicKnight(Side side) {
+        super(side);
+    }
+
+    public void lighteningAttack(Unit[] targets) {
+
+        for(Unit target : targets) {
+
+            if(target instanceof MagicKnight) continue;
+            if(mana < MANA_USAGE) break;
+            System.out.printf("⚡⚡⚡⚡⚡️ → 💀💀 %s%n", target);
+            target.hp -= 8;
+            mana -= MANA_USAGE;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return side.toString() + " 진영 마법기사";
+    }
+}
+```
+
+###### ☕️ Horse.java
+```java
+public class Horse<T extends Unit> {
+    private int extraHp;
+    private T rider;
+
+    public Horse(int extraHp) {
+        this.extraHp = extraHp;
+    }
+
+    public void setRider(T rider) {
+        this.rider = rider;
+        rider.hp += extraHp;
+    }
+
+    @Override
+    public String toString() {
+        return "말 (추가체력: %d)".formatted(extraHp);
+    }
+}
+```
+
+###### ☕️ Main.java
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        
+        Swordman redSideSwordmanA = new Swordman(Side.RED);
+        Knight redSideKnightA = new Knight(Side.RED);
+        Knight redSideKnightB = new Knight(Side.RED);
+        MagicKnight redSideMagicKnightA = new MagicKnight(Side.RED);
+
+        Knight blueSideKnightA = new Knight(Side.BLUE);
+        MagicKnight blueMagicKnightA = new MagicKnight(Side.BLUE);
+        MagicKnight blueMagicKnightB = new MagicKnight(Side.BLUE);
+
+        Horse<Swordman> avante = new Horse<>(40);
+        Horse<Knight> sonata = new Horse<>(50);
+
+        avante.setRider(redSideSwordmanA); // 🔴
+        sonata.setRider(blueMagicKnightA);
+
+        redSideSwordmanA.defaultAttack(blueSideKnightA); // 🔴
+        redSideKnightA.defaultAttack(blueMagicKnightA);
+        redSideKnightB.switchWeapon();
+        redSideKnightB.defaultAttack(blueMagicKnightB);
+
+        blueMagicKnightA.defaultAttack(redSideSwordmanA);
+        blueMagicKnightB.lighteningAttack(new Unit[] {
+                redSideKnightA,
+                redSideKnightB,
+                redSideMagicKnightA
+        });
+    }
+}
+```
 
