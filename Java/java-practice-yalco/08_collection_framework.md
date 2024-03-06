@@ -21,7 +21,6 @@
   * 장점 : 각 요소돌로의 접근이 빠르다.
   * 단점 : 요소 추가/제거 시 성능 부하, 메모리를 비교적 더 차지
   * 변경이 드물고 빠른 접근이 필요한 곳에 적합하다.
-  * 
 
 #### 💡 ```ArrayList``` 의 추가와 삭제
 > 자바의 정석 CHAPTER 11 참조
@@ -37,7 +36,7 @@
 * 배열에 객체를 순차적으로 저장할 때와 객체를 마지막에 저장된 것부터 삭제하면 데이터를 옮기지 않아도 되기 때문에 작업시간이 짧다.
 * 하지만 배열의 중간에 위치한 객체를 추가하거나 삭제하는 경우 다른 데이터의 위치를 이동시켜 줘야 하기 때문에 다루는 데이터의 개수가 많을수록 작업시간이 오래 걸린다.
 
-#### 📁 ex
+#### 📁 ```ArrayList```의 메서드
 ```java
         //  ⭐️ 제네릭을 사용하여 타입 지정
         //  - 붙이지 않을 시 <Object>와 동일
@@ -138,6 +137,7 @@
         eliteSquad = new ArrayList<Knight>();
         eliteSquad = new ArrayList<MagicKnight>();
 ```
+```java
         //  ⭐️ 인스턴스 요소를 지울 때는 참조를 기준으로
         //  - 내용이 같다고 같은 인스턴스가 아님
         Knight knight1 = new Knight(Side.RED);
@@ -146,12 +146,87 @@
         //  요소가 하나 지워졌는지 여부 반환
         boolean removed1 = knights.remove(new Knight(Side.RED));
         boolean removed2 = knights.remove(knight1);
-    }
-}
 ```
+
+### 📌 ```LinkedList```
+* 불연속적으로 존재하는 데이터를 서로 연결(link)한 형태로 구성되어 있음.
+* 각 요소(node)들은 <ins>자신과 연결된 다음 요소에 대한 참조(주소값)</ins>와 <ins>데이터</ins>로 구성되어 있다.
+* 배열의 단점을 보완하기 위해서 나온 자료구조.
+```bash
+* 배열의 단점
+  - 크기를 변경할 수 없다.
+  - 비순차적인 데이터의 추가 또는 삭제에 시간이 많이 걸린다. 
+```
+* Queue를 구현하는 용도로 사용 가능.
+* 용도
+  * 장점: 요소의 추가와 제거가 빠름, 메모리 절약.
+  * 단점: 요소 접근이 느림.
+  * 요소들의 추가/제거가 잦은 곳에 적합.
+
+#### 📁 ```LinkedList```의 메서드
+```java
+        //  💡 LinkedList에만 있는 메소드들 중...
+        LinkedList<Integer> intNums = new LinkedList<>();
+        for (int intNum : new int[] {2, 3, 4}) { intNums.add(intNum); };
+
+        intNums.addFirst(1);
+        intNums.addFirst(0);
+        intNums.addLast(5); // add와 반환값만 다름. 코드에서 확인해 볼 것
+        intNums.addLast(6);
+```
+```java
+        //  💡 LinkedList에만 있는 메소드들 중...
+        LinkedList<Integer> intNums = new LinkedList<>();
+        for (int intNum : new int[] {2, 3, 4}) { intNums.add(intNum); };
+
+        intNums.addFirst(1);
+        intNums.addFirst(0);
+        intNums.addLast(5); // add와 반환값만 다름. 코드에서 확인해 볼 것
+        intNums.addLast(6);
+```
+```java
+        //  💡 앞에서/뒤에서 꺼내지 않고 반환
+        //  - peek~ : 비어있을 경우 null 반환
+        //  - get~ : 비어있을 경우 익셉션
+        int peekedFirst = intNums.peekFirst();
+        int gottenFirst = intNums.getFirst();
+        int peekedLast = intNums.peekLast();
+        int gottenLast = intNums.getLast();
+```
+```java
+        //  💡 앞에서/뒤에서 꺼내어 반환
+        //  - poll~ : 비어있을 경우 null 반환
+        //  - remove~ : 비어있을 경우 익셉션
+        int polledFirst = intNums.pollFirst();
+        int removedSecond = intNums.removeFirst();
+        int polledLast = intNums.pollLast();
+        int removedLast = intNums.removeLast();
+
+				    //  ⭐️ 위의 기능들 활용하여 Stack/Queue 구현
+```
+```java
+        LinkedList<Character> charLList = new LinkedList<>();
+
+        //  💡 push & pop : 스택 간편하게 구현
+        //  - 클래스 코드에서 살펴볼 것
+
+        charLList.push('A');
+        charLList.push('B');
+        charLList.push('C');
+        charLList.push('D');
+        charLList.push('E');
+
+        char pop1 = charLList.pop();
+        char pop2 = charLList.pop();
+        char pop3 = charLList.pop();
+```
+
+---
 
 ## 2. Set
 * 순서를 유지하지 않는 데이터의 집합, 데이터의 중복을 허용하지 않는다.
+
+
 
 ## 3. Map
 * key와 value의 쌍(pair)으로 이루어진 데이터의 집합.
