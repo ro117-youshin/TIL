@@ -265,14 +265,106 @@
         list1.add(6); // ⚠️ 런타임 오류
 ```
 
-
 ---
 
 ## 2. Set
 * 순서를 유지하지 않는 데이터의 집합, 데이터의 중복을 허용하지 않는다.
 
+|주요 클래스|장점|단점|
+|:-----:|:-----|:-----|
+|```HashSet```|성능이 빠르고 메모리 적게 사용|순서 관련 기능 없음(보장하지 않음)|
+|```LinkedHashSet```|요소들을 입력 순서대로 정렬(내부적으로 링크 사용)|```HashSet``` 보다는 성능이 떨어짐|
+|```TreeSet```|요소들을 특정 기준대로 정렬(기본 오름차순)|데이터 추가/삭제에 시간 더 소모|
 
+#### 💡 해시 hash - HashSet이 사용하는 방식
+* 동일한 입력 값 👉🏻 언제나 동일한 출력값
+* 값마다의 고유한 정수값을 해시값으로 저장
+  * 이 값을 기준으로 정렬
+* 일정 개수까지는 정렬(된 형태), 이를 넘어서면 재조정(클래스 코드 확인)
+  * 정렬을 목적으로는 사용하지 말 것
+
+#### 📁 ```Set``` 메서드
+```java
+	Set<Integer> intHashSet1 = new HashSet<>();
+        intHashSet1.add(1);
+        intHashSet1.add(1);
+        intHashSet1.add(2);
+        intHashSet1.add(3);  // intHashSet1: size = 3 
+
+        List<Integer> intList = new ArrayList(  // intList: size = 10
+                Arrays.asList(1, 1, 2, 2, 3, 3, 4, 5, 6, 7)
+        );
+        Set<Integer> intHashSet2 = new HashSet<>(intList);  // intHashSet2: size = 7   intList: size = 10
+```
+```java
+	//  💡 for-each문 사용 가능
+        for (Integer i :intHashSet1) {
+            System.out.println(i);
+        }
+```
+```java
+	//  ⭐️ 아래와 같이 응용 가능
+        //  - 중복을 제거한 ArrayList
+	//  - ArrayList에 HashSet을 addAll해서 사용 가능.
+        intList.clear();
+        intList.addAll(intHashSet2);
+```
+* ```addAll()``` 은 클래스 코드를 살펴보면
+  * ```boolean addAll(Collection<? extends E> c);```
+  * ```Collection``` 을 인자로 받기 때문에 가능
+
+```java
+	//  포함 여부
+        boolean has2 = intHashSet1.contains(2);
+        boolean has4 = intHashSet1.contains(4);
+
+        //  요소 삭제, 있었는지 여부 반환
+        boolean rm3 = intHashSet1.remove(3);
+        boolean rm4 = intHashSet1.remove(4);
+```
+```java
+	//  다른 콜렉션 기준으로 내용 삭제
+        intHashSet2.removeAll(intHashSet1);
+```
+```java
+	//  💡 그 외
+        intHashSet1.size();
+        intHashSet2.isEmpty();
+        intHashSet1.clear();
+```
+
+#### 📁 참조형 관련
+```java
+        Set<Swordman> swordmenSet = new HashSet<>();
+        Swordman swordman = new Swordman(Side.RED);
+
+        swordmenSet.add(swordman);
+        swordmenSet.add(swordman);
+        swordmenSet.add(new Swordman(Side.RED));
+        swordmenSet.add(new Swordman(Side.RED));
+```
+* 위 ```swordmenSet``` 의 ```size = 3```
+* 참조형 데이터들은 같은 인스턴스인가 여부에 따라 중복으로 추가될지 안될지 결정
+* ```Set``` 에서 ```swordman``` 을 삭제하려면
+  * ```swordmenSet.remove(swordman);```
+  * ```new``` 연산자로 생성한 두 ```Swordman``` 은 외부에 주소가 저장된 변수가 없기 때문에 ```clear()``` 메서드 사용하여 삭제      
+
+
+---
 
 ## 3. Map
 * key와 value의 쌍(pair)으로 이루어진 데이터의 집합.
 * 순서는 유지되지 않으며, key는 중복을 허용하지 않고, value는 중복을 허용한다.
+
+
+
+
+
+
+
+
+
+
+
+
+
