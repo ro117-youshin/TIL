@@ -147,6 +147,14 @@
         boolean removed1 = knights.remove(new Knight(Side.RED));
         boolean removed2 = knights.remove(knight1);
 ```
+###### 📁 ArrayList에만 있는 메소드 (자주 쓰이지 않음)
+```java
+	//  ⭐️ LinkedList 와의 차이와 연관지어 생각해 볼 것
+
+        ArrayList<Attacker> attackers = new ArrayList<>();
+        attackers.ensureCapacity(5); // 자리수 미리 확보
+        attackers.trimToSize(); // 남는 자리 없애기 (메모리 회수)
+```
 
 ### 📌 ```LinkedList```
 * 불연속적으로 존재하는 데이터를 서로 연결(link)한 형태로 구성되어 있음.
@@ -167,17 +175,9 @@
 ```java
         //  💡 LinkedList에만 있는 메소드들 중...
         LinkedList<Integer> intNums = new LinkedList<>();
-        for (int intNum : new int[] {2, 3, 4}) { intNums.add(intNum); };
-
-        intNums.addFirst(1);
-        intNums.addFirst(0);
-        intNums.addLast(5); // add와 반환값만 다름. 코드에서 확인해 볼 것
-        intNums.addLast(6);
-```
-```java
-        //  💡 LinkedList에만 있는 메소드들 중...
-        LinkedList<Integer> intNums = new LinkedList<>();
-        for (int intNum : new int[] {2, 3, 4}) { intNums.add(intNum); };
+        for (int intNum : new int[] {2, 3, 4}) {
+	    intNums.add(intNum);
+	}
 
         intNums.addFirst(1);
         intNums.addFirst(0);
@@ -188,27 +188,37 @@
         //  💡 앞에서/뒤에서 꺼내지 않고 반환
         //  - peek~ : 비어있을 경우 null 반환
         //  - get~ : 비어있을 경우 익셉션
-        int peekedFirst = intNums.peekFirst();
-        int gottenFirst = intNums.getFirst();
-        int peekedLast = intNums.peekLast();
-        int gottenLast = intNums.getLast();
+        int peekedFirst = intNums.peekFirst();	// 0
+        int gottenFirst = intNums.getFirst();	// 0
+        int peekedLast = intNums.peekLast();	// 6
+        int gottenLast = intNums.getLast();	// 6	intNums: size = 7
 ```
+* 위의 코드로 보면 마지막 라인 ```gottenLast``` 변수가 초기화 되어도 ```0``` 부터 ```6``` 까지 list에 들어가 있어 ```intNums: size = 7``` 이다.
 ```java
         //  💡 앞에서/뒤에서 꺼내어 반환
         //  - poll~ : 비어있을 경우 null 반환
         //  - remove~ : 비어있을 경우 익셉션
-        int polledFirst = intNums.pollFirst();
-        int removedSecond = intNums.removeFirst();
-        int polledLast = intNums.pollLast();
-        int removedLast = intNums.removeLast();
+        int polledFirst = intNums.pollFirst();		// 0
+        int removedSecond = intNums.removeFirst();	// 1
+        int polledLast = intNums.pollLast();		// 6
+        int removedLast = intNums.removeLast();		// 5	intNums: size = 3
 
-				    //  ⭐️ 위의 기능들 활용하여 Stack/Queue 구현
+        //  ⭐️ 위의 기능들 활용하여 Stack/Queue 구현
 ```
+* 맨 위의 코드부터 이어서 보면 마지막 라인에서 ```intNums: size = 3``` 이다.
 ```java
         LinkedList<Character> charLList = new LinkedList<>();
 
-        //  💡 push & pop : 스택 간편하게 구현
-        //  - 클래스 코드에서 살펴볼 것
+        // 💡 push & pop : 스택 간편하게 구현
+	// 클래스 코드를 살펴보면..
+	// - push
+	// public void push(E e) {
+	//     addFirst(e);
+	// }
+	// - pop
+	// public E pop() {
+        //     return removeFirst();
+    	// }
 
         charLList.push('A');
         charLList.push('B');
@@ -220,6 +230,41 @@
         char pop2 = charLList.pop();
         char pop3 = charLList.pop();
 ```
+
+#### ⭐️ 실무에서는 컬렉션 자료형을 인터페이스로
+```java
+	List<Integer> intList = new ArrayList<>();
+        intList = new LinkedList<>();
+        
+        Set<String> strSet = new HashSet<>();
+        strSet = new TreeSet<>();
+        
+        Map<Integer, String> intStrMap = new HashMap<>();
+        intStrMap = new TreeMap<>();
+```
+* ```List```, ```Set```, ```Map``` 등의 인터페이스로 변수, 인자, 제네릭 등의 자료형 지정
+  * 상세구현이 어떤 알고리즘으로 되어 있는지 굳이 드러내지 않음
+  * 필요에 따라 다른 종류로 교체가 용이
+
+#### ⚠️ ```Arrays``` 의 ```ArrayList```
+* ```Arrays.asList``` 가 반환하는 ```ArrayList```
+* ```java.util.ArrayList``` 와 다름
+  * ```java.util.Arrays``` 의 정적 내부 클래스
+  * 사이즈 변경 불가 (요소 추가 안 됨)
+```java
+	List<Integer> testIntList = Arrays.asList(1, 2, 3);
+        //  ArrayList<Integer> testIntList = Arrays.asList(1,2,3); ⚠️ 불가
+```
+```java
+	List<Integer> list1 = Arrays.asList(1, 2, 3, 4, 5);
+        ArrayList<Integer> list2 = new ArrayList<>(list1);
+
+        String list1Type = list1.getClass().getName();
+        String list2Type = list2.getClass().getName();
+
+        list1.add(6); // ⚠️ 런타임 오류
+```
+
 
 ---
 
