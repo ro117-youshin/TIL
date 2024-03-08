@@ -498,7 +498,7 @@
         Arrays.sort(nums);
         Arrays.sort(strs);
 ```
-###### 💡 역순(Desc)으로 정렬
+#### 💡 역순(Desc)으로 정렬
 ###### ☕️ IntDescComp.java
 ```java
 public class IntDescComp implements Comparator<Integer> {
@@ -525,7 +525,7 @@ index 7 = 2
 index 8 = 1
 ```
 
-###### 💡 인자값에 인접한 값으로 정렬
+#### 💡 인자값에 인접한 값으로 정렬
 ###### ☕️ CloseToInt.java
 ```java
 public class CloseToInt implements Comparator<Integer> {
@@ -556,7 +556,7 @@ index 6 = 8
 index 7 = 1
 index 8 = 9
 ```
-###### 💡 문자열 길이로 정렬
+#### 💡 문자열 길이로 정렬
 ```java
 	Arrays.sort(strs, new Comparator<String>() {
             @Override
@@ -566,13 +566,13 @@ index 8 = 9
         });
 ```
 
-###### 💡 ```ArrayList``` 도 ```sort``` 사용 가능
+#### 💡 ```ArrayList``` 도 ```sort``` 사용 가능
 ```java
 ArrayList<Integer> numsArray = new ArrayList<>(Arrays.asList(nums));
 numsArray.sort(new IntDescComp());
 ```
 
-###### 💡 짝수 우선 정렬
+#### 💡 짝수 우선 정렬
 ```java
         Arrays.sort(strs, new Comparator<String>() {
             @Override
@@ -582,7 +582,8 @@ numsArray.sort(new IntDescComp());
         });
 ```
 
-###### 💡 
+#### 💡 참조 데이터 Compare
+###### ```Comparator 제네릭 타입 Unit``` [Section 7. - 4. 다음 섹션을 위한 게임예제](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md#4-다음-섹션을-위한-게임예제) 코드에서 import
 ###### ☕️ UnitSorter.java
 ```java
 import sec07.chap04.*;
