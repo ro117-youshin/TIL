@@ -349,6 +349,98 @@
   * ```swordmenSet.remove(swordman);```
   * ```new``` 연산자로 생성한 두 ```Swordman``` 은 외부에 주소가 저장된 변수가 없기 때문에 ```clear()``` 메서드 사용하여 삭제      
 
+#### 📁 Set 에 임의의 정수 배열을 넣을 경우
+```java
+	HashSet<Integer> intHashSet = new HashSet<>();
+        LinkedHashSet<Integer> intLinkedHashSet = new LinkedHashSet<>();
+        TreeSet<Integer> intTreeSet = new TreeSet<>();
+
+        for (int i : new int[] { 3, 1, 8, 5, 4, 7, 2, 9, 6}) {
+            intHashSet.add(i);
+            intLinkedHashSet.add(i);
+            intTreeSet.add(i);
+        }
+        for (Set s : new Set[] {intHashSet, intLinkedHashSet, intTreeSet}) {
+            System.out.println(s);
+        }
+        //  ⭐️ LinkedHashSet : 입력된 순서대로 / TreeSet : 오름차순
+        //  ⚠️ HashSet이 정렬된 것처럼 보이지만 보장된 것이 아님
+        //  - Hash 방식에 의한 특정 조건에서의 정렬일 뿐
+```
+```java
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+[3, 1, 8, 5, 4, 7, 2, 9, 6]
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+* ⭐️ LinkedHashSet : 입력된 순서대로 / TreeSet : 오름차순
+* ⚠️ HashSet이 정렬된 것처럼 보이지만 보장된 것이 아님
+* Hash 방식에 의한 특정 조건에서의 정렬일 뿐
+
+#### 📁 Set에 임의의 문자열 배열을 넣을 경우
+```java
+	Set<String> strHashSet = new HashSet<>();
+        Set<String> strLinkedHashSet = new LinkedHashSet<>();
+        Set<String> strTreeSet = new TreeSet<>();
+
+        for (String s : new String[] {
+                "Fox", "Banana", "Elephant", "Car", "Apple", "Game", "Dice"
+        }) {
+            strHashSet.add(s);
+            strLinkedHashSet.add(s);
+            strTreeSet.add(s);
+        }
+        for (Set s : new Set[] {strHashSet, strLinkedHashSet, strTreeSet}) {
+            System.out.println(s);
+        }
+```
+```java
+[Apple, Game, Car, Elephant, Dice, Fox, Banana]
+[Fox, Banana, Elephant, Car, Apple, Game, Dice]
+[Apple, Banana, Car, Dice, Elephant, Fox, Game]
+```
+* ⭐️ LinkedHashSet : 입력된 순서대로 / TreeSet : 오름차순
+* ⚠️ HashSet에 문자열을 넣으면 역시 무작위로
+
+#### Red-Black Tree
+* ```TreeSet``` 에 사용되는 알고리즘
+* 시각화 사이트들
+  * [Red Black Tree Visualizationred black tree visualization - Google Search](https://www.google.com/search?q=red+black+tree+visualization&oq=red+black+tree+visualization&aqs=edge..69i57j0i22i30j0i390i650l5.5523j0j1&sourceid=chrome&ie=UTF-8)
+```java
+	//  💡 TreeSet의 주요 메소드들
+        int firstInt = intTreeSet.first();
+        String lastStr = strTreeSet.last();
+```
+```java
+	//  같은 것이 없다면 트리구조상 바로 위의 것 (바로 더 큰 것) 반환
+        String foxCeiling = strTreeSet.ceiling("Fox");
+        String creamCeiling = strTreeSet.ceiling("Cream");
+
+        //  같은 것이 없다면 트리구조상 바로 아래의 것 (바로 더 작은 것) 반환
+        String foxFloor = strTreeSet.floor("Fox");
+        String diceFloor = strTreeSet.floor("Cream");
+```
+```java
+	//  맨 앞에서/뒤에서 제거
+
+        int pollFirst1 = intTreeSet.pollFirst();
+        int pollFirst2 = intTreeSet.pollFirst();
+
+        int pollLast1 = intTreeSet.pollLast();
+        int pollLast2 = intTreeSet.pollLast();
+```
+```java
+	//  순서가 뒤집힌 NavigableSet 반환
+        Set<String> strTreeSetDesc 
+                = (TreeSet<String>) strTreeSet.descendingSet();
+```
+```java
+	//  ⚠️ 요소로 추가 불가
+        //  - Comparable 또는 Comparator 필요
+        TreeSet<Knight> knightSet1 = new TreeSet<>();
+        knightSet1.add(new Knight(Side.BLUE));
+        knightSet1.add(new Knight(Side.BLUE));
+        knightSet1.add(new Knight(Side.BLUE));
+```
 
 ---
 
@@ -356,7 +448,13 @@
 * key와 value의 쌍(pair)으로 이루어진 데이터의 집합.
 * 순서는 유지되지 않으며, key는 중복을 허용하지 않고, value는 중복을 허용한다.
 
+---
 
+## 4. Comparable & Comparator
+
+---
+
+## 5. Iterator
 
 
 
