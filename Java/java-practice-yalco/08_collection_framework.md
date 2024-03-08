@@ -451,6 +451,179 @@
 ---
 
 ## 4. Comparable & Comparator
+* 둘 모두 인터페이스로 컬렉션을 정렬하는데 필요한 메서드를 정의하고 있음
+* ```Comparable``` (비교의 대상): 자신과 다른 객체를 비교
+  * 숫자 클래스들, 불리언, 문자열
+  * ```Date```, ```BigDecimal```, ```BigInteger``` 등
+* ```Comparator``` (비교의 주체): 주어진 두 객체를 비교
+  * 컬렉션에서는 정렬의 기준으로 사용
+  * ```Arrays``` 의 정렬 메서드, ```TreeSet``` 이나 ```TreeMap``` 등의 생성자에 활용 
+
+#### 📁 ex01
+###### ☕️ Main.java
+```java
+	Integer int1 = Integer.valueOf(1);
+        Integer int2 = Integer.valueOf(2);
+        Integer int3 = Integer.valueOf(3);
+
+        int _1_comp_3 = int1.compareTo(3);	// -1
+        int _2_comp_1 = int2.compareTo(1);	// 1
+        int _3_comp_3 = int3.compareTo(3);	// 0
+
+        int _t_comp_f = Boolean.valueOf(true).compareTo(Boolean.valueOf(false));	// 1
+
+        int _abc_comp_def = "ABC".compareTo("DEF");	// -3
+        int _efgh_comp_abcd = "efgh".compareTo("abcd");	// 4
+
+        Integer[] nums = {3, 8, 1, 7, 4, 9, 2, 6, 5};
+        String[] strs = {
+                "Fox", "Banana", "Elephant", "Car", "Apple", "Game", "Dice"
+        };
+
+        //  ⭐️ Arrays 클래스의 sort 메소드
+        //  - 기본적으로 compareTo에 의거하여 정렬
+        //  - 인자가 없는 생성자로 생성된 TreeSet, TreeMap도 마찬가지
+        Arrays.sort(nums);
+        Arrays.sort(strs);
+```
+```java
+	Integer[] nums = {3, 8, 1, 7, 4, 9, 2, 6, 5};
+        String[] strs = {
+                "Fox", "Banana", "Elephant", "Car", "Apple", "Game", "Dice"
+        };
+
+        //  ⭐️ Arrays 클래스의 sort 메소드
+        //  - 기본적으로 compareTo에 의거하여 정렬
+        //  - 인자가 없는 생성자로 생성된 TreeSet, TreeMap도 마찬가지
+        Arrays.sort(nums);
+        Arrays.sort(strs);
+```
+###### 💡 역순(Desc)으로 정렬
+###### ☕️ IntDescComp.java
+```java
+public class IntDescComp implements Comparator<Integer> {
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return o2-o1;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+Arrays.sort(nums, new IntDescComp());
+```
+```java
+nums
+index 0 = 9
+index 1 = 8
+index 2 = 7
+index 3 = 6
+index 4 = 5
+index 5 = 4
+index 6 = 3
+index 7 = 2
+index 8 = 1
+```
+
+###### 💡 인자값에 인접한 값으로 정렬
+###### ☕️ CloseToInt.java
+```java
+public class CloseToInt implements Comparator<Integer> {
+    int closeTo;
+    public CloseToInt(int closeTo) {
+        this.closeTo = closeTo;
+    }
+
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return (Math.abs(o1 - closeTo) - Math.abs(o2 - closeTo));
+    }
+}
+```
+###### ☕️ Main.java
+```java
+Arrays.sort(nums, new CloseToInt(5));
+```
+```java
+nums
+index 0 = 5
+index 1 = 4
+index 2 = 6
+index 3 = 3
+index 4 = 7
+index 5 = 2
+index 6 = 8
+index 7 = 1
+index 8 = 9
+```
+###### 💡 문자열 길이로 정렬
+```java
+	Arrays.sort(strs, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.length() - o2.length();
+            }
+        });
+```
+
+###### 💡 ```ArrayList``` 도 ```sort``` 사용 가능
+```java
+ArrayList<Integer> numsArray = new ArrayList<>(Arrays.asList(nums));
+numsArray.sort(new IntDescComp());
+```
+
+###### 💡 짝수 우선 정렬
+```java
+        Arrays.sort(strs, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.length() - o2.length();
+            }
+        });
+```
+
+###### 💡 
+###### ☕️ UnitSorter.java
+```java
+import sec07.chap04.*;
+
+public class UnitSorter implements Comparator<Unit> {
+    @Override
+    public int compare(Unit o1, Unit o2) {
+
+        int result = getClassPoint(o2) - getClassPoint(o1);
+        if(result == 0) result = o1.hashCode() - o2.hashCode();
+        
+        return result;
+    }
+
+    public int getClassPoint(Unit u) {
+        int result = u.getSide() == Side.RED ? 10 : 0;
+
+        if(u instanceof Swordman) result += 1;
+        if(u instanceof Knight) result += 2;
+        if(u instanceof MagicKnight) result += 3;
+
+        return result;
+    }
+}
+```
+###### ☕️ Main.java
+```java
+	TreeSet<Unit> unitTSet = new TreeSet<>(new UnitSorter());
+        for(Unit u : new Unit[] {
+            new Knight(Side.BLUE),
+            new Knight(Side.BLUE),  // 중복
+            new Swordman(Side.RED),
+            new Swordman(Side.RED), // 중복
+            new MagicKnight(Side.RED),
+            new Knight(Side.RED),
+            new Swordman(Side.BLUE),
+        }) {
+            unitTSet.add(u);
+        }
+```
+* ```if(result == 0) result = o1.hashCode() - o2.hashCode();``` 분기로 중복 허용
 
 ---
 
