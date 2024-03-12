@@ -629,8 +629,50 @@ public class UnitSorter implements Comparator<Unit> {
 ---
 
 ## 5. Iterator
+* ```java.lang.Iterable``` 인터페이스 구현 클래스에서 사용
+* 컬렉션을 순회하는데 사용
 
+#### 📁 ex
+###### ☕️ Main.java
+```java
+Set<Integer> intHSet = new HashSet<>(
+    Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)
+);
 
+//  💡 이터레이터 반환 및 초기화
+//  - 기타 Collection 인터페이스를 구현한 클래스들에도 존재
+Iterator<Integer> intItor = intHSet.iterator();
+```
+```next()``` / ```hasNext()```
+```java
+// 💡 next : 자리를 옮기며 다음 요소 반환
+Integer int1 = intItor.next();	// 1
+Integer int2 = intItor.next();	// 2
+Integer int3 = intItor.next();	// 3
+
+//  💡 hasNext : 순회가 끝났는지 여부 반환
+boolean hasNext = intItor.hasNext();	// true
+```
+```java
+//  ⭐️ 순회 초기화
+intItor = intHSet.iterator();
+```
+```remove()```
+```java
+//  💡 remove : 현 위치의 요소 삭제
+while (intItor.hasNext()) {
+    if (intItor.next() % 3 == 0) {
+	intItor.remove();
+    }
+}
+```
+⚠️ ```foreach``` 사용 시 ```ConcurrentModificationException```
+```java
+//  ⚠️ foreach 문으로 시도하면 오류
+for (Integer num : intHSet) {
+    if (num % 3 == 0) intHSet.remove(num);
+}
+```
 
 
 
