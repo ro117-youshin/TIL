@@ -27,6 +27,90 @@
     * ```@FunctionalInterface``` 로 강제
     * 클래스 메소드와 ```default``` 메소드는 여럿 있을 수 있음  
 
+#### 📁 람다식 기본 문법
+###### ☕️ Printer.java
+```java
+@FunctionalInterface
+public interface Printer {
+    void Print();
 
+//    void saySomething(); // ⚠️둘 이상의 메소드는 불가
+}
+```
+###### ☕️ Main.java
+```java
+Printer printer1 = new Printer() {
+    @Override
+    public void Print() {
+        System.out.println("람다식이 없었을 때 방식");
+    }
+};
 
+Printer printer2 = () -> {
+    System.out.println("인자, 반환값 없는 람다식");
+};
+Printer printer3 = () -> System.out.println("반환값 없을 시 { } 중괄호 생략 가능");
+Printer printer4 = () -> {
+    System.out.println("코드가 여러 줄일 때는");
+    System.out.println("{ } 중괄호 필요");
+};
 
+for (Printer p : new Printer[] {printer1, printer2, printer3, printer4}) {
+    p.print();
+}
+```
+
+#### 📁 반환값만 있을 경우
+###### ☕️ Returner.java
+```java
+@FunctionalInterface
+public interface Returner {
+    Object returnObj();
+}
+```
+###### ☕️ Main.java
+```java
+Returner returner1 = () -> 1; // {return 1;};
+Returner returner2 = () -> "반환 코드만 있을 시 { } 중괄호와 return 생략가능";
+
+Object returned1 = returner1.returnObj(); // 1
+Object returned2 = returner2.returnObj(); // 반환 코드만 있을 시 { } 중괄호와 return 생략가능
+```
+
+#### 📁 매개변수가 하나일 때
+###### ☕️ SingleParam.java
+```java
+@FunctionalInterface
+public interface SingleParam {
+    int func (int i);
+}
+```
+###### ☕️ Main.java
+```java
+SingleParam square = (i) -> i * i;
+SingleParam cube = i -> i * i * i; // 인자가 하나일 시 괄호 생략 가능
+
+int _3_squared = square.func(3); // 9
+int _3_cubed = cube.func(3);     // 27
+```
+
+#### 📁 매개변수가 두 개일 때
+###### ☕️ DoubleParam.java
+```java
+@FunctionalInterface
+public interface DoubleParam {
+    int func(int a, int b);
+}
+```
+###### ☕️ Main.java
+```java
+DoubleParam add = (a, b) -> a + b;
+DoubleParam multAndPrint = (a, b) -> {
+    int result = a * b;
+    System.out.printf("%d * %d = %d%n", a, b, result);
+    return result;
+};
+
+int added = add.func(2, 3);
+int multiplied = multAndPrint.func(2, 3);
+```
