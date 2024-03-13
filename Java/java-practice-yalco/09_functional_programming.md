@@ -240,8 +240,68 @@ clickButtonNTimes.accept(dogButton, 5);
 멍멍
 ```
 
+#### 📌 ```Function``` & ```BiFunction```
+* ```Function``` : 일반적인 함수, 하나의 매개변수를 받아서 결과를 반환.
+* ```BiFunction``` : 두 개의 매개변수를 받아서 하나의 결과를 반환.
 
+> Unit, Horse는 [Section 7. - 4. 다음 섹션을 위한 게임예제](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md#4-다음-섹션을-위한-게임예제) 코드에서 import
 
+```java
+Function<Integer, Boolean> isOdd = i -> i % 2 == 1;      // 홀수 여부
+Function<String, Button> getButton = s -> new Button(s); // 
+
+// Horse를 탄 Unit은 ExtraHp 효과를 구현.
+BiFunction<Unit, Horse, Integer> getfullHP = (u, h) -> {
+    h.setRider(u);
+    return u.hp;
+};
+
+BiFunction<String, Runnable, Button> getButtonWFunc = (s, r) -> {
+    Button b = new Button(s);
+    b.setOnClickListener(r);
+    return b;
+};
+
+Boolean isOdd3 = isOdd.apply(3); // true
+Boolean isOdd4 = isOdd.apply(4); // false
+
+Button goatButton = getButton.apply("염소");
+
+Integer unitFullHP = getfullHP.apply( // unitFullHP: 200
+    new MagicKnight(Side.RED), new Horse(80)
+);
+
+getButtonWFunc
+        .apply("오리", () -> System.out.println("꽥꽥"))
+        .onClick();
+```
+
+#### 📌 ```Predicate``` & ```BiPredicate```
+* ```Predicate``` : 조건식을 표현하는데 사용됨. 매개변수는 하나, 반환 타입은 boolean.
+* ```BiPredicate``` : 조건식을 표현하는데 사용됨. 매개변수는 둘, 반환 타입은 boolean.
+
+```java
+Predicate<Integer> isOddTester = i -> i % 2 == 1;
+Predicate<String> isAllLowerCase = s -> s.equals(s.toLowerCase());
+
+BiPredicate<Character, Integer> areSameCharNum = (c, i) -> (int) c == i;
+BiPredicate<Unit, Unit> areSameSide = (u1, u2)  -> u1.getSide() == u2.getSide();
+
+boolean isOddT3 = isOddTester.test(3);        // true
+boolean isOddT4 = isOddTester.test(4);        // false
+boolean isAL1 = isAllLowerCase.test("Hello"); // false
+boolean isAL2 = isAllLowerCase.test("world"); // true
+
+boolean areSameCN1 = areSameCharNum.test('A', 64); // false
+boolean areSameCN2 = areSameCharNum.test('A', 65); // true
+
+boolean areSameSide1 = areSameSide.test( // false
+    new Knight(Side.RED), new Knight(Side.BLUE)
+);
+boolean areSameSide2 = areSameSide.test( // true
+    new Swordman(Side.BLUE), new MagicKnight(Side.BLUE)
+);
+```
 
 
 
