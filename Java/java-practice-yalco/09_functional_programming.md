@@ -280,6 +280,8 @@ getButtonWFunc
 * ```Predicate``` : 조건식을 표현하는데 사용됨. 매개변수는 하나, 반환 타입은 boolean.
 * ```BiPredicate``` : 조건식을 표현하는데 사용됨. 매개변수는 둘, 반환 타입은 boolean.
 
+> Unit, Swordman, Knight, MagicKnight은 [Section 7. - 4. 다음 섹션을 위한 게임예제](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md#4-다음-섹션을-위한-게임예제) 코드에서 import
+
 ```java
 Predicate<Integer> isOddTester = i -> i % 2 == 1;
 Predicate<String> isAllLowerCase = s -> s.equals(s.toLowerCase());
@@ -303,5 +305,76 @@ boolean areSameSide2 = areSameSide.test( // true
 );
 ```
 
+#### 📌 ```UnaryOperator``` & ```BinaryOerator```
+* ```UnaryOperator``` : Function의 자손, Function과 달리 매개변수와 결과의 타입이 같다.
+* ```BinaryOerator``` : BiFunction의 자손, BiFunction과 달리 매개변수와 결과의 타입이 같다.
+
+> Unit, Swordman, Knight, MagicKnight은 [Section 7. - 4. 다음 섹션을 위한 게임예제](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md#4-다음-섹션을-위한-게임예제) 코드에서 import
+
+```java
+UnaryOperator<Integer> square = i -> i * i;
+UnaryOperator<Swordman> respawn = s -> {
+    if (s instanceof MagicKnight) return new MagicKnight(s.getSide());
+    if (s instanceof Knight) return  new Knight(s.getSide());
+    return new Swordman(s.getSide());
+};
+
+Integer squared = square.apply(3); // 9
+Swordman respawned1 = respawn.apply(new Knight(Side.BLUE));     // "BLUE 진영 기사"
+Swordman respawned2 = respawn.apply(new MagicKnight(Side.RED)); // "RED 진영 마법기사"
+
+```
+```java
+BinaryOperator<Double> addTwo = (i, j) -> i + j;
+BinaryOperator<Swordman> getWinner = (s1, s2) -> {
+    while (s1.hp > 0 && s2.hp > 0) {
+        s1.defaultAttack(s2);
+        s2.defaultAttack(s1);
+        if (s1 instanceof MagicKnight) {
+            ((MagicKnight) s1).lighteningAttack(new Swordman[] {s2});
+        }
+        if (s2 instanceof MagicKnight) {
+            ((MagicKnight) s2).lighteningAttack(new Swordman[] {s1});
+        }
+    }
+    if (s1.hp > 0) return s1;
+    if (s2.hp > 0) return s2;
+    return null;
+};
+
+var added = addTwo.apply(12.34, 23.45); // 35.79
+
+Swordman winner1 = getWinner.apply(new Swordman(Side.RED), new Knight(Side.BLUE));          // "BLUE 진영 기사"
+Swordman winner2 = getWinner.apply(new MagicKnight(Side.RED), new Knight(Side.BLUE));       // "RED 진영 마법기사"
+Swordman winner3 = getWinner.apply(new Swordman(Side.RED), new MagicKnight(Side.BLUE));     // "BLUE 진영 마법기사"
+Swordman winner4 = getWinner.apply(new MagicKnight(Side.RED), new MagicKnight(Side.BLUE));  // null
+```
+
+#### 📌 컬렉션에 활용해보기
+###### ```ArrayList``` 에서
+```java
+// 💡 Iterable 인터페이스의  forEach 메소드
+// - 곧 배울 스트림의 forEach 와는 다름 (기능은 같음, 다른 곳에 선언되어 있을 뿐)
+// - Consumer를 인자로 받아 실행
+// - 이터레이터를 쓸 수 있는 클래스에서 사용 가능
+
+new ArrayList<>(
+    Arrays.asList("하나", "둘", "셋", "넷", "댜섯")
+).forEach(s -> System.out.println(s));
+```
+###### ```Map``` 에서
+```java
+HashMap<String, Character> subjectGradeHM = new HashMap<>();
+subjectGradeHM.put("English", 'B');
+subjectGradeHM.put("Math", 'C');
+subjectGradeHM.put("Programming", 'A');
+
+//  💡 BiConsumer를 받음
+subjectGradeHM.forEach(
+        (s, g) -> System.out.println(
+                "%s : %c".formatted(s, g)
+        )
+);
+```
 
 
