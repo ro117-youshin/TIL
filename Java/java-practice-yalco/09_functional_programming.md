@@ -114,3 +114,134 @@ DoubleParam multAndPrint = (a, b) -> {
 int added = add.func(2, 3);
 int multiplied = multAndPrint.func(2, 3);
 ```
+
+## 2. java.util.function 패키지
+* 자바에서는 람다식을 위한 함수형 인터페이스가 정의되어 있어야 함.
+  *  필요할 때마다 정의해야 하는 번거로움이 있음.
+* 일반적으로 자주 쓰이는 형식의 메소드를 함수형 인터페이스로 미리 정의해 놓음.
+
+| 함수형 인터페이스 | 메서드 | 인자(들) 타입 | 반환값 타입 |
+| --- | --- | :---: | :---: |
+| ```Runnable``` (java.lang 패키지) | ```run``` |  |  |
+| ```Supplier<T>``` | ```get``` |  | T |
+| ```Consumer<T>``` | ```accept``` | T |  |
+| ```BiConsumer<T, U>``` | ```accept``` | T, U |  |
+| ```Function<T, R>``` | ```apply``` | T | R |
+| ```BiFunction<T, U, R>``` | ```apply``` | T, U | R |
+| ```Predicate<T>``` | ```test``` | T | boolean |
+| ```BiPredicate<T, U>``` | ```test``` | T, U | boolean |
+| ```UnaryOperator<T>``` | ```apply``` | T | T |
+| ```BinaryOperator<T>``` | ```apply``` | T, T | T |
+
+> * 타입 문자 'T'는 'Type'을, 'R'은 'Return Type' 을 의미. 
+> * 매개 변수의 타입으로 보통 'T'를 사용하므로, 알파벳에서 'T' 다음 문자인 'U', 'V', 'W' 를 매개 변수의 타읍으로 사용하는 것. (별다른 의미는 없음)
+
+#### 📌 ```Runnable```
+* 매개변수, 반환값 모두 없음.
+
+###### ☕️ Main.java
+```java
+Runnable dogButtonFunc = () -> System.out.println("멍멍");
+Runnable catButtonFunc = () -> System.out.println("야옹");
+Runnable cowButtonFunc = () -> System.out.println("음메");
+
+dogButtonFunc.run();
+catButtonFunc.run();
+cowButtonFunc.run();
+```
+```java
+멍멍
+야옹
+음메
+```
+###### ☕️ Button.java
+```java
+public class Button {
+    private String text;
+    public Button(String text) { this.text = text; }
+    public String getText() { return text; }
+
+    private Runnable onClickListener;
+    public void setOnClickListener(Runnable onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+    public void onClick () {
+        onClickListener.run();
+    }
+}
+```
+###### ☕️ Main.java
+```java
+System.out.println("\n- - - - -\n");
+
+Button dogButton = new Button("강아지");
+dogButton.setOnClickListener(dogButtonFunc);
+
+Button catButton = new Button("고양이");
+catButton.setOnClickListener(() -> {
+    System.out.println("- - - - -");
+    System.out.println(catButton.getText() + " 울음소리: 야옹야옹");
+    System.out.println("- - - - -");
+});
+
+dogButton.onClick();
+catButton.onClick();
+```
+```java
+멍멍
+- - - - -
+고양이 울음소리: 야옹야옹
+- - - - -
+```
+
+#### 📌 ```Supplier```
+* 매개변수는 없고, 반환값만 있음.
+
+```java
+Supplier<String> appName = () -> "얄코오피스";
+Supplier<Double> rand0to10 = () -> Math.random() * 10;
+Supplier<Boolean> randTF = () -> Math.random() > 0.5;
+
+String supp1 = appName.get();   // "얄코오피스
+Double supp2 = rand0to10.get(); // 7.673529874025304
+Boolean supp3 = randTF.get();   // false
+```
+
+#### 📌 ```Consumer``` & ```BiConsumer```
+* ```Consumer``` : ```Supplier``` 와 반대로 매개변수만 있고, 반환값이 없음.
+* ```BiConsumer``` : 두 개의 매개변수만 있고, 반환값이 없음.
+
+```java
+Consumer<Integer> sayOddEven = i -> System.out.printf(
+    "%d은 %c수입니다.%n", i, "짝홀".charAt(i % 2)
+);
+
+Consumer<Button> clickButton = b -> b.onClick();
+
+BiConsumer<Button, Integer> clickButtonNTimes = (b, n) -> {
+    for (int i = 0; i < n; i++) { b.onClick(); }
+};
+
+sayOddEven.accept(3);
+sayOddEven.accept(4);
+clickButton.accept(catButton);
+clickButtonNTimes.accept(dogButton, 5);
+```
+```java
+3은 홀수입니다.
+4은 짝수입니다.
+- - - - -
+고양이 울음소리: 야옹야옹
+- - - - -
+멍멍
+멍멍
+멍멍
+멍멍
+멍멍
+```
+
+
+
+
+
+
