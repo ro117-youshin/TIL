@@ -630,9 +630,20 @@ public class UnitSorter implements Comparator<Unit> {
 
 ## 5. Iterator
 * ```java.lang.Iterable``` 인터페이스 구현 클래스에서 사용
-* 컬렉션을 순회하는데 사용
+* 컬렉션에 저장된 요소를 접근하는데 사용되는 인터페이스, 컬렉션을 순회하는데 사용
+* 컬렉션의 요소를 읽어오는 방법을 표준화했기 때문에 코드의 재사용성을 높임.
+  * 공통 인터페이스를 정의해서 표준을 정의하고 구현하여 표준을 따르도록 함으로써 코드의 일관성을 유지하여 재사용성을 극대화하는 것이 객체지향 프로그래밍의 중요한 목적 중의 하나.
 
-#### 📁 Iterator 알아보기
+#### 📁 Iterator 메서드
+```java
+public interface Iterator {
+    boolean hasNext();	// 다음 요소가 있는지 판단
+    Object next();	// 다음 요소를 가져옴
+    void remove();	// 가져온 요소를 삭제
+}
+```
+
+#### 📁 메서드 예제
 ###### ☕️ Main.java
 ```java
 Set<Integer> intHSet = new HashSet<>(
@@ -643,7 +654,8 @@ Set<Integer> intHSet = new HashSet<>(
 //  - 기타 Collection 인터페이스를 구현한 클래스들에도 존재
 Iterator<Integer> intItor = intHSet.iterator();
 ```
-```next()``` / ```hasNext()```
+
+* ```next()``` / ```hasNext()```
 ```java
 // 💡 next : 자리를 옮기며 다음 요소 반환
 Integer int1 = intItor.next();	// 1
@@ -657,7 +669,8 @@ boolean hasNext = intItor.hasNext();	// true
 //  ⭐️ 순회 초기화
 intItor = intHSet.iterator();
 ```
-```remove()```
+
+* ```remove()```
 ```java
 //  💡 remove : 현 위치의 요소 삭제
 while (intItor.hasNext()) {
@@ -666,7 +679,8 @@ while (intItor.hasNext()) {
     }
 }
 ```
-⚠️ ```foreach``` 사용 시 ```ConcurrentModificationException```
+
+* ⚠️ ```foreach``` 사용 시 ```ConcurrentModificationException```
 ```java
 //  ⚠️ foreach 문으로 시도하면 오류
 for (Integer num : intHSet) {
@@ -674,7 +688,7 @@ for (Integer num : intHSet) {
 }
 ```
 
-#### 📁 예제
+#### 📁 예제, ```map``` 과 ```iterator```
 > [Section 7. chap 4. 소스 참조](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/07_class_and_data_type.md#4-다음-섹션을-위한-게임예제) 
 ###### ☕️ Main.java
 ```java
@@ -744,6 +758,46 @@ for (Integer num : intHSet) {
         while (hmEntryItor.hasNext()) {
             System.out.println(hmEntryItor.next());
         }
+```
+```java
+- - - - -
+// hmKeyItor.next();
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+- - - - -
+// hmValueItor.next();
+1.7226275854634487
+3.8379772979469617
+0.2290824591094498
+7.938628189444273
+5.988118247746846
+8.699139943100795
+7.762793120460994
+2.99299412926209
+9.13121946786349
+7.921331386187003
+
+- - - - -
+// hmEntryItor.next();
+1=1.7226275854634487
+2=3.8379772979469617
+3=0.2290824591094498
+4=7.938628189444273
+5=5.988118247746846
+6=8.699139943100795
+7=7.762793120460994
+8=2.99299412926209
+9=9.13121946786349
+10=7.921331386187003
 ```
 ```java
 	//  ⭐ 이들은 따로 반환된 컬렉션의 이터레이터
