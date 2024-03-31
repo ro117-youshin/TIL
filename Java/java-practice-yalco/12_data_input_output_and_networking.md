@@ -92,7 +92,7 @@ public class Ex01 {
 #### 📁 파일 이름 변경
 ###### ☕️ Ex02
 ```java
-				String newName = "name_changed.txt" ;
+	String newName = "name_changed.txt" ;
 
         File file2 = new File(Ex01.CUR_PATH + "file2.txt");
         File nameChange = new File(Ex01.CUR_PATH + newName);
@@ -102,8 +102,52 @@ public class Ex01 {
         System.out.println(renameResult ? "이름 변경됨" : "해당 파일 없음");
 ```
 
+### 2. 폴더 다루기
 
+###### ☕️ Ex03
+```java
+	String folderName = "myFolder";
+        File folder = new File(Ex01.CUR_PATH + folderName);
 
+        //  💡 디렉토리 만들기
+        boolean folderMade = folder.mkdir();
+
+        boolean isFile = folder.isFile();
+        boolean isDir = folder.isDirectory();
+```
+* index 3의 배수는 dir 생성, 나머지는 file 생성
+```java
+	IntStream.range(0, 10).forEach(i -> {
+            try {
+                if (i % 3 == 0) {
+                    new File(
+                            "%s%s/folder%d"
+                            .formatted(Ex01.CUR_PATH, folderName, i + 1)
+                    ).mkdir();
+                    return;
+                }
+                new File(
+                        "%s%s/file%d.txt"
+                        .formatted(Ex01.CUR_PATH, folderName, i + 1)
+                ).createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        //  💡 폴더 안의 파일/폴더들 배열로 출력
+        File[] filesInFolder = folder.listFiles();
+        String[] fileNamesInFolder = folder.list();
+```
+* 생성 결과 꺼내보기
+```java
+	for (File item : filesInFolder) {
+            System.out.println(
+                    (item.isFile() ? " 📄" : "📁")
+                    + " " + item.getName()
+            );
+        }
+```
 
 
 
