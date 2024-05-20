@@ -461,4 +461,61 @@ TreeSet<String> treeSetMD = new TreeSet<>(String::compareTo);
 ---
 
 ## 4. 스트림
+* 연속되는 요소들의 흐름
+  * 배열, 컬렉션, 파일 등에서 만들어질 수 있음
+
+
+#### 기본예제: 홀수만 골라내서 정렬하기
+###### ☕️ Ex01.java
+```java
+public static void main(String[] args) {
+    List<Integer> int0To9 = new ArrayList<>(
+        Arrays.asList(5, 2, 0, 8, 4, 1, 7, 9, 3, 6)
+    );
+}
+```
+###### 기존의 방식
+```java
+List<Integer> odds = new ArrayList<>();
+for(Integer i : int0To9) {
+    if(i % 2 == 1) {
+        odds.add(i);
+    }
+}
+odds.sort(Integer::compare);
+
+List<String> oddsStrs = new ArrayList<>();
+for(Integer i : odds) {
+    oddsStrs.add(String.valueOf(i));
+}
+String oddsStr = String.join(", ", oddsStrs);
+
+System.out.println(oddsStr); // 1, 3, 5, 7, 9
+```
+###### 💡 스트림을 사용한 방식
+```java
+String oddsStrStreamed = int0To9
+        .stream()
+        .filter(i -> i % 2 == 1)
+        .sorted(Integer::compareTo)
+        .map(String::valueOf)
+        .collect(Collectors.joining(", "));
+System.out.println("스트림을 사용한 방식 :: " + oddsStrStreamed); // 스트림을 사용한 방식 :: 1, 3, 5, 7, 9
+```
+* 일련의 데이터를 연속적으로 가공하는데 유용
+  * 내부적으로 수행 - 중간과정이 밖으로 드러나지 않음
+    * 외부에 변수 등이 만들어지지 않음
+  * 배열, 컬렉션, I/O 등을 동일한 프로세스로 가공
+  * 함수형 프로그래밍을 위한 다양한 기능들 제공
+  * 가독성 향상
+  * ⭐ 원본을 수정하지 않음 - *정렬 등에 영향받지 않음*
+* 멀티쓰레딩에서 병렬처리 가능 
+
+
+
+
+
+
+
+
 
