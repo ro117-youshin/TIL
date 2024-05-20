@@ -658,4 +658,197 @@ Object[] fromFile_Arr = fromFile.toArray();
 Stream<Double> emptyDblStream = Stream.empty();
 ```
 
+---
 
+## 5. 스트림 연산
+
+| 연산 | 종류 | 설명 |
+| --- | --- | --- |
+| `peek` | 중간 | 연산과정중 스트림에 영향을 끼치지는 않으면서 주어진 Consumer 작업을 실행 |
+| `filter` | 중간 | 주어진 Predicate에 충족하는 요소만 남김 |
+| `distinct` | 중간 | 중복되지 않는 요소들의 스트림을 반환 |
+| `map` | 중간 | 주어진 Function에 따라 각 요소들을 변경 |
+| `sorted` | 중간 | 요소들을 정렬 |
+| `limit` | 중간 | 주어진 수 만큼의 요소들을 스트림으로 반환 |
+| `skip` | 중간 | 앞에서 주어진 개수만큼의 요소를 제거 |
+| `takeWhile` / `dropWhile` | 중간 | 주어진 Predicate 을 충족하는 동안 취하거나 건너뜀 |
+| `forEach` | 최종 | 각 요소들에 주어진 Consumer 를 실행 |
+| `count` | 최종 | 요소들의 개수를 반환 |
+| `min` / `max` | 최종 | 주어진 Comparator 에 따라 최소/최대값을 반환 |
+| `reduce` | 최종 | 주어진 초기값과 BinaryOperator 로 값들을 하나의 값으로 접어 나감 |
+
+* 중간 연산: 연산 결과가 스트림인 연산. 스트림에 연속해서 중간 연산할 수 있음.
+* 최종 연산: 연산 결과가 스트림이 아닌 연산. 스트림의 요소를 소모하므로 단 한번만 가능.
+
+#### 💡 `filter`
+```java
+Stream<T> filter(Predicate<? super T> predicate)
+```
+* `filter()`는 매개변수로 `Predicate`를 필요로 하는데, 연산결과가 `boolean`인 람다식을 사용해도 된다.
+* 필요에 따라 다른 조건으로 여러 번 사용할 수 있다.
+
+#### 예제
+###### ☕️ Ex01.java
+```java
+String str1 = "Hello World! Welcome to the world of Java~";
+
+str1.chars().forEach(System.out::println);
+```
+```java
+char str1MaxChar = (char) str1.chars()
+                .max() // (OptionalInt 반환) '~' 126
+                //.min() // ' ' 32
+                .getAsInt();
+```
+* `max()`는 스트림의 요소를 소모하므로 한번만 사용가능. 스트림이 닫힌다.
+  * `max()`는 Stream이 아닌 `OptinalInt`를 반환.
+
+###### 사용되는 모든 알파벳 문자들을 정렬하여 프린트
+```java
+     str1.chars()
+                .sorted()
+                .distinct()
+                .filter(i -> (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z'))
+                .forEach(i -> System.out.print((char) i));
+```
+```
+HJWacdefhlmortvw
+```
+
+#### 💡 Stream의 자료형 변환
+* 대소문자 구분 없이 중복 제거한 뒤 정렬하고 쉼표로 구분
+* int to String을 위해 `boxed()`를 사용하여 원시형 `IntStream`을 `Stream<Integer>`로 바꿔주어야 한다.
+```java
+String fromStr1 = str1.chars() // IntStream
+        .boxed() // Stream<Integer>
+        // 💡 boxed를 사용하여 Stream<Integer>으로 변환
+        //  요소를 다른 타입으로 바꾸려면 Stream<T>을 사용해야 함
+        .map(i -> String.valueOf((char) i.intValue()))
+        .map(String::toUpperCase)
+        .filter(s -> Character.isLetter(s.charAt(0)))
+        .sorted()
+        .distinct()
+        .collect(Collectors.joining(", "));
+```
+```
+A, C, D, E, F, H, J, L, M, O, R, T, V, W
+```
+
+#### 💡 `peek`으로 중간과정 체크하기
+* 스트림이나 요소를 변경하지 않고 특정 작업 수행 - 디버깅에 유용
+
+```java
+String oddSquaresR = IntStream.range(0, 10).boxed()
+                .peek(i -> System.out.println("초기값: " + i))
+                .filter(i -> i % 2 == 1)
+                .peek(i -> System.out.println("홀수만: " + i))
+                .map(i -> i * i)
+                .peek(i -> System.out.println("제곱: " + i))
+                .sorted((i1, i2) -> i1 < i2 ? 1 : -1)
+                .peek(i -> System.out.println("역순: " + i))
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+```
+```
+초기값: 0
+초기값: 1
+홀수만: 1
+제곱: 1
+초기값: 2
+초기값: 3
+홀수만: 3
+제곱: 9
+초기값: 4
+초기값: 5
+홀수만: 5
+제곱: 25
+초기값: 6
+초기값: 7
+홀수만: 7
+제곱: 49
+초기값: 8
+초기값: 9
+홀수만: 9
+제곱: 81
+역순: 81
+역순: 49
+역순: 25
+역순: 9
+역순: 1
+```
+```
+oddSquaresR = "81, 49, 25, 9, 1"
+```
+
+#### 💡 `allMatch`/`anyMatch`
+* (모든 요소 / 어느 한 요소라도) 주어진 `Predicate`에 부합하는가 여부 반환
+
+```java
+Integer[] ints = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+boolean intsMatch = Arrays.stream(ints)
+                .allMatch(i -> i > 0); // true
+                //.allMatch(i -> i % 2 == 0); // false
+                //.anyMatch(i -> i < 0); // false
+                //.anyMatch(i -> i % 2 == 0); // true
+```
+
+#### 💡 `takeWhile`/`dropWhile`
+* 주어진 `Predicate`을 충족시킬 때까지 취함/건너뜀
+#### 💡 `count`
+* 중간과정을 거친 요소들의 개수를 반환
+
+```java
+long afterWhileOp = Arrays.stream(ints)
+                .takeWhile(i -> i < 4)  
+                //.dropWhile(i -> i < 4) 
+                .peek(System.out::println)
+                .count();
+```
+```
+// takeWhile(i -> i < 4)
+// peek()
+1
+2
+3
+// count()
+3
+// dropWhile(i -> i < 4)
+// peek()
+4
+5
+6
+7
+8
+9
+// count()
+6
+```
+
+#### 💡 `sum`
+* `IntStream`, `LongStream`, `DoubleStream` 요소의 총합 반환
+```java
+int intsSum = IntStream.range(0, 100 + 1)
+                //.filter(i -> i % 2 == 1) // 홀수
+                //.filter(i -> i % 2 == 0) // 짝수
+                //.filter(i -> i % 3 == 0) // 3의 배수
+                .sum();
+```
+
+#### 💡 `reduce`
+* 주어진 `BiFunction`으로 값을 접어나감
+* seed 값이 없을 때: `Optional` 반환 (빈 스트림일 수 있으므로)
+```java
+int intReduce = IntStream.range(1, 10)
+                //.filter(i -> i % 2 == 1)
+                .reduce((prev, curr) -> {
+                    System.out.printf("prev: %d, cur: %d%n", prev, curr);
+                    return prev * curr;
+                })
+                .getAsInt(); // 필요함
+```
+* seed 값이 있을 때: 실제 값 반환
+```java
+int intReduceWithSeed = IntStream.range(1, 10)
+                .reduce(2, (prev, curr) -> prev * curr);
+```
