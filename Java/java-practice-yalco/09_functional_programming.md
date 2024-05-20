@@ -511,11 +511,151 @@ System.out.println("스트림을 사용한 방식 :: " + oddsStrStreamed); // �
   * ⭐ 원본을 수정하지 않음 - *정렬 등에 영향받지 않음*
 * 멀티쓰레딩에서 병렬처리 가능 
 
+### 📌 스트림 생성
+#### 스트림을 생성하는 여러가지 예제
+###### ☕️ Ex02.java
+###### 📁 배열로부터 생성
+```java
+Integer[] integerArry = {1,2,3,4,5};
+Stream<Integer> fromArray = Arrays.stream(integerArry);
+Object[] fromArray_Arr = fromArray.toArray();
+// ⚠️ 런타임 에러, 스트림이 이미 닫혔음
+// Object[] ifReuse = fromArray.toArray();
+```
 
+#### 💡 스트림의 특징: 스트림은 일회용이다.
+> 자바의정석 CHAPTER14 참조
+* 스트림은 `Iterator`처럼 일회용이다. `Iterator`로 컬렉션의 요소를 모두 읽고 나면 다시 사용할 수 없는 것처럼, 스트림도 한번 사용하면 닫혀서 다시 사용할 수 없다. 필요하다면 스트림을 다시 생성해야 한다.
+* 위 예제에서 `ifReuse` 배열은 런타임 에러(`IllegalStateException`)를 발생시킨다.
 
+###### 📁 원시값의 배열로부터는 스트림의 클래스가 달라짐
+```java
+// 원시값의 배열로부터는 스트림의 클래스가 달라짐
+int[] intArray = {1,2,3,4,5};
+IntStream fromIntArray = Arrays.stream(intArray);
+int[] fromIntArray_Arr = fromIntArray.toArray();
 
+double[] dblArray = {1.1,2.2,3.3,4.4,5.5};
+DoubleStream fromDoubleArray = Arrays.stream(dblArray);
+double[] fromDoubleArray_Arr = fromDoubleArray.toArray();
+```
 
+#### 💡 스트림의 특징: Stream<Integer>와 IntStream
+> 자바의정석 CHAPTER14 참조
+* 요소의 타입이 T인 스트림은 기본적으로 Stream<T>이지만, 오토박싱&언박싱으로 인한 비효율을 줄이기 위해 데이터 소스의 요소를 기볺셩으로 다루는 스트림, IntStream, LongStream, DoubleStream이 제공된다.
+* 일반적으로 Stream<Integer> 대신 IntStream을 사용하는 것이 더 효율적이고, IntStream 에는 int타입의 값으로 작업하는데 유용한 메서드들이 포함되어 있다.
 
+###### 📁 컬렉션으로부터 생성
+```java
+List<Integer> intArrayList = new ArrayList<>(Arrays.asList(integerArry));
+Stream fromCollection = intArrayList.stream();
+Object[] fromCollection_Arr = fromCollection.toArray();
 
+// 맵의 경우 엔트리의 스트림으로 생성
+Map<String, Character> subjectGradeHM = new HashMap<String, Character>();
+subjectGradeHM.put("English", 'B');
+subjectGradeHM.put("French", 'C');
+subjectGradeHM.put("Italian", 'A');
+Object[] fromSubjectGradeHM = subjectGradeHM.entrySet().stream().toArray();
+```
+
+###### 📁 빌더로 생성
+```java
+Stream.Builder<Character> builder = Stream.builder();
+builder.accept('스');
+builder.accept('트');
+builder.accept('림');
+builder.accept('빌');
+builder.accept('더');
+Stream<Character> withBuilder = builder.build();
+Object[] withBuilder_Arr = withBuilder.toArray();
+```
+
+###### 📁 concat 메서드로 생성
+```java
+Stream<Integer> toConcat1 = Stream.of(11, 22, 33);
+Stream<Integer> toConcat2 = Stream.of(44, 55, 66);
+Stream<Integer> withConcatMethod = Stream.concat(toConcat1, toConcat2);
+Object[] withConcatMethod_Arr = withConcatMethod.toArray();
+```
+
+###### 📁 이터레이터로 생성
+```java
+//  - 인자: 초기값, 다음 값을 구하는 람다 함수
+//  - limit으로 횟수를 지정해야 함
+Stream<Integer> withIter1 = Stream
+        .iterate(0, i -> i + 2)
+        .limit(10);
+Object[] withIter1_Arr = withIter1.toArray();
+
+Stream<String> withIter2 = Stream
+        .iterate("홀", s -> s + (s.endsWith("홀") ? "짝" : "홀"))
+        .limit(8);
+Object[] withIter2_Arr = withIter2.toArray();
+```
+
+###### 📁 원시자료형 스트림의 기능들로 생성
+```java
+IntStream fromRange1 = IntStream.range(10, 20); // 20 미포함
+IntStream fromRange2 = IntStream.rangeClosed(10, 20); // 20 포함
+
+Stream<Integer> fromRangeBox = fromRange1.boxed();
+Object[] fromRangeBox_Arr = fromRangeBox.toArray();
+```
+* 위 소스에서 `fromRangeBox` 배열함수는 `IntPipeline`이다.
+  * `fromRangeBox` 배열함수는 `IntStream`이 `boxed`된 것으로 `ReferencePipeline`이 아닌가?
+  * `IntStream.boxed()`는 원시 int값을 Integer객체로 변환하는 중간 연산이다.
+  * 이 연산이 적용되면, 스트림의 타입이 `IntStream`에서 `Stream<Integer>`로 변경된다.
+  * 그러나 이 변환과정은 스트림의 내부 구현에 영향을 주지 않는다.
+  * `IntPipeline` 클래스는 `IntStream`의 구현체이며, `boxed()` 메서드를 호출하더라도 스트림의 내부 구현체가 바로 변경되지는 않는다.
+  * 대신, `boxed()` 연산은 `IntPipeline` 상에서 작동하며, 이를 통해 생성된 `Stream<Integer>`는 여전히 내부적으로 `IntPipeline`을 기반으로 한다.
+  * 이는 `IntStream`의 원시 데이터를 처리하는 로직이 `IntPipeline`에 포함되어 있기 때문이다.
+  * 즉, `fromRangeBox` 변수가 참조하는 `Stream<Integer>` 객체는 내부적으로 원시 int값들을 처리하는 `IntPipeline` 기반의 로직을 유지한다.
+  * 이 때문에 디버깅 시 `IntPipeline`으로 표시되는 것이다.
+* Java의 스트림 API는 이러한 방식으로 설계되어 있어, 효율적인 데이터 처리를 위해 원시 타입 스트림과 객체 타입 스트림 간의 전환이 내부적으로 최적화 되어 있다.
+  * 따라서, `Stream<Integer>` 객체가 `IntPipeline`을 사용하는 것은 이러한 설계의 일부이다. 
+
+###### 📁 Random 클래스의 스트림 생성 메소드들
+```java
+// 0 ~ 100 사이의 5개 랜덤 정수
+IntStream randomInts = new Random().ints(5, 0, 100);
+int[] randomInts_Arr = randomInts.toArray();
+
+// 2 ~ 3 사이의 5개 랜덤 실수
+DoubleStream randomDbls = new Random().doubles(5, 2, 3);
+double[] randomDbls_Arr = randomDbls.toArray();
+```
+
+###### 문자열을 각 문자에 해당하는 정수의 스트림으로
+```java
+IntStream fromString = "Hello World".chars();
+int[] fromString_Arr = fromString.toArray();
+```
+###### 📁 파일로부터 생성
+###### 📄 turtle.txt
+```txt
+거북아 거북아
+머리를 내어라
+내놓지 않으면
+구워서 먹으리
+```
+
+```java
+//  - File I/O
+Stream<String> fromFile;
+Path path = Paths.get("./src/sec09/chap04/turtle.txt");
+try {
+    fromFile = Files.lines(path);
+} catch (IOException e) {
+    throw new RuntimeException(e);
+}
+
+Object[] fromFile_Arr = fromFile.toArray();
+```
+
+###### 빈 스트림 생성
+```java
+Stream<Double> emptyDblStream = Stream.empty();
+```
 
 
