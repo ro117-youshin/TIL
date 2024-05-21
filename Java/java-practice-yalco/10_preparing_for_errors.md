@@ -2,6 +2,8 @@
 > '제대로 파는 자바 - 얄코' 섹션10 학습 [(인프런)](https://www.inflearn.com/course/%EC%A0%9C%EB%8C%80%EB%A1%9C-%ED%8C%8C%EB%8A%94-%EC%9E%90%EB%B0%94/dashboard)
 > 1. 예외처리
 > 2. try 문 더 알아보기
+> 3. 예외 정의하고 발생시키기
+> 4. 예외 떠넘기기와 되던지기기
 
 ## 1. 예외처리
 
@@ -187,9 +189,131 @@ public class Ex01 {
 4 : 🛑 기타 다른 오류
 ```
 
+## 3. 예외 정의하고 발생시키기
+* 예외 던지기 *throw*
+* 컴퓨터가 문제라고 인식하지 못하는 상황에서 인위적으로 예외 발생시키기
 
+###### ☕️ Ex01.java
+```java
+throw new RuntimeException();
+```
+* 예외/오류가 던져지면 그 아래의 코드는 작성할 수 없음
+```java
+throw new RuntimeException("에러 메시지 작성!");
+```
+* `console`: `Exception in thread "main" java.lang.RuntimeException: 에러 메시지 작성!` 
+```java
+throw new RuntimeException("에러 메시지",
+        new IOException(
+                new NullPointerException()
+        )
+);
+```
+* `console`: <br>
+`Exception in thread "main" java.lang.RuntimeException: 에러 메시지
+	at sec10.chap03.Ex01.main(Ex01.java:14)`<br>
+`Caused by: java.io.IOException: java.lang.NullPointerException
+	... 1 more`<br>
+`Caused by: java.lang.NullPointerException
+	... 1 more`
+* Exception 파라미터로 error message와 다른 Exception을 넣어줄 수도 있음.
 
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
+    public static void main(String[] args) {
+        registerDutyMonth("정핫훈", 7);
 
+//        registerDutyMonth("김돌준", 13);
+        //  ⭐️ try 문으로 감싸지 않았음
+        //  - 다음 코드들이 실행되려면 주석처리해야 함
+        //  - try 문으로 감싸주어야 함
+        try {
+            registerDutyMonth("김돌준", 13);
+        } catch (Exception ignored) {} // 예외 후속처리에 아무것도 하지 않음
+
+        openMyFile("잘나온얼굴.png");
+        openMyFile("야구동영상.avi");
+    }
+
+    public static void registerDutyMonth (String name, int month) {
+        if (month < 1 || month > 12) {
+            throw new IndexOutOfBoundsException(
+                    "%s님은 담당배정의 개월을 잘못 입력하셨어요."
+                            .formatted(name)
+            );
+        }
+        System.out.printf("%s님 %d월 담당으로 배정되셨어요.%n", name, month);
+    }
+
+    public static void openMyFile (String fileName) {
+        if (fileName.contains("야구동영상")) {
+            //  💡 try 문으로 감싸야 컴파일되는 예외
+            try {
+                throw new FileNotFoundException(
+                        "파일이 존재하지 않습니다."
+                );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                System.out.println("👨‍🏫 인강 프로그램을 실행합니다...");
+            }
+            return;
+        }
+        System.out.printf("%s 파일 열람%n", fileName);
+    }
+}
+```
+###### console
+```
+정핫훈님 7월 담당으로 배정되셨어요.
+잘나온얼굴.png 파일 열람
+👨‍🏫 인강 프로그램을 실행합니다...
+java.io.FileNotFoundException: 파일이 존재하지 않습니다.
+	   at sec10.chap03.Ex02.openMyFile(Ex02.java:34)
+	   at sec10.chap03.Ex02.main(Ex02.java:18)
+```
+
+#### 💡 사용자 정의 예외 만들기
+###### ☕️ Ex03.java 
+```java
+public class Ex03 {
+
+    public static void main(String[] args) {
+        try {
+            registerDutyMonth("김돌준", 13);
+        } catch (WrongMonthException we) {
+            we.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerDutyMonth (String name, int month) {
+        if (month < 1 || month > 12) {
+            throw new WrongMonthException(month);
+        }
+        System.out.printf("%s씨 %d월 담당으로 배정되셨어요.%n", name, month);
+    }
+}
+```
+###### ☕️ WrongMonthException.java
+```java
+public class WrongMonthException extends RuntimeException {
+    public WrongMonthException(int month) {
+        //  💡 최고조상인 Throwable의 생성자 확인
+        //  - detailMessage 에 값을 넣는 오버로드
+        super(
+                ("%d월은 존재하지 않습니다." +
+                        " 1 ~ 12월 중에서 정확하게 입력해주세요.")
+                        .formatted(month, month)
+        );
+    }
+}
+```
+###### console
+```
+sec10.chap03.WrongMonthException: 13월은 존재하지 않습니다. 1 ~ 12월 중에서 정확하게 입력해주세요.
+```
 
 
 
