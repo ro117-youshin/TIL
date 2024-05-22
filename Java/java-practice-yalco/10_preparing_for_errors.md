@@ -415,16 +415,229 @@ sec10.chap04.WrongMonthException: 잘못 입력하셨습니다.
 정핫훈님 7월 담당으로 배정되셨어요.
 ```
 
+#### 💡 예외 되던지기
+* 메서드와 호출부 모두에서 예외를 처리
+* 메서드에서는 예외처리를 한 뒤 이를 다시 던짐
 
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
 
+    public static void main(String[] args) {
 
+        Map<String, Integer> dutyRegMap = new HashMap<>();
+        dutyRegMap.put("정핫훈", 7);
+        dutyRegMap.put("김돌준", 13);
 
+        dutyRegMap.forEach((name, month) -> {
+            try {
+                registerDutyMonthSafer(name, month);
+            } catch (WrongMonthException we) {
+                we.printStackTrace();
+                System.out.println("호출부에서 다시 호출");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
+    //  💡 일단 자기 선에서도 처리하고 외부로도 던지는 메소드
+    //  - 필요한 일은 하되, 정상적으로 진행된 것은 아님을 호출부에 알리기 위함
+    //  - 예외를 양쪽에서 처리해줄 필요가 있을 때
+    public static void registerDutyMonthSafer (String name, int month) throws WrongMonthException {
+        try {
+            if (month < 1 || month > 12) {
+                throw new WrongMonthException(
+                        "우선 임의로 업무기간을 배정하겠습니다."
+                );
+            }
+            System.out.printf("%s님 %d월 담당으로 배정되셨어요.%n", name, month);
+        } catch (WrongMonthException we) {
+            System.out.printf(
+                    "%s님 %d월 담당으로 배정되셨어요.%n",
+                    name, new Random().nextInt(1, 12 + 1)
+            );
+            throw we;
+        }
+    }
+}
+```
+###### console
+```java
+김돌준님 4월 담당으로 배정되셨어요.
+호출부에서 다시 호출
+정핫훈님 7월 담당으로 배정되셨어요.
+sec10.chap04.WrongMonthException: 우선 임의로 업무기간을 배정하겠습니다.
+	at sec10.chap04.Ex02.registerDutyMonthSafer(Ex02.java:31)
+	at sec10.chap04.Ex02.lambda$main$0(Ex02.java:15)
+	at java.base/java.util.HashMap.forEach(HashMap.java:1421)
+	at sec10.chap04.Ex02.main(Ex02.java:13)
+```
 
+#### 💡 예외의 버블링
+* 하위 메서드에서 처리하지 못한 예외는 윗선에서 처리
 
+###### ☕️ SmallException.java
+```java
+public class SmallException extends Exception {
+    public SmallException() {
+        super("사원급 문제");
+    }
+}
+```
+###### ☕️ MediumException.java
+```java
+public class MediumException extends Exception {
+    public MediumException() {
+        super("대리급 문제");
+    }
+}
+```
+###### ☕️ LargeException.java
+```java
+public class LargeException extends Exception {
+    public LargeException() {
+        super("부장급 문제");
+    }
+}
+```
+###### ☕️ XLargeException.java
+```java
+public class XLargeException extends Exception {
+    public XLargeException() {
+        super("사장급 문제");
+    }
+}
+```
 
+###### ☕️ Ex03.java
+```java
+public class Ex03 {
+    public static void main(String[] args) {
+        IntStream.rangeClosed(0, 4)
+                .forEach(Ex03::ceo);
+    }
+    //  스택 최상위의 메서드, 맨 나중에 호출
+    //  사원 메서드에서는 SmallException만 처리하고 나머지는 외부로 넘긴다.
+    public static void sawon (int i) throws XLargeException, LargeException, MediumException {
+        try {
+            switch (i) {
+                case 1: throw new SmallException();
+                case 2: throw new MediumException();
+                case 3: throw new LargeException();
+                case 4: throw new XLargeException();
+                default:
+                    System.out.println("저 가 봐도 되죠?");
+            }
+        } catch (SmallException se) {
+            System.out.println(se.getMessage() + ": 저 이건 알아요!");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
+    public static void daeri (int i) throws XLargeException, LargeException {
+        try {
+            sawon(i);
+        } catch (MediumException me) {
+            System.out.println(me.getMessage() + ": 내가 처리할 테니 가 봐요.");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
+    public static void bujang (int i) throws XLargeException {
+        try {
+            daeri(i);
+        } catch (LargeException le) {
+            System.out.println(le.getMessage() + ": 잘 하자. 응?");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public static void ceo (int i) {
+        try {
+            bujang(i);
+        } catch (XLargeException xe) {
+            System.out.println(xe.getMessage() + ": 전원 집합");
+        }
+    }
+}
+```
+
+###### console
+```
+저 가 봐도 되죠?
+사원급 문제: 저 이건 알아요!
+대리급 문제: 내가 처리할 테니 가 봐요.
+부장급 문제: 잘 하자. 응?
+사장급 문제: 전원 집합
+```
+
+#### 💡 연결된 예외 *chained exception*
+* 특정 예외가 발생할 때 이를 원인으로 하는 다른 예외를 던짐
+
+###### ☕️ Ex04.java
+```java
+public class Ex04 {
+
+    public static void main(String[] args) {
+        Map<String, Integer> dutyRegMap = new HashMap<>();
+        dutyRegMap.put("정핫훈", 3);
+        dutyRegMap.put("김돌준", 8);
+
+        dutyRegMap.forEach((name, month) -> {
+
+            //  💡 실행부에서, 혹은 또 이를 호출한 외부에서 처리해주어야 함
+            try {
+                chooseDutyMonth(name, month);
+            } catch (WrongMonthException we) {
+                we.printStackTrace(); // ⭐️ 로그에서 Caused By 항목 확인해 볼 것
+                System.out.printf("%s씨, 해보자는 거지?%n", name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void chooseDutyMonth (String name, int index) throws WrongMonthException {
+        int[] availables = {1, 3, 4, 7, 9, 12};
+
+        try {
+            int month = availables[index - 1];
+            System.out.printf("%s씨 %d월 담당으로 배정되셨어요.%n", name, month);
+        } catch (ArrayIndexOutOfBoundsException ae) {
+            WrongMonthException we = new WrongMonthException(
+                    "%d번은 없어요.".formatted(index)
+            );
+
+            //  💡 예외의 원인이 되는 예외를 지정 (이를 수행하는 생성자가 없을 경우)
+            we.initCause(ae);
+            //  이 예외는 cause를 입력받는 생성자를 지정해놓았음
+            //  - IDE의 안내를 따라 바꿔 볼 것
+
+            //  ⭐️ 다른 종류의 예외가 발생해도 이 예외의 원인으로 등록해서
+            //  통일된 타입(WrongMonthException)의 예외로 반환 가능
+
+            throw we;
+        }
+    }
+}
+```
+###### console
+```java
+sec10.chap04.WrongMonthException: 8번은 없어요.
+	at sec10.chap04.Ex04.chooseDutyMonth(Ex04.java:34)
+	at sec10.chap04.Ex04.lambda$main$0(Ex04.java:16)
+	at java.base/java.util.HashMap.forEach(HashMap.java:1421)
+	at sec10.chap04.Ex04.main(Ex04.java:12)
+Caused by: java.lang.ArrayIndexOutOfBoundsException: Index 7 out of bounds for length 6
+	at sec10.chap04.Ex04.chooseDutyMonth(Ex04.java:30)
+	... 3 more
+김돌준씨, 해보자는 거지?
+정핫훈씨 4월 담당으로 배정되셨어요.
+```
 
 
 
