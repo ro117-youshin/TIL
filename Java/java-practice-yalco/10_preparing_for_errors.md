@@ -4,6 +4,8 @@
 > 2. try 문 더 알아보기
 > 3. 예외 정의하고 발생시키기
 > 4. 예외 떠넘기기와 되던지기기
+> 5. try with resources
+> 6. NPE와 Optional
 
 ## 1. 예외처리
 
@@ -637,6 +639,225 @@ Caused by: java.lang.ArrayIndexOutOfBoundsException: Index 7 out of bounds for l
 	... 3 more
 김돌준씨, 해보자는 거지?
 정핫훈씨 4월 담당으로 배정되셨어요.
+```
+
+---
+
+## 5. try with resources
+* 사용한 뒤 닫아주어야 하는 리소스 접근에 사용
+  * 파일 열람, 데이터베이스 접근 등
+  * 기존에 `finally` 블록으로 명시해야 했던 것을 간편화
+* try문에서 호출, 초기화하면 Closable의 close 메서드를 실행하여 자동으로 닫아준다. 
+
+###### turtle.txt
+```
+거북이 날아라
+거북이 날아라
+```
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+
+    public static void main(String[] args) {
+        String correctPath = "./src/sec09/chap04/turtle.txt";
+        String wrongPath = "./src/sec09/chap04/rabbit.txt";
+
+        openFile1(correctPath);
+        openFile1(wrongPath);
+    }
+
+    public static void openFile1 (String path) {
+        Scanner scanner = null;
+
+        try {
+            scanner = new Scanner(new File(path));
+            while (scanner.hasNextLine()) {
+                System.out.println(scanner.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.printf("⚠️ %s 파일 없음%n", path);
+        } finally {
+            System.out.println("열었으면 닫아야지 ㅇㅇ");
+            if (scanner != null) scanner.close();
+
+            //  💡 만약 이 부분을 작성하는 것을 잊는다면?
+        }
+    }
+}
+```
+###### console
+```
+거북이 날아라
+거북이 날아라
+열었으면 닫아야지 ㅇㅇ
+⚠️ ./src/sec09/chap04/rabbit.txt 파일 없음
+열었으면 닫아야지 ㅇㅇ
+java.io.FileNotFoundException: .\src\sec09\chap04\rabbit.txt (지정된 파일을 찾을 수 없습니다)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+	at java.base/java.util.Scanner.<init>(Scanner.java:639)
+	at sec10.chap05.Ex01.openFile1(Ex01.java:21)
+	at sec10.chap05.Ex01.main(Ex01.java:14)
+```
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+
+    public static void main(String[] args) {
+        String correctPath = "./src/sec09/chap04/turtle.txt";
+        String wrongPath = "./src/sec09/chap04/rabbit.txt";
+
+        openFile2(correctPath);
+        openFile2(wrongPath);
+    }
+
+    public static void openFile2 (String path) {
+        //  ⭐ Scanner가 Closable - AutoClosable를 구현함 확인
+
+        try (Scanner scanner = new Scanner(new File(path))) {
+            while (scanner.hasNextLine()) {
+                System.out.println(scanner.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.printf("⚠️ %s 파일 없음%n", path);
+        }
+
+        // 💡 .close를 작성하지 않아도 자동으로 호출됨
+    }
+}
+```
+###### console
+```java
+거북이 날아라
+거북이 날아라
+⚠️ ./src/sec09/chap04/rabbit.txt 파일 없음
+java.io.FileNotFoundException: .\src\sec09\chap04\rabbit.txt (지정된 파일을 찾을 수 없습니다)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+	at java.base/java.util.Scanner.<init>(Scanner.java:639)
+	at sec10.chap05.Ex01.openFile2(Ex01.java:25)
+	at sec10.chap05.Ex01.main(Ex01.java:19)
+```
+
+#### 직접 만들어보기
+* 작전 실패/성공 여부와 상관없이 무조건 "💣 전원 폭사"
+###### ☕️ OpFailException.java
+```java
+public class OpFailException extends Exception {
+    public OpFailException() {
+        super("💀 작전 실패");
+    }
+}
+```
+###### ☕️ SuicideSquad.java
+```java
+public class SuicideSquad implements AutoCloseable {
+    public void doSecretTask () throws OpFailException {
+        if (new Random().nextBoolean()) {
+            throw new OpFailException();
+        };
+        System.out.println("🔫 비밀 작전 수행");
+    }
+
+    @Override
+    public void close() throws Exception {
+        System.out.println("💣 전원 폭사\n- - - - -\n");
+    }
+}
+```
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            dirtyOperation();
+        }
+    }
+
+    public static void dirtyOperation () {
+        try (SuicideSquad sc = new SuicideSquad()) {
+            sc.doSecretTask();
+        } catch (OpFailException e) {
+            //  💡 예외상황은 아만다 윌러가 책임짐
+            e.printStackTrace();
+            System.out.println("🗑️ 증거 인멸\n- - - - -\n");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+###### console
+```java
+💣 전원 폭사
+- - - - -
+
+🗑️ 증거 인멸
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+💣 전원 폭사
+- - - - -
+
+🗑️ 증거 인멸
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+💣 전원 폭사
+- - - - -
+
+🗑️ 증거 인멸
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+🔫 비밀 작전 수행
+💣 전원 폭사
+- - - - -
+
+💣 전원 폭사
+- - - - -
+
+🗑️ 증거 인멸
+- - - - -
+
+sec10.chap05.OpFailException: 💀 작전 실패
+	at sec10.chap05.SuicideSquad.doSecretTask(SuicideSquad.java:8)
+	at sec10.chap05.Ex02.dirtyOperation(Ex02.java:13)
+	at sec10.chap05.Ex02.main(Ex02.java:7)
+sec10.chap05.OpFailException: 💀 작전 실패
+	at sec10.chap05.SuicideSquad.doSecretTask(SuicideSquad.java:8)
+	at sec10.chap05.Ex02.dirtyOperation(Ex02.java:13)
+	at sec10.chap05.Ex02.main(Ex02.java:7)
+sec10.chap05.OpFailException: 💀 작전 실패
+	at sec10.chap05.SuicideSquad.doSecretTask(SuicideSquad.java:8)
+	at sec10.chap05.Ex02.dirtyOperation(Ex02.java:13)
+	at sec10.chap05.Ex02.main(Ex02.java:7)
+sec10.chap05.OpFailException: 💀 작전 실패
+	at sec10.chap05.SuicideSquad.doSecretTask(SuicideSquad.java:8)
+	at sec10.chap05.Ex02.dirtyOperation(Ex02.java:13)
+	at sec10.chap05.Ex02.main(Ex02.java:7)
 ```
 
 
