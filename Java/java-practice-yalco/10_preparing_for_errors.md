@@ -315,5 +315,121 @@ public class WrongMonthException extends RuntimeException {
 sec10.chap03.WrongMonthException: 13월은 존재하지 않습니다. 1 ~ 12월 중에서 정확하게 입력해주세요.
 ```
 
+---
+
+## 4. 예외 떠넘기기와 되던지기
+
+### Checked 예외 VS Unchecked 예외
+* 예외처리 필수 여부
+
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+
+    public static void main(String[] args) {
+        try {
+            maybeException2();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //  💡 RuntimeException 과 그 자손들 : unchecked 예외
+    //  - 주로 개발자의 실수로 일어나는 예외 (실수 안 하면 됨)
+    //  - 예외처리가 필수가 아님 (하지 않아도 컴파일 가능)
+    public static void maybeException1 () {
+        if (new Random().nextBoolean()) {
+            throw new RuntimeException();
+        }
+    }
+
+    //  ⚠️ 다른 예외들은 checked 예외
+    //  - 해당 메소드 내에서, 또는 호출한 곳에서 예외처리 필수
+    //  - 외적 요인으로 발생하는 예외 (조심해도 소용없으므로 대비해야 함)
+    //  - ⭐️ IDE의 안내에 따라 두 가지 옵션 실행해보기
+    //    - 메서드에서 자체에서 던지고 호출부를 try/catch로 감싸기
+    //    - 메서드 내에서 try/catch로 감싸기
+    public static void maybeException2 () throws FileNotFoundException {
+        if (new Random().nextBoolean()) {
+            throw new FileNotFoundException();
+        }
+    }
+}
+```
+
+#### 💡 예외를 메서드 외부로 떠넘기기
+
+###### ☕️ WrongMonthException.java
+```java
+public class WrongMonthException extends Exception {
+    public WrongMonthException(String message) {
+        super(message);
+    }
+
+    public WrongMonthException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+```
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
+
+    public static void main(String[] args) {
+
+        Map<String, Integer> dutyRegMap = new HashMap<>();
+        dutyRegMap.put("정핫훈", 7);
+        dutyRegMap.put("김돌준", 13);
+
+        dutyRegMap.forEach((name, month) -> {
+
+            //  💡 실행부에서, 혹은 또 이를 호출한 외부에서 처리해주어야 함
+            try {
+                registerDutyMonth(name, month);
+            } catch (WrongMonthException we) {
+                we.printStackTrace();
+                System.out.printf("%s님 다시 입력해주세요.%n", name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    //  💡 예외를 던질 가능성이 있지만 스스로 처리하지는 않는 메소드
+    public static void registerDutyMonth (String name, int month) throws WrongMonthException {
+        if (month < 1 || month > 12) {
+            throw new WrongMonthException("잘못 입력하셨습니다.");
+        }
+        System.out.printf("%s님 %d월 담당으로 배정되셨어요.%n", name, month);
+    }
+}
+```
+###### console
+```java
+sec10.chap04.WrongMonthException: 잘못 입력하셨습니다.
+	at sec10.chap04.Ex02.registerDutyMonth(Ex02.java:30)
+	at sec10.chap04.Ex02.lambda$main$0(Ex02.java:17)
+	at java.base/java.util.HashMap.forEach(HashMap.java:1421)
+	at sec10.chap04.Ex02.main(Ex02.java:13)
+김돌준님 다시 입력해주세요.
+정핫훈님 7월 담당으로 배정되셨어요.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
