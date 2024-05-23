@@ -895,10 +895,235 @@ sec10.chap05.OpFailException: 💀 작전 실패
 * 컴파일러 선에서 방지되지 않음
   * `RuntimeException`
 
-###### Ex01.java
+###### ☕️ Ex01.java
 ```java
-
+String nulStr = null;
+System.out.println(nulStr.length()); // ⚠️ NPE
 ```
+```java
+public class Ex01 {
+
+    public static void main(String[] args) {
+        System.out.println(
+                catOrNull().length()  // 반복실행해 볼 것
+        );
+    }
+
+    public static String catOrNull() {
+        //  슈뢰딩거의 고양이
+        return new Random().nextBoolean() ? "Cat" : null;
+    }
+}
+```
+* 위 코드를 반복해서 실행했을 때, 삼항연산자가 `false`일 경우 NPE
+```java
+public class Ex01 {
+
+    public static void main(String[] args) {
+	try {
+            System.out.println(
+                    catOrNull().length()
+            );
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
+            System.out.println(0);
+        }
+    }
+
+    public static String catOrNull() {
+        //  슈뢰딩거의 고양이
+        return new Random().nextBoolean() ? "Cat" : null;
+    }
+}
+```
+* `try/catch` 문으로 NPE 대비하기 (오류가 발생하면 대안으로 0을 출력)
+* 그러나 `null`이 발생하는 모든 곳에 대비할 수는 없다. 그래서 나온 것이 `Optional`
+
+### `Optional`
+* `Optional<T>`: `null` 일 수도 있는 `T` 타입의 값
+* `null` 일 수 있는 값을 보다 안전하고 간편하게 사용하기 위
+
+#### of: 담으려는 것이 확실히 있을 때
+```java
+Optional<String> catOpt = Optional.of("Cat");
+catOpt = Optional.of(null); // ⚠️ of로 null을 담으면 NPE
+```
+
+#### ofNullable: 담으려는 것이 null일 수도 있을 때
+```java
+Optional<String> dogOpt = Optional.ofNullable("Dog"); // "Optional[Dog]"
+Optional<String> cowOpt = Optional.ofNullable(null); // "Optional.empty"
+```
+
+#### empty: 명시적으로 null을 담으려면
+```java
+Optional<String> henOpt = Optional.empty(); // "Optional.empty"
+```
+
+###### `Optional`을 사용하여 Ex01.java 슈뢰딩거 고양이 구현
+```java
+public static void main(String[] args) {
+
+        catOpt = getCatOpt();
+}
+
+public static Optional<String> getCatOpt() {
+	return Optional.ofNullable(new Random().nextBoolean() ? "Cat" : null);
+}
+```
+* `return`에는 `Optional`상자에 값이 담겨오기 때문에 NPE 대비 
+
+#### `Optional`의 `filter`와 `map` 메서드
+```java
+public static void main(String[] args) {
+    
+        List<Optional<Integer>> optInts = new ArrayList<>();
+        IntStream.range(0, 20)
+                .forEach(i -> {
+                    optInts.add(Optional.ofNullable(
+                            new Random().nextBoolean() ? i : null
+                    ));
+                });
+
+        //  💡 Optional의 filter와 map 메소드
+        optInts.stream()
+                .forEach(opt -> {
+                    System.out.println(
+                            opt
+                                    //  ⭐️ 걸러진 것은 null로 인식됨
+                                    //  - 스트림의 filter처럼 건너뛰는 것이 아님!
+                                    .filter(i -> i % 2 == 1)
+                                    .map(i -> "%d 출력".formatted(i))
+                                    .orElse("(SKIP)")
+                    );
+                });
+}
+```
+###### console
+```java
+(SKIP)
+(SKIP)
+(SKIP)
+3 출력
+(SKIP)
+(SKIP)
+(SKIP)
+7 출력
+(SKIP)
+(SKIP)
+(SKIP)
+11 출력
+(SKIP)
+13 출력
+(SKIP)
+15 출력
+(SKIP)
+17 출력
+(SKIP)
+19 출력
+```
+
+### `Optional`을 반환하는 스트림의 메서드들
+* 반환할 값이 없을 수도 있는 메서드들 - 빈 스트림일 때 
+
+###### ☕️ Ex03.java
+```java
+public class Ex03 {
+
+    public static void main(String[] args) {
+        // 메소드마다 반환값이 다를 수 있으므로 var 사용
+        var numFromOpt = IntStream.range(0, 100)
+
+                .filter(i -> i % 2 == 1)
+                //.filter(i -> i > 100) // 주석해제 후 다시 실행해 볼 것
+
+                //  💡 첫 번째 요소를 반환
+                .findFirst() // 항상 순서상 첫번 째 것을 반환, 'OptionalInt'
+
+                //.max() // 'OptionalInt'
+                //.min() // 'OptionalInt'
+
+                //  평균값을 ⭐️ Double로 반환
+                //.average() // 'OptionalDouble'
+
+		// 초기값이 없다면 'OptionalInt'
+		// 초기값이 잆으면 'Int'
+                //.reduce((prev, curr) -> prev + curr)
+
+                .orElse(-1); // Optional이 반환되므로
+        //  혹은 기타 Optional의 인스턴스 메소드 사용
+    }
+}
+```
+
+```java
+public class Ex03 {
+
+    public static void main(String[] args) {
+        // 메소드마다 반환값이 다를 수 있으므로 var 사용
+        var numFromOpt = IntStream.range(0, 100)
+                .parallel() // 병렬 실행 (이후 배움), 주석해제 해 볼 것
+
+                .filter(i -> i % 2 == 1)
+
+                //  💡 첫 번째 요소를 반환
+                .findAny() // ⭐️ 병렬작업 시 먼저 나오는 것 반환
+                // 병렬작업 시 findAny가 보다 효율적
+                // (순서가 중요하지 않다면)
+
+                .orElse(-1); // Optional이 반환되므로
+        //  혹은 기타 Optional의 인스턴스 메소드 사용
+    }
+}
+```
+###### console
+```
+65
+```
+```java
+public class Ex03 {
+	String[] names = {
+                "강백호", "서태웅", "채치수", "송태섭", "정대만",
+                "윤대협", "변덕규", "황태산", "안영수", "허태환",
+                "이정환", "전호장", "신준섭", "고민구", "홍익현",
+                "정우성", "신현철", "이명헌", "최동오", "정성구"
+        };
+
+        Stream<String> nameStream = Arrays.stream(names);
+
+        Random random = new Random();
+        random.setSeed(4); // 균일한 결과를 위해 지정된 시드값
+        List<Person> people = nameStream
+                .map(name -> new Person(
+                        name,
+                        random.nextInt(18, 35),
+                        random.nextDouble(160, 190),
+                        random.nextBoolean()
+                ))
+                .sorted()
+                .toList();
+
+        Person personFromOpt = people.stream()
+                //.filter(p -> !p.isMarried() && p.getAge() < 20 && p.getHeight() > 189)
+
+                .findFirst()
+
+                //.max(Comparator.comparingDouble(Person::getHeight))
+                //.min(Comparator.comparingInt(Person::getAge))
+
+                .orElse(new Person("엄친아", 19, 189.9, false));
+    }
+}
+```
+###### console
+```
+// 그대로 실행할 경우
+personFromOpt = no: 1, name: 강백호, age: 26, height: 187.227096, married: true
+// filter(), max(), min() 주석해제할 경우
+personFromOpt = no: 21, name: 엄친아, age: 19, height: 189.900000, married: false
+```
+
+
 
 
 
