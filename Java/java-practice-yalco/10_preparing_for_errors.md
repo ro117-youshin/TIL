@@ -321,8 +321,33 @@ sec10.chap03.WrongMonthException: 13월은 존재하지 않습니다. 1 ~ 12월 
 
 ## 4. 예외 떠넘기기와 되던지기
 
-### Checked 예외 VS Unchecked 예외
-* 예외처리 필수 여부
+### 💡 Checked Exception VS Unchecked Exception
+> 넥스트리소프트 : Java 예외(Exception) 처리에 대한 작은 생각 [(링크)](https://www.nextree.co.kr/p3239/)
+* Checked Exception
+  * 반드시 예외를 처리해야 함
+  * 확인시점: 컴파일 단계
+  * 예외 발생 시 트랜잭션 처리 roll-back 하지 않음
+  * 대표 예외: Exception의 상속받는 하위 클래스 중 `RuntimeException` 제외한 모든 예외
+    * `IOException`
+    * `SQLException`
+* Unchecked Exception
+  * 명시적인 처리를 강제하지 않음
+  * 확인시점: 실행단계
+  * 예외 발생 시 트랜잭션 처리 roll-back 함
+  * 대표 예외: `RuntimeException` 하위 예외
+    * `NullPointerException`
+    * `IllegalArgumentException`
+    * `IndexOutOfBoundException`
+    * `SystemException`   
+* Checked Exception과 Unchecked Exception의 가장 명확한 구분 기준은 '꼭 처리를 해야 하느냐'이다.
+  * Checked Exception이 발생할 가능성이 있는 메서드라면 반드시 로직을 `try/catch`로 감싸거나 `throw`로 던져서 처리해야 한다.
+  * 반면에 Unchecked Exception은 명시적인 예외처리를 하지 않아도 된다. 이 예외는 피할 수 있지만 개발자가 부주의해서 발생하는 경우가 대부분이고, 미리 예측하지 못했던 상황에서 발생하는 예외가 아니기 때문에 굳이 로직으로 처리를 할 필요가 없도록 만들어져 있다.
+* 한 가지 더 인지하고 있으면 좋은 것. 바로 예외 발생 시 트랜잭션의 roll-back 여부이다.
+  * 기본적으로 Checked Exception은 예외가 발생하면 트랜잭션을 roll-back 하지 않고 예외를 던져준다.
+  * 하지만 Unchecked Exception은 예외 발생 시 트랜잭션을 roll-back 한다는 점에서 차이가 있다.
+  * 트랜잭션의 전파방식 즉, 어떻게 묶어놓느냐에 따라서 Checked Exception이냐 Unchecked Exception이냐의 영향도가 크다.
+  * roll-back이 되는 범위가 달라지기 때문에 개발자가 이를 인지하지 못하면, 실행결과가 맞지 않거나 예상치 못한 예외가 발생할 수 있다.
+  * 그러므로 이를 인지하고 트랜잭션을 적용시킬 때 전파방식(propagation behavior)과 롤백규칙 등을 적절히 사용하면 더욱 효율적인 애플리케이션을 구현할 수 있을 것이다.
 
 ###### ☕️ Ex01.java
 ```java
@@ -860,9 +885,20 @@ sec10.chap05.OpFailException: 💀 작전 실패
 	at sec10.chap05.Ex02.main(Ex02.java:7)
 ```
 
+---
 
+## 6. NPE와 Optional
 
+### `NullPointerException`
+* `null`인 것으로부터 필드나 메서드 등을 호출하려 할 때 발생
+  * Ex) 폐업한 중국집에 배민 주문
+* 컴파일러 선에서 방지되지 않음
+  * `RuntimeException`
 
+###### Ex01.java
+```java
+
+```
 
 
 
