@@ -185,6 +185,64 @@ Thread sleeper = new Thread(
 
 ## 2. 쓰레드 다루기
 
+#### 💡 쓰레드에 이름 부여
+###### ☕️ IncreaseInterest.java
+```java
+public class IncreaseInterest implements Runnable {
+
+    int max;
+    public IncreaseInterest(int max) {this.max = max;}
+
+    @Override
+    public void run() {
+        String interest = "%s : 금리가 %d에서 %d로 올라가요.";
+
+        for (int i = 0; i < max; i++) {
+            try {
+                Thread.sleep(2000);
+                System.out.printf( (interest) + "%n", Thread.currentThread().getName(), i, (i + 1));
+            } catch (InterruptedException e) {
+
+            }
+        }
+    }
+}
+```
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+    public static void main(String[] args) {
+        Thread incInterest = new Thread(new IncreaseInterest(40));
+
+//        incInterest.setName("캐피탈직원");
+
+        incInterest.start();
+    }
+}
+```
+###### console
+```
+Thread-0 : 금리가 0에서 1로 올라가요.
+Thread-0 : 금리가 1에서 2로 올라가요.
+Thread-0 : 금리가 2에서 3로 올라가요.
+Thread-0 : 금리가 3에서 4로 올라가요.
+...
+```
+###### console: `setName("캐피탈직원")`
+```
+캐피탈직원 : 금리가 0에서 1로 올라가요.
+캐피탈직원 : 금리가 1에서 2로 올라가요.
+캐피탈직원 : 금리가 2에서 3로 올라가요.
+캐피탈직원 : 금리가 3에서 4로 올라가요.
+...
+```
+
+#### 쓰레드의 우선순위
+
+#### 쓰레드를 사용한 멀티태스킹
+
+
+
 ---
 
 ## 3. 쓰레드 그룹과 데몬 쓰레드
