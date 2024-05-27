@@ -3,7 +3,7 @@
 > 1. 쓰레드 만들기
 > 2. 쓰레드 다루기
 > 3. 쓰레드 그룹과 데몬 쓰레드
-> 4. 동기
+> 4. 동기화
 
 ## 1. 쓰레드 만들기
 
@@ -442,6 +442,170 @@ stop // 출력
 ---
 
 ## 3. 쓰레드 그룹과 데몬 쓰레드
+
+### 💡 쓰레드 그룹
+* 연관된 쓰레드들을 그룹으로 묶기 위해 사용됨
+* 쓰레드 그룹이 다른 쓰레드 그룹에 포함될 수 있음
+* 쓰레드를 일괄적으로 다루거나 보안상 분리하기 위해 사용
+
+
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+    public static void main(String[] args) {
+        Thread thr1 = new Thread(() -> {});
+
+        //  💡 따로 그룹을 지정해주지 않은 쓰레드
+        //  - main 쓰레드그룹에 속함
+        ThreadGroup mainThrGroup = thr1.getThreadGroup();
+        String mainThreadName = mainThrGroup.getName();
+
+        //  💡 쓰레드 그룹 직접 생성하기
+        ThreadGroup threadGroup1 = new ThreadGroup("TG_1");
+        String thrGroup1Name = threadGroup1.getName();
+
+        //  💡 그룹에 속한 쓰레드를 만드는 생성자
+        Thread thr2 = new Thread(threadGroup1, () -> {});
+        String thr2GroupName = thr2.getThreadGroup().getName();
+
+        //  💡 또 다른 쓰레드 그룹에 속한 쓰레드 그룹 만들기
+        ThreadGroup threadGroup2 = new ThreadGroup(threadGroup1, "TG_2");
+        String thrGroup2ParentName = threadGroup2.getParent().getName();
+    }
+}
+```
+```
+> mainThreadName = "main"
+> thrGroup1Name = "TG_1"
+> thr2GroupName = "TG_1"
+> thrGroup2ParentName = "TG_1"
+```
+
+
+###### ☕️ PrintThread.java
+```java
+public class PrintThread implements Runnable {
+    static int lastNo = 0;
+    String groupName;
+    int no;
+
+    public PrintThread(String groupName) {
+        this.groupName = groupName;
+        this.no = ++lastNo;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                System.out.printf("[%s] %d%n", groupName, no);
+            } catch (InterruptedException e) {
+                System.out.printf("🛑 %s 종료%n", groupName);
+                return;
+            }
+        }
+    }
+}
+```
+
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
+    public static void main(String[] args) {
+        ThreadGroup groupA = new ThreadGroup("A");
+        ThreadGroup groupB = new ThreadGroup("B");
+        ThreadGroup groupBB = new ThreadGroup(groupB, "BB");
+        ThreadGroup groupC = new ThreadGroup("C");
+
+        for (ThreadGroup tg : new ThreadGroup[] { groupA, groupB, groupBB, groupC }) {
+            for (int i = 0; i < 3; i++) {
+                new Thread(tg, new PrintThread(tg.getName())).start();
+            }
+        }
+
+        try (Scanner sc = new Scanner(System.in)) {
+            while (sc.hasNext()) {
+                String line = sc.nextLine();
+
+                if (line.length() == 1) {
+                    ThreadGroup[] groups = new ThreadGroup[] {
+                            groupA, groupB, groupC
+                    };
+
+                    if ("abc".contains(line)) {
+                        ThreadGroup group = groups["abc".indexOf(line)];
+
+                        //  💡 그룹의 현황 파악
+                        //  - 다른 메소드들도 살펴볼 것
+                        System.out.printf(
+                                "%s : %d / %d%n",
+                                group.getName(),
+                                group.activeCount(),
+                                //  내부의 쓰레드들이 멈춰도 active로 카운트
+                                group.activeGroupCount()
+                        );
+                    }
+
+                    if ("ABC".contains(line)) {
+                        //  그룹 일괄 종료
+                        ThreadGroup group = groups["ABC".indexOf(line)];
+                        group.interrupt();
+                    }
+                }
+
+                if (line.equalsIgnoreCase("quit")) break;
+            }
+        }
+    }
+}
+```
+###### console: 소문자 입력
+```
+a // 입력
+A : 3 / 0 // 출력
+b // 입력
+B : 6 / 1 // 출력
+c // 입력
+C : 3 / 0 // 출력
+```
+###### console: 대문자 입력
+```
+A // 입력
+🛑 A 종료
+🛑 A 종료
+🛑 A 종료
+[BB] 7
+[B] 5
+[BB] 9
+[C] 12
+[C] 11
+[BB] 8
+[B] 6
+[C] 10
+[B] 4
+```
+```
+B // 입력
+🛑 BB 종료
+🛑 BB 종료
+🛑 B 종료
+🛑 B 종료
+🛑 BB 종료
+🛑 B 종료
+[C] 11
+[C] 10
+[C] 12
+```
+```
+C // 입력
+🛑 C 종료
+🛑 C 종료
+🛑 C 종료
+```
+
+
+### 데몬 쓰레드
 
 ---
 
