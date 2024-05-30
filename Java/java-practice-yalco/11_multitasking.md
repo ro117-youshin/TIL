@@ -703,3 +703,177 @@ public class Ex03 {
 ---
 
 ## 4. 동기화
+
+### 💡 동기화 *synchronization*
+* 특정 자원에 여러 쓰레드가 동시에 접근하는 것을 방지
+* 쓰레드의 동기화 - 한 쓰레드가 진행중인 작업을 다른 쓰레드가 간섭하지 못하게 막는 것
+
+#### 📁 Ex01
+###### ☕️ ATM.java
+```java
+public class ATM {
+    private int balance = 0;
+    public void addMoney(int amount) {
+        balance += amount;
+    }
+    public int getBalance() {
+        return balance;
+    }
+
+    public void withdraw (String name, int amount) {
+
+        if (balance < amount) return;
+
+        System.out.printf(
+                "💰 %s 인출 요청 (현 잔액 %d)%n",
+                name, balance
+        );
+        try {
+            Thread.sleep(new Random().nextInt(700, 1000));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        balance -= amount;
+        System.out.printf(
+                "✅ %s 인출 완료 (현 잔액 %d)%n",
+                name, balance
+        );
+    }
+}
+```
+###### ☕️ CustomerRun.java
+```java
+public class CustomerRun implements Runnable {
+    String name;
+    ATM atmToUse;
+    int needed;
+
+    public CustomerRun(String name, ATM atmToUse, int needed) {
+        this.name = name;
+        this.atmToUse = atmToUse;
+        this.needed = needed;
+    }
+
+    @Override
+    public void run() {
+        while (atmToUse.getBalance() > needed) {
+            atmToUse.withdraw(name, needed);
+
+            try {
+                Thread.sleep(100);
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        ATM atm = new ATM();
+        atm.addMoney(5000);
+
+        Thread thr1 = new Thread(new CustomerRun("철수", atm, 500));
+        Thread thr2 = new Thread(new CustomerRun("마이크", atm, 300));
+        Thread thr3 = new Thread(new CustomerRun("호나우두", atm, 400));
+
+        thr1.start();
+        thr2.start();
+        thr3.start();
+    }
+}
+```
+###### console
+```
+💰 철수 인출 요청 (현 잔액 5000)
+💰 마이크 인출 요청 (현 잔액 5000)
+💰 호나우두 인출 요청 (현 잔액 5000)
+✅ 호나우두 인출 완료 (현 잔액 4600)
+💰 호나우두 인출 요청 (현 잔액 4600)
+✅ 철수 인출 완료 (현 잔액 4100)
+✅ 마이크 인출 완료 (현 잔액 3800)
+💰 철수 인출 요청 (현 잔액 3800)
+💰 마이크 인출 요청 (현 잔액 3800)
+✅ 마이크 인출 완료 (현 잔액 3500)
+✅ 호나우두 인출 완료 (현 잔액 3100)
+💰 마이크 인출 요청 (현 잔액 3100)
+💰 호나우두 인출 요청 (현 잔액 3100)
+✅ 철수 인출 완료 (현 잔액 2600)
+💰 철수 인출 요청 (현 잔액 2600)
+✅ 마이크 인출 완료 (현 잔액 2300)
+💰 마이크 인출 요청 (현 잔액 2300)
+✅ 호나우두 인출 완료 (현 잔액 1900)
+✅ 철수 인출 완료 (현 잔액 1400)
+💰 호나우두 인출 요청 (현 잔액 1400)
+💰 철수 인출 요청 (현 잔액 1400)
+✅ 마이크 인출 완료 (현 잔액 1100)
+💰 마이크 인출 요청 (현 잔액 1100)
+✅ 호나우두 인출 완료 (현 잔액 700)
+💰 호나우두 인출 요청 (현 잔액 700)
+✅ 철수 인출 완료 (현 잔액 200)
+✅ 마이크 인출 완료 (현 잔액 -100)
+✅ 호나우두 인출 완료 (현 잔액 -500)
+```
+* 잔액이 적자로 동기화 필요.
+
+###### ☕️ ATM.java
+* 동기화를 위해 `withdraw()` 메서드에 `synchronized` 붙이고 실행.
+###### console
+```
+💰 철수 인출 요청 (현 잔액 5000)
+✅ 철수 인출 완료 (현 잔액 4500)
+💰 호나우두 인출 요청 (현 잔액 4500)
+✅ 호나우두 인출 완료 (현 잔액 4100)
+💰 마이크 인출 요청 (현 잔액 4100)
+✅ 마이크 인출 완료 (현 잔액 3800)
+💰 호나우두 인출 요청 (현 잔액 3800)
+✅ 호나우두 인출 완료 (현 잔액 3400)
+💰 철수 인출 요청 (현 잔액 3400)
+✅ 철수 인출 완료 (현 잔액 2900)
+💰 호나우두 인출 요청 (현 잔액 2900)
+✅ 호나우두 인출 완료 (현 잔액 2500)
+💰 마이크 인출 요청 (현 잔액 2500)
+✅ 마이크 인출 완료 (현 잔액 2200)
+💰 호나우두 인출 요청 (현 잔액 2200)
+✅ 호나우두 인출 완료 (현 잔액 1800)
+💰 철수 인출 요청 (현 잔액 1800)
+✅ 철수 인출 완료 (현 잔액 1300)
+💰 호나우두 인출 요청 (현 잔액 1300)
+✅ 호나우두 인출 완료 (현 잔액 900)
+💰 마이크 인출 요청 (현 잔액 900)
+✅ 마이크 인출 완료 (현 잔액 600)
+💰 호나우두 인출 요청 (현 잔액 600)
+✅ 호나우두 인출 완료 (현 잔액 200)
+```
+* 또는 동기화를 필요로 하는 메서드 내의 특정 작업만 할 경우, `synchronized() {}` 블록 안에 작성할 것.
+```java
+public void withdraw(String name, int amount) {
+
+        //  💡 동기
+        //  - this는 현 쓰레드를 의미함
+        //  - 메소드 내의 특정 작업만 동기화가 필요할 때
+        synchronized (this) {
+
+            if (balance < amount) return;
+
+            System.out.printf(
+                    "💰 %s 인출 요청 (현 잔액 %d)%n",
+                    name, balance
+            );
+            try {
+                Thread.sleep(new Random().nextInt(700, 1000));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            balance -= amount;
+            System.out.printf(
+                    "✅ %s 인출 완료 (현 잔액 %d)%n",
+                    name, balance
+            );
+        }
+}
+```
