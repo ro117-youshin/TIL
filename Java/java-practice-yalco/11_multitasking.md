@@ -1178,7 +1178,130 @@ public class Main {
 ...
 ```
 
+---
 
+## 6. 쓰레드 풀과 Future
 
+### 쓰레드 풀
+* `Executors` & `ExcutorService` 사용하여 구현
+  * `java.util.concurrent` 패키지에서 제공
+* 많은 쓰레드 작업이 필요할 때 동시에 돌아가는 쓰레드들의 개수 제한
+  * 너무 많은 쓰레드 작업으로 인한 부하 방지
+* 쓰레드를 그때그때 생성/제거하지 않음
+  * 주어진 개수만큼 쓰레드들을 만든 뒤 재사용
+* 개발자가 직접 쓰레드를 생성하고 조작할 필요 없음
+  * `Runnable`을 대기열에 추가하면 자리가 나는대로 태워보냄
+  * 쓰레드들을 쓰레드 풀이 자동으로 관리함
+* 비유
+  * 쓰레드풀 - 자전거 대여 업체
+  * 쓰레드 - 업체 소유 자전거(대수 지정, 사용 후 반납 & 재사용)
+  * `Runnable` - 이용자(자전거가 모두 이용중이면 대기)
 
+#### 동굴 물 퍼내기 예제
+* 물이 40 들어찬 동굴에서 물이 20 남을 때까지 펌핑
+* ⭐ 한 번에 5명이 들어가서 펌핑할 수 있음
+  * 쓰레드 (🪣 양동이) 가 5개 있음
+  * 각 펌핑은 5초 소요
+* 0.5 초마다 지원자 (🦺 `Runnable`) 한 명씩 투입
+  * 양동이가 모두 사용중이면 자리가 날 때까지 대기 
+
+###### ☕️ Cave.java
+```java
+public class Cave {
+    private int water = 40;
+
+    public int getWater() {
+        return water;
+    }
+    public void pump() {
+        if (getWater() > 0) water--;
+    }
+}
+```
+###### ☕️ VolunteerRun.java
+```java
+public class VolunteerRun implements Runnable {
+    private static int lastNo = 0;
+    private static int working = 0;
+    
+    private int no;
+    private Cave cave;
+    
+    public VolunteerRun(Cave cave) {
+        this.no = ++lastNo;
+        this.cave = cave;
+
+        System.out.printf(
+                "🦺 %d번 지원자 투입 (남은 물 양: %d)%n", no, cave.getWater()
+        );
+    }
+
+    @Override
+    public void run() {
+        working++;
+        System.out.printf(
+                "🪣 %d번 지원자 시작 (현재 %d명 펌핑중, 남은 물 %d)%n",
+                no, working, cave.getWater()
+        );
+
+        try { Thread.sleep(5000);
+        } catch (InterruptedException e) {
+
+            //  💡 아래의 return이 없다면 shutdownNow를 해도 중단되지 않음
+            //  - 주석해제하고 shutdownNow 버전으로 다시 실행해 볼 것
+            //working--;
+            //System.out.printf(
+            //        "🛑 %d번 지원자 중단 (현재 %d명 펌핑중, 남은 물 %d)%n",
+            //        no, working, cave.getWater()
+            //);
+            //return;
+        }
+
+        cave.pump();
+        working--;
+        System.out.printf(
+                "✅ %d번 지원자 완료 (현재 %d명 펌핑중, 남은 물 %d)%n",
+                no, working, cave.getWater()
+        );
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        //  💡 쓰레드풀을 관리하는 라이브러리 클래스
+        ExecutorService es = Executors.newFixedThreadPool(
+                //  💡 동시에 일할 수 있는 지원자의 수
+                //  - 숫자를 바꿔 볼 것
+                5
+        );
+
+        Cave cave = new Cave();
+
+        while (cave.getWater() > 20) {
+
+            //  💡 execute : Runnable(지원자)을 대기열에 추가
+            es.execute(new VolunteerRun(cave));
+
+            try { Thread.sleep(500);
+            } catch (InterruptedException e) { return; }
+        }
+
+        //  💡 shutdown : 풀 닫기 (투입 중단, 더 투입시 예외)
+        //  - ⭐ 이를 생략하면 프로그램이 끝나지 않음
+        //  - 일단 들어간 지원자는 자리가 날 때까지 기다리다 일 함
+        es.shutdown();
+        //es.execute(new VolunteerRun(cave)); // ⚠️ 닫혔으므로 예외 발생
+
+        //  💡 shutdownNow : 풀 닫고 투입된 지원자 해산, 진행중인 업무 강제종료
+        //  - ⚠️ 진행중인 업무 강제종료는 보장하지 않음
+        //    - 각 쓰레드에 InterruptedException을 유발할 뿐
+        //    - 각 Runnable에서 해당 예외 발생시 종료되도록 처리해주어야 함
+        //  - 투입되어 대기중인 지원자들은 리스트 형태로 반환
+        //List<Runnable> waitings = es.shutdownNow();
+        //System.out.println(waitings);
+    }
+}
+```
 
