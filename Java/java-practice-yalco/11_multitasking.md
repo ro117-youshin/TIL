@@ -877,3 +877,116 @@ public void withdraw(String name, int amount) {
         }
 }
 ```
+
+### 💡 캐싱에 의한 문제 방지하기
+
+###### Cache1.java
+```java
+public class Cache1 {
+
+    static boolean stop = false;
+    public static void main(String[] args) {
+        new Thread(() -> {
+            int i = 0;
+            while (!stop) {
+                i++;
+
+                // ⭐️ 아래를 주석처리하고 다시 실행해보기
+                System.out.println(i);
+            }
+
+            System.out.println("- - - 쓰레드 종료 - - -");
+        }).start();
+
+        try { Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+
+        stop = true;
+
+        //  💡 JVM의 캐시 방식에 따라 멈출 수도 안 멈출 수도 있음
+        //  - stop으로의 접근이 동기화되지 않았을 시
+        //  - 한 쓰레드가 그 값을 바꿔도 다른 쓰레드는 캐시(CPU와 메모리 사이)에 저장된
+        //  - 바뀌기 이전 값을 참조할 수 있음
+        //    - println 메소드는 위 코드에서 캐시를 비우는 이유 제공
+    }
+}
+```
+* 위 예시 코드에서 `while`문 안에 `println()` 메서드를 주석처리 할 경우 `i`변수가 변경되더라도 사용하지 않아 쓰레드가 종료되지 않는다. (JVM Run 상태) 
+
+#### ⭐️ 해결책 1. `volatile` 사용
+- 변수의 값이 변경될 때마다 메모리에 업데이트
+- 멀티쓰레딩 환경에서 캐싱에 의한 문제 방지
+- 동기화와는 다름! 값 변경만 바로 확인시켜줌
+###### Cache2.java
+```java
+public class Cache2 {
+
+    volatile static boolean stop = false;
+    public static void main(String[] args) {
+        new Thread(() -> {
+            int i = 0;
+            while (!stop) {
+                i++;
+            }
+
+            System.out.println("- - - 쓰레드 종료 - - -");
+        }).start();
+
+        try { Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+
+        stop = true;
+    }
+}
+```
+
+#### ⭐️ 해결책 2. 동기화 사용
+* 동기화된 메소드로 변수에 접근 시
+  * 캐시 재사용에 의한 문제가 발생하지 않음
+###### Cache3.java
+```java
+public class Cache3 {
+
+    static boolean stop = false;
+
+    //  💡 동기화된 클레스 메소드들 (getter & setter)
+    synchronized public static boolean isStop() {
+        return stop;
+    }
+    synchronized public static void setStop(boolean stop) {
+        Cache3.stop = stop;
+    }
+
+    public static void main(String[] args) {
+        new Thread(() -> {
+            int i = 0;
+            while (!isStop()) {
+                i++;
+            }
+
+            System.out.println("- - - 쓰레드 종료 - - -");
+        }).start();
+
+        try { Thread.sleep(1000);
+        } catch (InterruptedException e) {}
+
+        setStop(true);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
