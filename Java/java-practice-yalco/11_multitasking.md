@@ -4,6 +4,11 @@
 > 2. 쓰레드 다루기
 > 3. 쓰레드 그룹과 데몬 쓰레드
 > 4. 동기화
+> 5. wait & notify
+> 6. 쓰레드 풀과 Future
+> 7. CompletableFuture
+> 8. 병렬 스트림
+> 9. Thread-safe한 클래스
 
 ## 1. 쓰레드 만들기
 
@@ -880,7 +885,7 @@ public void withdraw(String name, int amount) {
 
 ### 💡 캐싱에 의한 문제 방지하기
 
-###### Cache1.java
+###### ☕️ Cache1.java
 ```java
 public class Cache1 {
 
@@ -917,7 +922,7 @@ public class Cache1 {
 - 변수의 값이 변경될 때마다 메모리에 업데이트
 - 멀티쓰레딩 환경에서 캐싱에 의한 문제 방지
 - 동기화와는 다름! 값 변경만 바로 확인시켜줌
-###### Cache2.java
+###### ☕️ Cache2.java
 ```java
 public class Cache2 {
 
@@ -943,7 +948,7 @@ public class Cache2 {
 #### ⭐️ 해결책 2. 동기화 사용
 * 동기화된 메소드로 변수에 접근 시
   * 캐시 재사용에 의한 문제가 발생하지 않음
-###### Cache3.java
+###### ☕️ Cache3.java
 ```java
 public class Cache3 {
 
@@ -975,16 +980,203 @@ public class Cache3 {
 }
 ```
 
+---
+
+## 5. wait & notify
+#### `Object`의 쓰레드 관련 메서드들
+* `wait`: 동기화 메서드 사용 중 자기 일을 멈춤
+  * 다른 쓰레드가 사용할 수 있도록 양보
+  * 실행 중이던 쓰레드는 해당 객체의 대기실(waiting pool)에서 통지를 기다린다.
+* `notify`: 일을 멈춘 상태의 쓰레드에게 자리가 비었음을 통보
+  * 대기열의 쓰레드 중 하나에만 통보
+    * 상황에 따라서는 무한대기상태가 될 수 있음
+* `notifyAll`: 대기중인 모든 쓰레드에 통보
+  * 모든 쓰레드에게 통보를 하지만, 하나의 쓰레드만 lock을 얻고 나머지 쓰레드는 통보를 받긴 했지만, lock을 얻지 못하면 다시 lock을 기다린다.
+* 추가 설명을 적자면, 오래 기다린 쓰레드가 lock을 얻는다는 보장이 없다는 것.
+* 3가지 메서드 모두 동기화 블록(synchronized블록)내에서만 사용할 수 있다.
+
+#### 예제: 군인이 공중전화 이용하기
+###### ☕️ PhoneBooth.java
+```java
+public class PhoneBooth {
+    synchronized public void phoneCall (SoldierRun soldier) {
+        System.out.println("☎️ %s 전화 사용중...".formatted(soldier.title));
+
+        try { Thread.sleep(500);
+        } catch (InterruptedException e) {}
+
+        System.out.println("👍 %s 전화 사용 완료".formatted(soldier.title));
 
 
+        //notifyAll();
+        //try {
+        //    //  💡 현 사용자를 폰부스에서 내보냄
+        //    //  - sleep처럼 아래의 예외 반환 확인
+        //    wait();
+        //} catch (InterruptedException e) {
+        //    throw new RuntimeException(e);
+        //}
+    }
+}
+```
+###### ☕️ SoldierRun.java
+```java
+public class SoldierRun implements Runnable {
+    String title;
+    PhoneBooth phoneBooth;
 
+    public SoldierRun(String title, PhoneBooth phoneBooth) {
+        this.title = title;
+        this.phoneBooth = phoneBooth;
+    }
+    @Override
+    public void run() {
+        while (true) {
+            phoneBooth.phoneCall(this);
+        }
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        PhoneBooth booth = new PhoneBooth();
+        Arrays.stream("김병장,이상병,박일병,최이병".split(",")).forEach(s -> new Thread(
+                new SoldierRun(s, booth)
+        ).start());
+    }
+}
+```
+* `PhoneBooth.java` 클래스에서 주석을 해제하지 않으면 첫 사용자가 다 사용한다.
+  * 단, JDK 제품마다 차이가 있을 수 있다.
+* 주석을 해제하고 실행했을 때, 여러 쓰레드가 사용.
 
+#### 예제: 생산자와 소비자 모델
+* 같은 인스턴스의 다른 메서드에도 적용.
+  * 예제에서 살펴보면, 커피를 채우는 동안은 테이크아웃을 할 수 없음.
+###### ☕️ CoffeeMachine.java
+```java
+public class CoffeeMachine {
+    final int CUP_MAX = 10;
+    int cups = CUP_MAX;
 
+    synchronized public void takeout (CustomerRun customer) {
+        if (cups < 1) {
+            System.out.printf(
+                    "[%d] 😭 %s 커피 없음%n", cups, customer.name
+            );
+        } else {
+            try { Thread.sleep(1000);
+            } catch (InterruptedException e) {}
 
+            System.out.printf(
+                    "[%d] ☕️ %s 테이크아웃%n", cups, customer.name
+            );
+            cups--;
+        }
 
+        notifyAll();
+        try { wait(); // 커피를 타고 나감
+        } catch (InterruptedException e) {}
+    }
 
+    synchronized public void fill () {
+        if (cups > 3) {
+            System.out.printf(
+                    "[%d] 👌 재고 여유 있음...%n", cups
+            );
+        } else {
+            try { Thread.sleep(1000);
+            } catch (InterruptedException e) {}
 
+            System.out.printf(
+                    "[%d] ✅ 커피 채워넣음%n", cups
+            );
+            cups = CUP_MAX;
+        }
 
+        notifyAll();
+        try { wait(); // 커피를 채우고 나감
+        } catch (InterruptedException e) {}
+    }
+}
+```
+###### ☕️ CustomerRun.java
+```java
+public class CustomerRun implements Runnable {
+    String name;
+    CoffeeMachine coffeeMachine;
+
+    public CustomerRun(String name, CoffeeMachine coffeeMachine) {
+        this.name = name;
+        this.coffeeMachine = coffeeMachine;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            coffeeMachine.takeout(this);
+        }
+    }
+}
+``` 
+###### ☕️ ManagerRun.java
+```java
+public class ManagerRun implements Runnable {
+    CoffeeMachine coffeeMachine;
+    public ManagerRun(CoffeeMachine coffeeMachine) {
+        this.coffeeMachine = coffeeMachine;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            coffeeMachine.fill();
+        }
+    }
+}
+```
+###### ☕️ Main.java
+```java
+public class Main {
+    public static void main(String[] args) {
+        CoffeeMachine coffeeMachine = new CoffeeMachine();
+
+        Arrays.stream("철수,영희,돌준,병미,핫훈,짱은,밥태".split(","))
+                .forEach(s -> new Thread(
+                        new CustomerRun(s, coffeeMachine)
+                ).start());
+
+        new Thread(new ManagerRun(coffeeMachine)).start();
+    }
+}
+```
+###### console
+```
+[10] ☕️ 철수 테이크아웃
+[9] 👌 재고 여유 있음...
+[9] ☕️ 밥태 테이크아웃
+[8] ☕️ 핫훈 테이크아웃
+[7] ☕️ 짱은 테이크아웃
+[6] ☕️ 병미 테이크아웃
+[5] ☕️ 돌준 테이크아웃
+[4] ☕️ 영희 테이크아웃
+[3] ☕️ 돌준 테이크아웃
+[2] ☕️ 병미 테이크아웃
+[1] ☕️ 짱은 테이크아웃
+[0] 😭 핫훈 커피 없음
+[0] 😭 밥태 커피 없음
+[0] ✅ 커피 채워넣음
+[10] ☕️ 철수 테이크아웃
+[9] ☕️ 밥태 테이크아웃
+[8] ☕️ 핫훈 테이크아웃
+[7] ☕️ 짱은 테이크아웃
+[6] ☕️ 병미 테이크아웃
+[5] ☕️ 돌준 테이크아웃
+[4] ☕️ 영희 테이크아웃
+...
+```
 
 
 
