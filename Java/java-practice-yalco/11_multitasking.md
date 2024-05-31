@@ -1182,7 +1182,7 @@ public class Main {
 
 ## 6. 쓰레드 풀과 Future
 
-### 쓰레드 풀
+### 💡 쓰레드 풀
 * `Executors` & `ExcutorService` 사용하여 구현
   * `java.util.concurrent` 패키지에서 제공
 * 많은 쓰레드 작업이 필요할 때 동시에 돌아가는 쓰레드들의 개수 제한
@@ -1267,6 +1267,7 @@ public class VolunteerRun implements Runnable {
 }
 ```
 ###### ☕️ Main.java
+* `shutdown()` 사용하여 풀 닫기
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -1293,15 +1294,166 @@ public class Main {
         //  - 일단 들어간 지원자는 자리가 날 때까지 기다리다 일 함
         es.shutdown();
         //es.execute(new VolunteerRun(cave)); // ⚠️ 닫혔으므로 예외 발생
+    }
+}
+```
+* `shutdownNow()` 사용하여 풀 닫기
+* VolunteerRun.java 파일의 `run()` 메서드에서 `catch` 부분 주석해제 필요.
+```java
+public class Main {
+    public static void main(String[] args) {
+        //  💡 쓰레드풀을 관리하는 라이브러리 클래스
+        ExecutorService es = Executors.newFixedThreadPool(
+                //  💡 동시에 일할 수 있는 지원자의 수
+                //  - 숫자를 바꿔 볼 것
+                5
+        );
+
+        Cave cave = new Cave();
+
+        while (cave.getWater() > 20) {
+
+            //  💡 execute : Runnable(지원자)을 대기열에 추가
+            es.execute(new VolunteerRun(cave));
+
+            try { Thread.sleep(500);
+            } catch (InterruptedException e) { return; }
+        }
 
         //  💡 shutdownNow : 풀 닫고 투입된 지원자 해산, 진행중인 업무 강제종료
         //  - ⚠️ 진행중인 업무 강제종료는 보장하지 않음
         //    - 각 쓰레드에 InterruptedException을 유발할 뿐
         //    - 각 Runnable에서 해당 예외 발생시 종료되도록 처리해주어야 함
         //  - 투입되어 대기중인 지원자들은 리스트 형태로 반환
-        //List<Runnable> waitings = es.shutdownNow();
-        //System.out.println(waitings);
+        List<Runnable> waitings = es.shutdownNow();
+        System.out.println(waitings);
     }
 }
 ```
+
+### 💡 `Callable`
+* `Runnable`처럼 다른 쓰레드에서의 작업에 사용 가능.
+* `@FunctionalInterface`로 `Supplier<T>`와 동일하지만 Exception 처리를 함.
+
+###### 기본 예제: 주사위 굴려서 담
+###### ☕️ RollDiceCall.java
+```java
+public class RollDiceCall implements Callable<Integer> {
+    @Override
+    public Integer call() throws Exception {
+
+        Thread.sleep(1000);
+
+        int result = new Random().nextInt(0, 6) + 1;
+        System.out.println(result);
+
+        return result;
+    }
+}
+
+```
+###### ☕️ TryCallable.java
+```java
+public class TryCallable {
+    public static void main(String[] args) {
+        List<Integer> intList = new ArrayList<Integer>();
+        IntStream.range(0,10).forEach(i -> {
+            try {
+                intList.add(new RollDiceCall().call());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        System.out.println(String.join(",", intList.stream().map(String::valueOf).toArray(String[]::new)));
+    }
+}
+```
+
+### 💡 `Future`
+* 비동기적 연산의 결과
+  * `ExecutorService` 인스턴스의 `submit` 메서드가 반환
+  * 인자로 `Callable`을 받음
+* "~해서 얻어올 것"이란 의미
+  * 비동기 작업 후 `get` 메서드로 최종 값을 받아
+  * `get`이 호출되는 시점까지 비동기로 작업.
+
+###### ☕️ FutureExp.java
+```java
+public class FutureExp {
+
+    public static void main(String[] args) {
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+        //  💡 submit 메소드 : Callable을 받아 Future 반환
+        //  - 'String을 받아올 임무를 가진 것'이란 의미
+        //  - execute 메소드(Runnable을 받음)와 비교
+        Future<String> callAnswer = es.submit(() -> {
+            Thread.sleep(2000);
+            return "여보세요";
+        });
+
+        //  ⭐ get 메소드를 호출하기 전까지는 막히지 않고 동시에 진행
+        //  - Future의 Callable은 다른 쓰레드에서 진행됨
+
+        //  💡 isDone 메소드 : 퓨쳐의 태스크가 종료되었는지 여부 확인
+        while (!callAnswer.isDone()) {
+            System.out.println("📞 따르릉...");
+            try { Thread.sleep(400);
+            } catch (InterruptedException e) {}
+        }
+
+        String result = null;
+
+        //  💡 get 메소드 : 해당 퓨쳐 쓰레드의 작업이 끝난 뒤 결과를 받아옴
+        //  - ⭐ 이를 완료하기까지 그 뒤의 작업들이 막힘 (블로킹)
+        //  - 대안을 위해 다음 강에 배울 CompletableFuture가 나옴
+        try { result = callAnswer.get();
+        } catch (InterruptedException | ExecutionException e) {}
+
+        System.out.println("✅ 통화 시작 - " + result);
+        System.out.println("- - - 작업 종료 - - -");
+
+        es.shutdown();
+    }
+}
+```
+
+###### ☕️ TryFuture.java
+```java
+public class TryFuture {
+    public static void main(String[] args) {
+        //  💡 쓰레드 풀과 Future를 사용해서 여러 Callable 동시에 실행
+        ExecutorService es = Executors.newFixedThreadPool(4);
+
+        List<Future<Integer>> futList = new ArrayList<>();
+        IntStream.range(0, 10)
+                .forEach(i -> {
+                    futList.add(
+                            es.submit(new RollDiceCall())
+                    );
+                });
+
+        es.shutdown(); // 💡 제거하면 프로그램이 끝나지 않음
+
+        ArrayList<Integer> intList = new ArrayList<>();
+        for (Future<Integer> future : futList) {
+            try {
+                intList.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {}
+        }
+
+        System.out.println(String.join(
+                ",",
+                intList.stream().map(String::valueOf).toArray(String[]::new)
+        ));
+    }
+}
+```
+
+
+
+
+
+
 
