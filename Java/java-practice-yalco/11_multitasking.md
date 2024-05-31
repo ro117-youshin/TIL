@@ -1418,6 +1418,10 @@ public class FutureExp {
     }
 }
 ```
+* `Future`쓰레드는 `get`메서드가 호출되기 전까지 메인 쓰레드의 작업을 방해하지 않고 다른 쓰레드에서 돌고 있다는 의미.
+* 그리고 `get`메서드 이후의 코드는 `Future` 쓰레드의 작업이 끝나고 나서야 실행이 된다.
+* 정확히는 메인 쓰레드가 진행될 때, `Future` 쓰레드는 다른 쓰레드로 진행되고 있다가 `get`메서드를 호출하고 `Future` 쓰레드의 작업이 끝나야 메인 쓰레드가 실행된다.
+  * `get`의 시점에서는 메인 쓰레드가 `Future`쓰레드에 조인되어 시작된다.
 
 ###### ☕️ TryFuture.java
 ```java
@@ -1451,7 +1455,182 @@ public class TryFuture {
 }
 ```
 
+---
 
+## 8. 병렬 스트림
+* 자바 스트림의 일부 메서드는 병렬로 처리 가능
+  * `filter`, `map`, `reduce`
+  * 쓰레드 여럿에 분할하여 할 수 있는 작업들
+* 대부분의 경우 성능 향상
+  * 여러 쓰레드에서 병렬로 처리되기 때문
+  * 작업에 따라서는 느려질 수 있음
+    * 데이터 크기가 작을 경우(쓰레드 생성 시간이 더 큼)
+    * 순차적으로 처리되어야 하는 작업
+
+#### 예제: 스트림을 직렬과 병렬간의 변경
+###### ☕️ Ex01.java
+```java
+public class ex01 {
+    public static void main(String[] args) {
+        Stream<Character> stream1 = Stream.of('A', 'B', 'C');
+
+        //  💡 isParallel : 스트림이 병렬인지 여부
+        boolean bool1 = stream1.isParallel();
+
+        //  💡 parallel :  직렬 스트림을 병렬로 바꿈
+        stream1.parallel();
+        boolean bool2 = stream1.isParallel();
+
+        //  💡 sequential : 병렬 스트림을 직렬로 바꿈
+        stream1.sequential();
+        boolean bool3 = stream1.isParallel();
+
+        //  ⭐️ 처음부터 병렬 스트림으로 생성하기
+        //  - Arrays와 Collection의 parallelStream 사용
+        Stream<Integer> stream2 = Arrays.asList(1, 2, 3, 4, 5)
+                .parallelStream();
+
+        List<Double> dblList = new ArrayList<>(
+                Arrays.asList(1.23, 2.34, 3.45)
+        );
+        Stream<Double> stream3 = dblList.parallelStream();
+    }
+}
+```
+#### 예제: 직렬과 병렬의 성능비교
+###### ☕️ Ex02.java
+```java
+public class ex02 {
+
+
+    public static void main(String[] args) {
+        final int RANGE = 10000000;
+
+        measureTime("직렬 필터", () -> {
+            IntStream filtered = IntStream.range(0, RANGE)
+                    .filter(i -> i % 2 == 0);
+        });
+        measureTime("병렬 필터", () -> {
+            IntStream filtered = IntStream.range(0, RANGE)
+                    .parallel() // 💡 스트림을 병렬로 바꿔줌
+                    .filter(i -> i % 2 == 0);
+        });
+
+        System.out.println("\n- - - - -\n");
+
+        measureTime("직렬 매핑", () -> {
+            Stream<String> mapped = IntStream.range(0, RANGE).boxed()
+                    .map(String::valueOf);
+        });
+        measureTime("병렬 매핑", () -> {
+            Stream<String> mapped = IntStream.range(0, RANGE).boxed()
+                    .parallel()
+                    .map(String::valueOf);
+        });
+
+        System.out.println("\n- - - - -\n");
+
+        //  ⭐️ reduce : 병렬시 오히려 느려짐
+        measureTime("직렬 접기", () -> {
+            OptionalInt reduced = IntStream.range(0, RANGE)
+                    .reduce(Integer::sum);
+        });
+        measureTime("병렬 접기", () -> {
+            OptionalInt reduced = IntStream.range(0, RANGE)
+                    .parallel()
+                    .reduce(Integer::sum);
+        });
+
+        System.out.println("\n- - - - -\n");
+
+        //  ⭐️ sum : 개수가 커질수록 병렬시 유리해짐
+        //  - 숫자 조정해 볼 것
+        measureTime("직렬 합계", () -> {
+            int sum = IntStream.range(0, RANGE)
+                    .sum();
+        });
+        measureTime("병렬 합계", () -> {
+            int sum = IntStream.range(0, RANGE)
+                    .parallel()
+                    .sum();
+        });
+
+        System.out.println("\n- - - - -\n");
+
+        final int TRI_RANGE = 10;
+        //final int TRI_RANGE = RANGE; // 혼합이 더 느려짐
+
+        measureTime("직렬 3종", () -> {
+            OptionalInt tri = IntStream.range(0, TRI_RANGE)
+                    .filter(i -> i % 2 == 0)
+                    .map(i -> i + 1)
+                    .reduce(Integer::sum);
+        });
+        measureTime("병렬 3종", () -> {
+            OptionalInt tri = IntStream.range(0, TRI_RANGE)
+                    .parallel()
+                    .filter(i -> i % 2 == 0)
+                    .map(i -> i + 1)
+                    .reduce(Integer::sum);
+        });
+
+        //  ⭐️ 작업에 따라 병렬과 직렬의 혼합이 유리할 수 있음
+        //  - 이 작업의 경우 : 데이터 개수가 적음
+        //  - 성능이 중요할 시 테스트해가며 최적의 코드를 찾을 것
+        measureTime("혼합 3종", () -> {
+            OptionalInt tri = IntStream.range(0, TRI_RANGE)
+                    .parallel()
+                    .filter(i -> i % 2 == 0)
+                    .map(i -> i + 1)
+                    .sequential() // ⭐️
+                    .reduce(Integer::sum);
+        });
+    }
+
+    public static void measureTime (String taskName, Runnable runnable) {
+        //  💡 System.nanoTime : 시간차를 구하는 데 사용됨
+        //  - 정수 반환, ⭐️ 단 실제 현재 시간과는 상관없음
+        //    - 초시계를 보고 현재 시각을 알 수 없듯이
+        //  - 두 시점의 값을 비교하여 속도를 측정하는 용도로 사용
+        long startTime = System.nanoTime();
+
+        runnable.run();
+
+        long endTime = System.nanoTime();
+        System.out.printf(
+                "⌛️ %s 소요시간: %12d 나노초%n",
+                taskName,
+                endTime - startTime
+        );
+    }
+}
+```
+###### console
+```
+⌛️ 직렬 필터 소요시간:      6961300 나노초
+⌛️ 병렬 필터 소요시간:       238400 나노초
+
+- - - - -
+
+⌛️ 직렬 매핑 소요시간:      1020300 나노초
+⌛️ 병렬 매핑 소요시간:       163500 나노초
+
+- - - - -
+
+⌛️ 직렬 접기 소요시간:      8069800 나노초
+⌛️ 병렬 접기 소요시간:     20540400 나노초
+
+- - - - -
+
+⌛️ 직렬 합계 소요시간:     11180000 나노초
+⌛️ 병렬 합계 소요시간:      5373800 나노초
+
+- - - - -
+
+⌛️ 직렬 3종 소요시간:      1564700 나노초
+⌛️ 병렬 3종 소요시간:       586000 나노초
+⌛️ 혼합 3종 소요시간:       637500 나노초
+```
 
 
 
