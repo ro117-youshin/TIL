@@ -1632,6 +1632,126 @@ public class ex02 {
 ⌛️ 혼합 3종 소요시간:       637500 나노초
 ```
 
+---
+
+## 9. Thread-safe한 클래스들
+
+###### Ex01.java
+```java
+public class Ex01 {
+    public static void main(String[] args) {
+        Map<String, Integer> hashMap = new HashMap<>();
+
+        Runnable toHashMap = () -> {
+            for(int i = 0; i < 10000; i++) {
+                hashMap.put("key" + i, i);
+            }
+        };
+
+        Thread t1 = new Thread(toHashMap);
+        Thread t2 = new Thread(toHashMap);
+        Thread t3 = new Thread(toHashMap);
+
+        t1.start(); t2.start(); t3.start();
+
+        try {
+            t1.join(); t2.join(); t3.join();
+        } catch (InterruptedException e) {}
+    }
+}
+```
+* `hashMap`의 `size` > 10,000 (실행할 때마다 달라짐)
+* 요소는 10,000개 존재하지만, `size` 필드값을 올리는 과정에서 문제
+  * 둘 이상의 쓰레드가 동시에 올려버리므로
+* **Thread-safe** 하지 않음
+
+### `ConcurrentHashMap`
+###### Ex02.java
+```java
+public class Ex02 {
+    public static void main(String[] args) {
+        Map<String, Integer> hashMap = new HashMap<>();
+
+        //  💡 ConcurrentHashMap
+        //  - 동기화된 해시맵
+        //  - 맵을 구획으로 분할하여 각 구획에 대해 동기화를 적용
+        //  - 각 쓰레드가 서로 다른 구획에 접근
+        Map<String, Integer> concurrentHashMap = new ConcurrentHashMap<>();
+
+        Runnable toHashMap = () -> {
+            for (int i = 0; i < 10000; i++) {
+                hashMap.put("key" + i, i);
+            }
+        };
+        Runnable toConcurrHashMap = () -> {
+            for (int i = 0; i < 10000; i++) {
+                concurrentHashMap.put("key" + i, i);
+            }
+        };
+
+        measureTime("일반 해시맵", () -> {
+            Thread t1 = new Thread(toHashMap);
+            Thread t2 = new Thread(toHashMap);
+            Thread t3 = new Thread(toHashMap);
+
+            t1.start(); t2.start(); t3.start();
+            try {
+                t1.join(); t2.join(); t3.join();
+            } catch (InterruptedException e) {}
+
+            System.out.printf(
+                    "일반 해시맵 사이즈 : %d%n",
+                    hashMap.size()
+            );
+        });
+
+        System.out.println("- - - - -");
+
+        measureTime("Concurrent 해시맵", () -> {
+            Thread t1 = new Thread(toConcurrHashMap);
+            Thread t2 = new Thread(toConcurrHashMap);
+            Thread t3 = new Thread(toConcurrHashMap);
+
+            t1.start(); t2.start(); t3.start();
+            try {
+                t1.join(); t2.join(); t3.join();
+            } catch (InterruptedException e) {}
+
+            System.out.printf(
+                    "Concurrent 해시맵 사이즈 = %d%n",
+                    concurrentHashMap.size()
+            );
+        });
+    }
+
+    public static void measureTime (String taskName, Runnable runnable) {
+        long startTime = System.nanoTime();
+
+        runnable.run();
+
+        long endTime = System.nanoTime();
+        System.out.printf(
+                "⌛️ %s 소요시간: %,d 나노초%n",
+                taskName,
+                endTime - startTime
+        );
+    }
+}
+```
+###### console
+```
+일반 해시맵 사이즈 : 10641
+⌛️ 일반 해시맵 소요시간: 58,735,600 나노초
+- - - - -
+Concurrent 해시맵 사이즈 = 10000
+⌛️ Concurrent 해시맵 소요시간: 18,780,800 나노초
+```
+* ⭐ 멀티쓰레딩으로 인한 오류를 줄여줄 뿐 아니라 속도도 개선
+
+
+
+
+
 
 
 
