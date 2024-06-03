@@ -1665,8 +1665,8 @@ public class Ex01 {
   * 둘 이상의 쓰레드가 동시에 올려버리므로
 * **Thread-safe** 하지 않음
 
-### `ConcurrentHashMap`
-###### Ex02.java
+### 💡 `ConcurrentHashMap`
+###### ☕️ Ex02.java
 ```java
 public class Ex02 {
     public static void main(String[] args) {
@@ -1748,9 +1748,119 @@ Concurrent 해시맵 사이즈 = 10000
 ```
 * ⭐ 멀티쓰레딩으로 인한 오류를 줄여줄 뿐 아니라 속도도 개선
 
+### 💡 `Atomic` 클래스
+* 특정 변수에 대해 쓰레드로부터의 안전 제공
+  * 한 번에 하나의 쓰레드만 접근 가능
 
+#### 💡 `AtomicInteger` 다뤄보기
+###### Ex03.java
+```java
+public class Ex03 {
 
+    static int count = 0;
+    static AtomicInteger atomicCount = new AtomicInteger(0);
 
+    public static void main(String[] args) {
+
+        Runnable runnable = () -> {
+            for (int i = 0; i < 1000; i++) {
+                count++;
+                atomicCount.getAndIncrement();
+            }
+        };
+
+        Thread t1 = new Thread(runnable);
+        Thread t2 = new Thread(runnable);
+        Thread t3 = new Thread(runnable);
+
+        t1.start(); t2.start(); t3.start();
+
+        try {
+            t1.join(); t2.join(); t3.join();
+        } catch (InterruptedException e) {}
+
+        int result = count;
+        int atomicResult = atomicCount.get();
+    } // 🛑
+}
+```
+###### debug
+```
+result: 2721
+atomicResult: 3000
+```
+
+#### 💡 `AtomicReference` 다루기
+###### ☕️ Counter.java
+```java
+public class Counter {
+    private int count = 0;
+
+    public Counter(int count) {
+        this.count = count;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void increment() {
+        count++;
+    }
+}
+```
+###### ☕️ Ex04.java
+```java
+public class Ex04 {
+
+    static Counter counter = new Counter(0);
+
+    static AtomicReference atomicCounter = new AtomicReference(new Counter(0));
+
+    public static void main(String[] args) {
+        Runnable nonAtomic = () -> {
+            for (int i = 0; i < 10000; i++) {
+                counter.increment();
+            }
+        };
+
+        Runnable atomic = () -> {
+            for (int i = 0; i < 10000; i++) {
+
+                Counter before, after;
+                do {
+                    before = (Counter) atomicCounter.get();
+                    after = new Counter(before.getCount() + 1);
+
+                    // 💡 compareAndSet : ⭐️ atomic 메소드
+                    //  - 기존 값과 비교하여 같으면 새로운 값으로 교체
+
+                    //  ⭐️ do-while을 사용하여, 다른 쓰레드가 중간에 개입한 경우를 제외
+                    //  - atomicCounter의 값이 before와 같다면
+                    //  - after로 교체한 뒤 true 반환
+                } while (!atomicCounter.compareAndSet(before, after));
+            }
+        };
+
+        Thread t1 = new Thread(nonAtomic);
+        Thread t2 = new Thread(nonAtomic);
+        Thread t3 = new Thread(nonAtomic);
+
+        Thread t4 = new Thread(atomic);
+        Thread t5 = new Thread(atomic);
+        Thread t6 = new Thread(atomic);
+
+        t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t6.start();
+
+        try {
+            t1.join(); t2.join(); t3.join(); t4.join(); t5.join(); t6.join();
+        } catch (InterruptedException e) {}
+
+        int result = counter.getCount();
+        int atomicResult = ((Counter) atomicCounter.get()).getCount();
+    }
+}
+```
 
 
 
