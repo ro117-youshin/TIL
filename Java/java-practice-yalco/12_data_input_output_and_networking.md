@@ -208,13 +208,147 @@ public class Main {
 }
 ```
 
+## 5. 직렬화 Serialization
+* 인스턴스를 바이트 스트림으로 변환
+* 다른 곳에 보내거나 파일 등으로 저장하기 위해 사용
 
+#### 직렬화 예제
+###### ☕️ Person.java
+```java
+public class Person implements Serializable {
 
+    //  💡 serialVersionUID : 클래스의 버전 번호로 사용
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private int age;
+    private double height;
+    private boolean married;
 
+    //  💡 transient : 직렬화에서 제외
+    transient private String bloodType;
+    transient private double weight;
 
+    //  ⭐️ 직렬화에 포함되려면 해당 클래스도 Serializable 구현
+    private Career career;
 
+    public Person(String name, int age, double height, boolean married, String bloodType, double weight, Career career) {
+        this.name = name;
+        this.age = age;
+        this.height = height;
+        this.married = married;
+        this.bloodType = bloodType;
+        this.weight = weight;
+        this.career = career;
+    }
 
+}
+```
+###### ☕️ Career.java
+```java
+public class Career implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String company;
+    private int years;
 
+    public Career(String company, int years) {
+        this.company = company;
+        this.years = years;
+    }
+}
+```
+###### ☕️ Ex01.java
+```java
+public class Ex01 {
+
+    public static String PEOPLE_PATH = "src/sec12/chap05/people.ser";
+
+    public static void main(String[] args) {
+        Person person1 = new Person(
+                "홍길동", 20, 175.5, false,
+                "AB", 81.2,
+                new Career("ABC Market", 2)
+        );
+        Person person2 = new Person(
+                "전우치", 35, 180.3, true,
+                "O", 74.3,
+                new Career("Macrosoft", 14)
+        );
+
+        List<Person> people = new ArrayList<>();
+        people.add(person1);
+        people.add(person2);
+        people.add(new Person(
+                "임꺽정", 45, 162.8, true,
+                "A", 68.3,
+                new Career("Koryeo Inc.", 20)
+        ));
+        people.add(new Person(
+                "붉은매", 24, 185.3, false,
+                "B", 79.3,
+                new Career("Cocoa", 30)
+        ));
+
+        //  💡 ObjectOutputStream : 직렬화 구현한 인스턴스를 스트림으로 출력
+        try (
+                FileOutputStream fos = new FileOutputStream(PEOPLE_PATH);
+                BufferedOutputStream bos = new BufferedOutputStream(fos);
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+        ) {
+            oos.writeObject(person1);
+            oos.writeObject(person2);
+            oos.writeObject(people);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+#### 역직렬화 예제
+###### ☕️ Ex02.java
+```java
+public class Ex02 {
+    public static String PEOPLE_PATH = "src/sec12/chap05/people.ser";
+
+    public static void main(String[] args) {
+        Person person1Out;
+        Person person2Out;
+        List<Person> peopleOut;
+
+        //  ⭐️ 다시 인스턴스로 역직렬화
+        try (
+                FileInputStream fis = new FileInputStream(PEOPLE_PATH);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+        ) {
+
+            //  ⚠️ 직렬화할 때와 순서 동일해야 함
+            //  - 순서 바꾸고 재실행 해 볼 것
+            person1Out = (Person) ois.readObject();
+            person2Out = (Person) ois.readObject();
+            peopleOut = (ArrayList) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(person1Out);
+        System.out.println(person2Out);
+        System.out.println(peopleOut);
+    }
+
+}
+```
+
+###### 💡 serialVersionUID : 직렬화하여 주고받을 클래스의 버전
+* 직접 지정하지 않으면 자동으로 생성됨
+* 클래스를 보낼 쪽과 받을 쪽에 명시된 클래스의 내용이 다를 때를 대비
+* `Ex01.java` 직렬화 한 뒤 `Ex02.java` 역직렬화로 테스트 진행
+  * `Person`클래스의 내용은 유지하되 버전 번호를 바꿔서 실행해볼 것.
+    * ⚠️ 예외발생 (클래스의 변경내용이 공유되어야 함을 받는 쪽에 알림)
+  * 버전 번호는 유지하되, `Person` 클래스의 `name` 필드의 변수이름을 변경
+    * 예외는 발생하지 않으나 디버깅 해보면 해당 필드 값이 `null`임
+  * 버전 번호는 유지하되, `Person` 클래스 `age`필드의 타입을 변경
+    * ⚠️ 예외 발생
 
 
 
