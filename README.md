@@ -17,6 +17,8 @@
 
 ### DDD 
 * [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 도메인 모델](https://livebyfaith117.tistory.com/150)
+* [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 엔티티와 밸류](https://livebyfaith117.tistory.com/151)
+
 
 ### Java
 * [[제대로 파는 자바 (얄코)] Section 4. 제어문과 메소드](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/04_control_statement_and_method.md)
