@@ -18,6 +18,7 @@
 ### DDD 
 * [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 도메인 모델](https://livebyfaith117.tistory.com/150)
 * [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 엔티티와 밸류](https://livebyfaith117.tistory.com/151)
+* [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 도메인 용어](https://livebyfaith117.tistory.com/152)
 
 
 ### Java
