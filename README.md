@@ -15,6 +15,12 @@
 ### Seminar & Conference
 * [[20240131] 김영한님의 온라인 밋업 Live (and 오프라인 세미나)](https://github.com/ro117-youshin/TIL/blob/master/SeminarAndConference/20240131_kimyeonghan_seminar_in_inflearn.md)
 
+### DDD 
+* [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 도메인 모델](https://livebyfaith117.tistory.com/150)
+* [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 엔티티와 밸류](https://livebyfaith117.tistory.com/151)
+* [[DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기] Chapter 1. 도메인 모델 시작 - 도메인 용어](https://livebyfaith117.tistory.com/152)
+
+
 ### Java
 * [[제대로 파는 자바 (얄코)] Section 4. 제어문과 메소드](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/04_control_statement_and_method.md)
 * [[제대로 파는 자바 (얄코)] Section 5. 객체지향 프로그래밍](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/05_object_oriented_programming.md)
