@@ -13,7 +13,7 @@ Section 2. 아키텍처 개요
 ### 🏛️ 네 개의 영역
  아키텍처의 전형적인 영역, '표현', '응용', '도메인', '인프라스트럭처'의 네 영역이다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/archi_1.png" width="300" height="300"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/archi_1.png" width="400" height="300"/>
 
 웹 애플리케이션에서 표현 영역은 HTTP 요청을 응용 영역이 필요로 하는 형식으로 변환해서 전달하고, 응용 영역의 응답을 HTTP 응답으로 변환해서 전송한다. 
 예를 들어, 표현 영역은 웹 브라우저가 HTTP 요청 파라미터로 전송한 데이터를 응용 서비스가 요구하는 형식의 객체 타입으로 변환해서 전달하고, 응용 서비스가 리턴한 결과를 JSON 형식으로 변환해서 HTTP 응답으로 웹 브라우저에 전송한다. 
@@ -33,7 +33,7 @@ public class CancelOrderService {
 ```
 응용 서비스는 로직을 직접 수행하기보다는 도메인 모델에 로직 수행을 위임한다. 위 코드도 주문 취소 로직을 직접 구현하지 않고 `Order`객체에 취소 처리를 위임하고 있다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/application_to_domain.png" width="300" height="300"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/application_to_domain.png" width="400" height="300"/>
 
 <ins>도메인 영역은 도메인 모델을 구현한다.</ins> 
 * chap1에서 봤던 `Order`, `OrderLine`, `ShippingInfo`와 같은 도메인 모델이 이 영역에 위치한다. 
