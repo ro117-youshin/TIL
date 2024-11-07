@@ -7,6 +7,10 @@ CHAPTER 2. 아키텍처 개요
   > 2-1. DIP 주의사항<br>
   > 2-2. DIP와 아키텍처
 > 3. 도메인 영역의 주요 구성요소
+  > 3-1. 엔티티와 밸류
+  > 3-2. 애그리거트
+  > 3-3. 리포지터리
+  > 3-4. 요청 처리 흐름
 > 4. 인프라스트럭처
 > 5. 모듈
 
@@ -246,23 +250,86 @@ DIP를 잘못 생각하면 단순히 인터페이스와 구현 클래스를 분�
 
 인프라스트럭처에 위치한 클래스가 도메인이나 응용 영역에 정의한 인터페이스를 상속받아 구현하는 구조가 되므로 도메인과 응용 영역에 대한 영향을 주지 않거나 최소화하면서 구현 기술을 변경 가능하다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/dip_structure_final.png" width="500" height="300"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/dip_structure_final.jpg" width="500" height="300"/>
 
 인프라스트럭처 영역의 `EmailNotifier`클래스는 응용 영역의 `Notifier`인터페이스를 상속받고 있다.
 주문 시 통지 방식에 SMS를 추가해야 한다는 요구사항이 들어왔을 경우 응용 영역의 `OrderService`는 변경할 필요가 없다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/dip_structure_modify_impl.png" width="500" height="300"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/dip_structure_modify_impl.jpg" width="500" height="300"/>
 
 요구사항이 들어왔을 때 두 통지 방식을 함께 제공하는 `Notifier` 구현 클래스를 인프라스트럭처 영역에 추가하면 된다.
 비슷하게 Mybatis 대신 JPA를 구현 기술로 사용하고 싶다면 JPA 이용한 `OrderRepository` 구현 클래스를 인프라스트럭처 영역에 추가하면 된다.
 
+---
 
+## 3. 도메인 영역의 주요 구성요소
 
+도메인 영역의 모델은 도메인의 주요 개념을 표현하며 핵심이 되는 로직을 구현한다. 
+도메인 영역의 주요 구성요소는 **엔티티**와 **밸류 타입**이다.
 
+- **엔티티 ENTITY** : <ins>고유의 식별자를 갖는 객체로 자신의 라이프사이클을 갖는다.</ins> 주문(Order), 회원(Member), 상품(Product)과 같이 도메인의 고유한 개념을 표현한다. 도메인 모델의 데이터를 포함하며 해당 데이터와 관련된 기능을 함께 제공한다.
+- **밸류 VALUE** : <ins>고유의 식별자를 갖지 않는 객체로 주로 개념적으로 하나인 도매인 객체의 속성을 표현할 때 사용한다.</ins> 엔티티의 속성으로 사용될 뿐만 아니라 다른 밸류 타입의 속성으로도 사용될 수 있다.
+- **애그리거트 AGGREGATE** : <ins>애그리거트는 관련된 엔티티와 밸류 객체를 개념적으로 하나로 묶은 것이다.</ins>
+- **리포지터리 REPOSITORY** : <ins>도메인 모델의 영속성을 처리한다.</ins>
+- **도메인 서비스 DOMAIN SERVICE** : <ins>특정 엔티티에 속하지 않은 도메인 로직을 제공한다.</ins> '할인 금액 계산'은 상품, 쿠폰, 회원 등급 등 다양한 조건을 이용해서 구현하게 되는데, 이렇게 도메인 로직이 여러 엔티티와 밸류를 필요로 할 경우 도메인 서비스에서 로직을 구현한다.
 
+### 🏛️ 엔티티와 밸류
 
+저자분이 신입 시절 처음 도메인 모델을 만들 때, DB 테이블의 엔티티와 도메인 모델의 엔티티를 구분하지 못해 거의 동일하게 만들곤 했다고 한다.
+그러나 경력을 더할수록 도메인 모델에 대한 이해가 쌓이면서 <ins>실제 도메인 모델의 엔티티와 DB 관계형 모델의 엔티티는 같은 것이 아님을 갈게 되었다고 한다.</ins>
 
+이 두 모델의 가장 큰 차이점은 <ins>도메인 모델의 엔티티는 데이터와 도메인 기능을 함께 제공한다는 점이다.</ins>
+예를 들어, 주문을 나타내는 엔티티는 주문과 관련된 데이터와 배송지 주소 변경을 위한 기능을 함께 제공한다.
 
+```java
+public class Order {
+    // 주문 도메인 모델의 데이터
+    private OrderNo number;
+    private Orderer orderer;
+    private ShippingInfo shippingInfo;
+    ...
+    
+    // 도메인 모델 엔티티는 도메인 기능도 함께 제공
+    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+        ...
+    }
+}
+```
+***도메인 모델의 엔티티***는 단순히 데이터를 담고 있는 데이터 구조가 아니라 <ins>데이터와 함께 기능을 제공하는 객체</ins>이다.
+도메인 관점에서 기능을 구현하고 기능 구현을 캡슐화해서 데이터가 임의로 변경되는 것을 막는다. 
+
+또 다른 차이점은 <ins>도메인 모델의 엔티티는 두 개 이상의 데이터가 개념적으로 하나인 경우 밸류 타입을 이용해서 표현할 수 있다는 것이다.</ins>
+위 코드의 `Orderer`는 주문자를 표현하는 객체이며 밸류 타입으로 주문자의 이름과 이메일 데이터를 포함할 수 있다.
+```java
+public class Orderer {
+    private String name;
+    private String email;
+    ...
+}
+```
+
+#### 💡 밸류는 불변으로 구현하는 것을 권장한다.
+이는 엔티티의 밸류 타입 데이터를 변경할 때 객체 자체를 완전히 교체한다는 것을 의미한다.
+예를 들어, 배송지 정보를 변경하는 코드는 기존 객체의 값을 변경하지 않고 다음과 같이 새로운 객체를 필드에 할당한다.
+
+```java
+public class Order {
+    private ShippingInfo shippingInfo;
+    ...
+  
+    // 도메인 모델 엔티티는 도메인 기능도 함께 제공
+    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+        checkShippingInfoChangeable();
+        setShippingInfo(newShippingInfo);
+    }
+    
+    private void setShippingInfo(ShippingInfo newShippingInfo) {
+        if(newShippingInfo == null) throw new IllegalArgumentException();
+        // 밸류 타입의 데이터를 변경할 때는 새로운 객체로 교체한다.
+        this.shippingInfo = newShippingInfo;
+    }
+}
+```
 
 
 
