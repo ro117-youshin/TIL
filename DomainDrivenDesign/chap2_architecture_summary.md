@@ -378,6 +378,96 @@ public class Order {
 애그리거트를 어떻게 구성했느냐에 따라 구현이 복잡해지기도 하고 트랜잭션 범위가 달라지기도 한다.
 또한 선택한 구현 기술에 따라 애그리거트 구현에 제약이 생기기도 한다.
 
+### 🏛️ 리포지터리
+
+&nbsp;도메인 객체를 지속적으로 사용하려면 RDBMS, NoSQL, 로컬 파일과 같은 물리적인 저장소에 도매인 객체를 보관해야 하는데, 이를 위한 도메인 모델이 리포지터리(repository)이다.
+엔티티나 밸류가 요구사항에서 도출되는 도메인 모델이라면 리포지터리는 구현을 위한 도메인 모델이다.
+
+&nbsp;리포지터리는 애그리거트 단위로 도메인 객체를 저장하고 조회하는 기능을 정의한다.
+
+```java
+public interface OrderRepository {
+    public Order findByNumber(OrderNumber number);
+    // 애그리거트 단위로 저장/삭제
+    public void save(Order order);
+    public void delete(Order order);
+}
+```
+&nbsp;`OrderRepository`의 메서드를 보면 대상을 찾고 저장하는 단위가 애그리거트 루트인 `Order`이다. 
+`Order`는 애그리거트에 속한 모든 객체를 포함하고 있으므로 결과적으로 애그리거트 단위로 저장하고 조회한다.
+
+&nbsp;도메인 모델을 사용해야 하는 코드는 리포지터리를 통해서 도메인 객체를 구한 뒤에 도메인 객체의 기능을 실행하게 된다.
+예를 들어, 주문 취소 기능을 제공하는 응용 서비스는 아래 코드처럼 `OrderRepository`를 이용해서 `Order`객체를 구하고 해당 기능을 실행한다.
+
+```java
+public class CancelOrderService {
+    private OrderRepository orderRepository;
+    
+    public void cancel(OrderNumber number) {
+        Order order = orderRepository.findByNumber(number);
+        if(order == null) throw new NoOrderException(number);
+        order.cancel();
+    }
+    
+    ... DI 등의 방식으로 OrderRepository 객체 전달
+}
+```
+
+&nbsp;도메인 모델 관점에서 `OrderRepository`는 도메인 객체를 영속화하는데 필요한 기능을 추상화한 것으로 고수준 모듈에 속한다. 
+기반 기술을 이용해서 `OrderRepository`를 구현한 클래스는 저수준 모듈로 인프라스트럭처 영역에 속한다.
+
+&nbsp; 전체 모듈 구조를 그려보면, 
+
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/overall_module_structure.jpg" width="400" height="500"/>
+
+&nbsp;응용 서비스는 의존 주입과 같은 방식을 사용해서 실제 리포지터리 구현 객체에 접근한다.
+스프링 프레임워크를 사용한다면 아래 코드와 비슷한 방식으로 리포지터리 구현 객체를 주입할 것이다.
+
+```java
+@Configuration
+public class OrderServiceConfig { // 응용 서비스 영역 설정
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Bean
+    public CancelOrderService cancelOrderService() {
+        return new CancelOrderService(orderRepository);
+    }
+}
+```
+```java
+@Configuration
+public class RepositoryConfig { // 인프라스트럭처 영역 설정
+    @Bean 
+    public JpaOrderRepository orderRepository() {
+        return new JpaOrderRepository();
+    }
+    @Bean
+    public LocalContainerEntityManagerFactoryBean emf() {
+        ...
+    }
+}
+```
+
+&nbsp;응용 서비스와 리포지터리는 밀접한 연관이 있는 이유는 아래와 같다.
+* 응용 서비스는 필요한 도메인 객체를 구하거나 저장할 때 리포지터리를 사용한다.
+* 응용 서비스는 트랜잭션을 관리하는데, 트랜잭션 처리는 리포지터리 구현 기술에 영향을 받는다.
+
+&nbsp;리포지터리의 사용 주체가 응용 서비스이기 때문에 리포지터리는 응용 서비스가 필요로 하는 메서드를 제공한다.
+가장 기본이 되는 메서드는 아래의 두 가지이다.
+* 애그리거트를 저장하는 메서드
+* 애그리거트 루트 식별자로 애그리거트를 조회하는 메서드
+
+```java
+public interface SomeRepository {
+    void save(Some some);
+    Some findById(SomeId id);
+}
+```
+
+
+
+
 
 
 
