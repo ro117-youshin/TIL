@@ -1,13 +1,19 @@
 # CHAPTER 1. 도메인 모델 시작
 
 > [DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기 - 최범균] 학습 후 기록
->
+
 > 1. 도메인 모델<br>
   > 1-1. 도메인<br>
   > 1-2. 도메인 모델<br>
   > 1-3. 도메인 모델 패턴<br>
   > 1-4. 도메인 모델 도출<br>
-> 2. 엔티티와 벨류
+> 2. 엔티티와 벨류<br>
+  > 2-1. 엔티티와 밸류<br>
+  > 2-2. 엔티티<br>
+  > 2-3. 엔티티의 식별자 생성<br>
+  > 2-4. 밸류 타입<br>
+  > 2-5. 엔티티 식별자와 밸류 타입<br>
+  > 2-6. 도메인 모델에 set 메서드 넣지 않기<br>
 > 3. 도메인 용어
 
 ## 1. 도메인 모델
@@ -286,4 +292,55 @@ public class Order {
 ```
 
 > 앞서 도메인 모델 패턴을 설명할 때에는 제약 조건 검사를 isShippingChangeable, 지금은 verifyNotYetShipped라는 이름으로 변경하였다. 이유는 그 사이에 도메인을 더 잘 알게 되었기 때문이다. 최초에는 배송지 정보 변경에 대한 제약 조건만 파악했기 때문에 '배송지 정보 변경 가능 여부 확인'을 의미하는 isShippingChangeable 이름을 사용했다. 그런데, 요구사항을 분석하면서 배송지 정보 변경과 주문 취소가 둘 다 '출고 전에 가능'하다는 제약 조건을 알게 되었고 이를 반영하여 메서드 이름을 verifyNotYetShipped로 변경했다.
->
+
+---
+
+## 2. 엔티티와 밸류 타입
+
+### 🏛️ 엔티티와 밸류
+&nbsp;도출한 모델은 크게 엔티티(Entity)와 밸류(value)로 구분할 수 있다. 
+엔티티와 밸류를 제대로 구분해야 도메인을 올바르게 설계하고 구현할 수 있다. 
+그래서 이 둘의 차이를 명확하게 이해하는 것이 도메인을 구현하는데 있어 중요하다.
+
+### 🏛️ 엔티티
+&nbsp;<ins>엔티티의 가장 큰 특징은 식별자를 갖는다는 것.</ins> 
+식별자는 엔티티 객체마다 고유해서 <ins>각 엔티티는 서로 다른 식별자를 갖는다.</ins>
+
+&nbsp;엔티티의 식별자는 바뀌지 않는다. 엔티티를 생성하고 엔티티의 속성을 바꾸고 엔티티를 삭제할 때까지 식별자는 유지된다.
+
+&nbsp;엔티티의 식별자는 바뀌지 않고 고유하기 때문에 두 엔티티 객체의 식별자가 같으면 두 엔티티는 같다고 판단할 수 있다. 
+엔티티를 구현한 클래스는 다음과 같이 식별자를 이용해서 `equals()` 메서드와 `hashCode()` 메서드를 구현할 수 있다.
+
+```java
+public class Order {
+    private String orderNumber;
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null) return false;
+        if(obj.getClass() != Order.class) return false;
+        Order order = (Order)obj;
+        if(this.orderNumber == null) return false;
+        return this.orderNumber.equals(other.orderNumber);
+    }
+    
+    @Override
+    public int haschCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result * ((orderNumber == null) ? 0 : orderNumber.hashCode());
+        return result;
+    }
+    ...
+}
+```
+
+
+
+
+
+
+
+
+
