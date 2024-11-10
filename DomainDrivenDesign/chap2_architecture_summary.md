@@ -1,5 +1,7 @@
-CHAPTER 2. 아키텍처 개요
-=====================
+# CHAPTER 2. 아키텍처 개요
+
+> [DDD Start! 도메인 주도 설계 구현과 핵심 개념 익히기 - 최범균] 학습 후 기록
+
 > 1. 아키텍처<br>
   > 1-1. 네 개의 영역<br>
   > 1-2. 계층 구조 아키텍처
@@ -465,9 +467,34 @@ public interface SomeRepository {
 }
 ```
 
+### 🏛️ 요청 처리 흐름
 
+&nbsp;사용자가 애플리케이션에 기능 실행을 요청하면 그 요청을 처음 받는 영역은 **표현 영역**이다.
+스프링 MVC를 사용해서 웹 애플리케이션을 구현했다면 <ins>컨트롤러가 사용자의 요청을 받아 처리</ins>하게 된다.
 
+&nbsp;<ins>표현 영역은 사용자가 전송한 데이터 형식이 올바른지 검사하고 문제가 없다면 데이터를 이용해서 응용 서비스에 기능 실행을 위임한다.</ins>
+이 때 표현 영역은 사용자가 전송한 데이터를 응용 서비스가 요구하는 형식으로 변환해서 전달한다.
 
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/request_processing_flow.jpg" width="500" height="400"/>
+
+&nbsp;**응용서비스**는 도메인 모델을 이용해서 기능을 구현한다. 기능 구현에 필요한 도메인 객체를 리포지터리에서 가져와 실행하거나 신규 도메인 객체를 생성해서 리포지터리에 저장한다.
+
+&nbsp; 도메인의 상태를 변경하는 응용 서비스는 변경 상태가 물리 저장소에 반영되도록 트랜잭션을 관리해야 한다. 
+아래는 스프링이 제공하는 트랜잭션 관리 기능을 이용해 트랜잭션 처리를 확인했다.
+
+```java
+public class CancelOrderService {
+    private OrderRepository orderRepository;
+    
+    @Transaction    // 응용 서비스는 트랜잭션을 관리한다.
+    public void cancel(OrderNumber number) {
+        Order order = orderRepository.findByNumber(number);
+        if(order == null) throw new NoOrderException(number);
+        order.cancel();
+    }
+    ...
+}
+```
 
 
 
