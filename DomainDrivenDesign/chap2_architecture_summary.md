@@ -420,7 +420,7 @@ public class CancelOrderService {
 
 &nbsp; 전체 모듈 구조를 그려보면, 
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/overall_module_structure.jpg" width="400" height="500"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/overall_module_structure.png" width="400" height="500"/>
 
 &nbsp;응용 서비스는 의존 주입과 같은 방식을 사용해서 실제 리포지터리 구현 객체에 접근한다.
 스프링 프레임워크를 사용한다면 아래 코드와 비슷한 방식으로 리포지터리 구현 객체를 주입할 것이다.
