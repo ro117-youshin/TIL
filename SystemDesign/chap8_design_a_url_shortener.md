@@ -3,6 +3,8 @@
 
 &nbsp;고전적인 시스템 설계 문제 가운데 하나인, [TinyURL](https://tinyurl.com/) 같은 URL 단축기를 설계하는 문제를 풀어보는 것을 정리.
 
+---
+
 ### 🪜 STEP 1 - 문제 이해 및 설계 범위 확정
 #### 💡 개략적 추정
 * 쓰기 연산: 매일 1억 개의 단축 URL 생성
@@ -11,6 +13,8 @@
 * URL 단축 서비스를 10년간 운영한다고 가정하면 1억(100million) * 365 * 10 = 3650억(365billion)개의 레코드를 보관해야 한다.
 * 축약 전 URL의 평균 길이는 100이라고 하자.
 * 따라서 10년 동안 필요한 저장 용량은 3650억(365billion) * 100byte = 36.5TB 이다.
+
+---
 
 ### 🪜 STEP 2 - 개략적 설계안 제시 및 동의 구하기
 &nbsp;API 엔드포인트(endpoint), URL 리디렉션, URL 단축 플로에 대해 살펴보자.
@@ -50,11 +54,15 @@
 &nbsp; 단축 URL이 www.tinyurl.com/{hashValue} 같은 형태라고 하자. 
 결국 중요한 것은 긴 URL을 이 해시 값으로 대응시킬 해시 함수 fx를 찾는 일이다.
 
-<img>
+```text
+긴 URL -----> fx (해시) -----> https://tinyurl.com/{qtj5opu}
+```
 
 이 해시 함수는 아래의 요구사항을 만족해야 한다.
 * 입력으로 주어지는 긴 URL이 다른 값이면 해시 값도 달라야 한다.
 * 계산된 해시 값은 원래 입력으로 주어졌던 긴 URL로 복원될 수 있어야 한다.
+
+---
 
 ### 🪜 STEP 3 - 상세 설계
 &nbsp;데이터 모델, 해시 함수, URL 단축 및 리디렉션에 관한 보다 구체적인 설계안을 만들어 보자.
@@ -167,9 +175,9 @@ _해시 값 길이_<br>
 4. 캐시에 해당 단축 URL이 없는 경우에는 데이터베이스에서 꺼낸다. 데이터베이스에 없다면 아마 사용자가 잘못된 단축 URL을 입력한 경우일 것이다.
 5. 데이터베이스에서 꺼낸 URL을 캐시에 넣은 후 사용자에게 반환한다.
 
-### 🪜 STEP 4 - 마무리
-
+---
 
 #### _Reference_
 [1] A RESTful Tutorial: _https://www.restapitutorial.com/index.html_ <br>
-[2] Bloom filter: _https://en.wikipedia.org/wiki/Bloom_filter_
+[2] Bloom filter: _https://en.wikipedia.org/wiki/Bloom_filter_ <br>
+[3] 가상 면접으로 배우는 대규모 시스템 설계 기초(System Design Interview - An Insider's Guide: Alex Xu 번역본)
