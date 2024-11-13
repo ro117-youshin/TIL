@@ -111,7 +111,7 @@ _해시 값 길이_<br>
 하지만 이렇게 하면 해시 결과가 서로 충돌할 확률이 높다. 
 그래서 충돌이 발생했을 때는, 충돌이 해소될 때까지 사전에 정한 문자열을 해시값에 덧붙인다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/hash_collision_resolution.png" width="500" height="400"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/hash_collision_resolution.png" width="600" height="400"/>
 
 &nbsp;이 방법을 쓰면 충돌은 해소할 수 있지만 <ins>단축 URL을 생성할 때 한 번 이상 데이터베이스 질의를 해야 하므로 오버헤드가 크다.</ins>
 데이터베이스 대신 <ins>블룸 필터를 사용하면 성능을 높일 수 있다.</ins>
@@ -149,7 +149,7 @@ _해시 값 길이_<br>
 
 &nbsp;URL 단축기는 시스템의 핵심 컴포넌트이므로, 그 처리 흐름이 논리적으로는 단순해야 하고 기능적으로는 언제나 동작하는 상태로 유지되어야 한다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/url_shortening_deep_dive.png" width="500" height="400"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/url_shortening_deep_dive.png" width="600" height="400"/>
 
 &nbsp; 6.의 데이터베이스에 레코드를 만든 후 단축 URL을 클라이언트에 전달한다.
 
@@ -158,7 +158,7 @@ _해시 값 길이_<br>
 &nbsp; URL 리디렉션 메커니즘의 상세한 설계를 그리고 있다. 
 쓰기보다 읽기를 더 자주하는 시스템이라, <단축 URL, 원래 URL>의 쌍을 캐시에 저장하여 성능을 높였다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/url_redirecting_deep_dive.png" width="500" height="200"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/url_redirecting_deep_dive.png" width="600" height="200"/>
 
 로드밸런서의 동작 흐름을 요약해보면,
 1. 사용자가 단축 URL을 클릭한다.
