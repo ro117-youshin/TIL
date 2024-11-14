@@ -625,18 +625,60 @@ public class Receiver{
 }
 ```
 
+---
 
+## 3. 도메인 용어
 
+&nbsp;코드를 작성할 때 도메인에서 사용하는 용어는 아주 중요하다. 도메인에서 사용하는 용어를 코드에 반영하지 않는다면 그 코드는 개발자에게 코드의 의미를 해석해야 하는 부담을 준다.
 
+ex) `OrderState`를 다음과 같이 구현했다고 가정해보자.
 
+```java
+public OrderState {
+    STEP1, STEP2, STEP3, STEP4, STEP5, STEP6
+}
+```
 
+실제주문상태는 '결제 대기중', '상품 준비중', '출고 완료됨', '배송중', '배송완료', '주문 취소' 인데, 이 코드는 개발자가 전체 상태를 6단계로 보고 코드로 표현한 것이다. 
+이 개발자는 `Order` 코드를 아래와 같이 작성할 가능성이 높다.
 
+```java
+public class Order {
+    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+        verifyStep1OrStep2();
+        setShippingInfo(newShippingInfo);
+    }
+    private void verifyStep1OrStep2() {
+        if (state != OrderState.STEP1 && state != OrderState.STEP2)
+            throw new IllegalStateException("already shipped");
+    }
+    ...
+}
+```
 
+&nbsp;배송지 변경은 '출고 전'에 가능한데 이 코드의 `verifyStep1OrStep2`라는 이름은 도메인의 중요 규칙이 드러나지 않는다. 
+각각 STEP의 상태를 파악해야 한다. 즉, 기획자나 도메인 전문가가 개발자와의 업무 회의에서 '출고 전' 이라는 단어를 사용하면 개발자는 머릿속으로 '출고 전은 STEP1과 STEP2' 라고 도메인 지식을 코드로 해석해야 한다.
 
+&nbsp;아래의 코드처럼 도메인 용어를 사용해서 `OrderState`를 구현하면 불필요한 변환을 거치지 않아도 된다.
 
+```java
+public enum OrderState {
+    PAYMENT_WAITING, PREPARING, SHIPPED, DELIVERING, DELIVERY_COMPLETED;
+}
+```
 
+&nbsp;위와 같이 도메인에서 사용하는 용어를 최대한 코드에 반영하면 코드를 보고 바로 도메인을 이해할 수 있다. 
+코드를 도메인 용어로 해석하거나 도메인 용어를 코드로 해석하는 과정이 줄어든다. 
+이는 코드의 가독성을 높여서 코드를 분석하고 이해하는 시간을 절약한다. 
+도메인 용어를 사용해서 최대한 도메인 규칙을 코드로 작성하게 되므로 (의미를 변환하는 과정에서 발생하는) 버그도 줄어들게 된다.
 
++\
+&nbsp;도메인 용어는 좋은 코드를 만드는 데 아주 중요한 요소임에 틀림없지만 국내 개발자는 이 점에 있어 불리한 면이 있다. 
+바로 영어 때문이다. 즉 도메인 용어를 영어로 해석하는 노력이 필요함을 뜻한다. 
+알맞은 영어 단어를 찾는 것은 쉽지 않은 일이지만 시간을 들여 찾는 노력을 해야 한다. 
+사전을 사용해서 적당한 단어를 찾는 노력을 하지 않고 도메인에 어울리지 않는 단어를 사용하면 코드는 도메인과 점점 멀어지게 된다.
 
+&nbsp;**도메인 용어에 알맞은 단어를 찾는 시간을 아까워하지 말자.**
 
 
 
