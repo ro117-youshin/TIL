@@ -18,6 +18,7 @@
 ### DomainDrivenDesign 
 * [[DDD / 도메인 주도 설계] Chapter 1. 도메인 모델 시작](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap1_domain_model_start.md)
 * [[DDD / 도메인 주도 설계] Chapter 2. 아키텍처 개요](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap2_architecture_summary.md)
+* [[DDD / 도메인 주도 설계] Chapter 3. 애그리거트](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap3_aggregate.md)
 
 ### SystemDesign
 * [[대규모 시스템 설계 기초] CHAPTER 8. DESIGN A URL SHORTENER (URL 단축기 설계)](https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/chap8_design_a_url_shortener.md)
@@ -40,6 +41,7 @@
 ### React
 * [[모던 리액트 Deep Dive] 01장 리액트 개발을 위해 꼭 알아야 할 자바스크립트](https://github.com/ro117-youshin/TIL/blob/master/React/01_js_need_to_know_for_react_development.md)
 * [[모던 리액트 Deep Dive] 02장 리액트 핵심 요소 깊게 살펴보기](https://github.com/ro117-youshin/TIL/blob/master/React/02_exploring_core_elements_of_react.md)
+* [[모던 리액트 Deep Dive] 03장 리액트 훅 깊게 살펴보기](https://github.com/ro117-youshin/TIL/blob/main/React/03_exploring_hook_of_react.md)
 
 ### Database
 
