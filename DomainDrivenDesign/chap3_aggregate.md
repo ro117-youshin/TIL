@@ -24,11 +24,11 @@
 
 &nbsp;애그리거트는 관련된 객체를 하나의 군으로 묶어주는데, 수많은 객체를 애그리거트로 묶어서 바라보면 좀 더 상위 수준에서 도메인 모델 간의 관계를 파악할 수 있다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/models_at_individual_object_level.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_individual_object_level.png"/>
 
 &nbsp; 동일한 모델이지만 애그리거트를 사용함으로써 모델 간의 관계를 개별 모델 수준뿐만 아니라 상위 수준에서도 이해할 수 있게 된다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/models_at_aggregate_level.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_aggregate_level.png"/>
 
 &nbsp;애그리거트는 모델을 잘 이해하게 해줄 뿐만 아니라 <ins>일관성을 관리하는 기준이 된다.</ins>
 <ins>일관성을 관리하기 때문에 복잡한 도메인을 단순한 구조로 만들어주고, 복잡도가 낮아지는 만큼 도메인 기능을 확장하고 변경하는데 필요한 노력(개발 시간)도 줄어든다.</ins>
