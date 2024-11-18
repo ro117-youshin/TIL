@@ -180,4 +180,4 @@ _해시 값 길이_<br>
 #### _Reference_
 [1] A RESTful Tutorial: _https://www.restapitutorial.com/index.html_ <br>
 [2] Bloom filter: _https://en.wikipedia.org/wiki/Bloom_filter_ <br>
-[3] 가상 면접으로 배우는 대규모 시스템 설계 기초(System Design Interview - An Insider's Guide: Alex Xu 번역본)
+[3] 가상 면접으로 배우는 대규모 시스템 설계 기초(System Design Interview - An Insider's Guide: Alex Xu 번역본) - CHAPTER 8.
