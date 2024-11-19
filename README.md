@@ -21,7 +21,8 @@
 * [[DDD / 도메인 주도 설계] Chapter 3. 애그리거트](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap3_aggregate.md)
 
 ### SystemDesign
-* [[대규모 시스템 설계 기초] CHAPTER 8. DESIGN A URL SHORTENER (URL 단축기 설계)](https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/chap8_design_a_url_shortener.md)
+* [[대규모 시스템 설계 기초] DESIGN A URL SHORTENER (URL 단축기 설계)](https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/chap8_design_a_url_shortener.md)
+* [[대규모 시스템 설계 기초] DESIGN A NEWS FEED SYSTEM (뉴스 피드 시스템 설계)](https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/design_a_news_feed_system.md)
 
 ### Java
 * [[제대로 파는 자바 (얄코)] Section 4. 제어문과 메소드](https://github.com/ro117-youshin/TIL/blob/master/Java/java-practice-yalco/04_control_statement_and_method.md)
