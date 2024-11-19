@@ -59,7 +59,7 @@ _GET/v1/me/feed_
 #### 💡 피드 발행
 &nbsp;피드 발행 시스템의 개략적 형태
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/feed_publishing_system.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/feed_publishing_system.png" width="500" height="750"/>
 
 * User: 모바일 앱이나 브라우저에서 새 포스팅을 올리는 주체. _POST_  _/v1/me/feed_ API를 사용한다.
 * Load balancer: 트래픽을 웹 서버들로 분산한다.
@@ -71,7 +71,7 @@ _GET/v1/me/feed_
 #### 💡 뉴스 피드 생성
 &nbsp;뉴스 피드가 만들어지는 개략적인 설계
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/news_feed_building.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/news_feed_building.png" width="500" height="750"/>
 
 * User: 뉴스 피드를 읽는 주체다. _GET_ _/v1/me/feed_ API를 이용한다.
 * Load balancer: 트래픽을 웹 서버들로 분산한다.
@@ -87,7 +87,7 @@ _GET/v1/me/feed_
 #### 💡 피드 발행 흐름 상세 설계
 &nbsp;아래 그림에서 대부분의 컴포넌트는 STEP 2에서 다룬 정도로 충분할 것이라 보고, 웹 서버와 fanout service(포스팅 전송 서비스)에 초점을 맞추어 보자.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/feed_publishing_deep_dive.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/feed_publishing_deep_dive.png" width="600" height="750"/>
 
 📌 _웹 서버_ 
 
@@ -131,7 +131,7 @@ fanout에는 두 가지 모델이 있다. 하나는 쓰기 시점에 fanout-on-w
 * 친구나 팔로어가 아주 많은 사용자의 경우에는 팔로어로 하여금 해당 사용자의 포스팅을 필요할 때 가져가도록 하는 풀 모델을 사용하여 시스템 과부하를 방지할 것이다.
 * 아울러 안정 해시(consistent hashing)를 통해 요청과 데이터를 보다 고르게 분산하여 `hotkey problem`을 줄여볼 것이다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/fanout_service.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/fanout_service.png" width="600" height="650"/>
 
 &nbsp;위 그림은 `💡 피드 발행 흐름 상세 설계`의 그림에서 `fanout service`에 관한 부분만 따로 떼어 옮겼다.
 자세히 살펴보면,
@@ -151,7 +151,7 @@ fanout에는 두 가지 모델이 있다. 하나는 쓰기 시점에 fanout-on-w
 #### 💡 피드 읽기 흐름 상세 설계
 &nbsp;뉴스 피드를 읽는 과정 전반의 상세 설계안은 아래와 같다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/news_feed_retrieval_deep_dive.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/news_feed_retrieval_deep_dive.png" width="600" height="750"/>
 
 &nbsp;이미지나 비디오와 같은 미디어 콘텐츠는 `CDN`에 저장하여 빨리 읽어갈 수 있도록 하였다.
 
@@ -166,7 +166,7 @@ fanout에는 두 가지 모델이 있다. 하나는 쓰기 시점에 fanout-on-w
 #### 💡 캐시 구조
 &nbsp; 캐시는 뉴스 피드 시스템의 핵심 컴포넌트다. 이번 설계의 경우 아래와 같이 캐시를 다섯 계층으로 나눴다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/cache_architecture.png"/>
+<img src="https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/img/cache_architecture.png" width="700" height="350"/>
 
 * 뉴스 피드: 뉴스 피드의 ID를 보관.
 * 콘텐츠: 포스팅 데이터를 보관, 인기 콘텐츠는 따로 보관.
