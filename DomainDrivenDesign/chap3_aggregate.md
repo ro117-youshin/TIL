@@ -33,6 +33,7 @@
 <p align="center">
   <img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_aggregate_level.png" width="600" height="350"/>
 </p>
+
 &nbsp;애그리거트는 모델을 잘 이해하게 해줄 뿐만 아니라 <ins>일관성을 관리하는 기준이 된다.</ins>
 <ins>일관성을 관리하기 때문에 복잡한 도메인을 단순한 구조로 만들어주고, 복잡도가 낮아지는 만큼 도메인 기능을 확장하고 변경하는데 필요한 노력(개발 시간)도 줄어든다.</ins>
 
@@ -66,7 +67,9 @@
 &nbsp; <ins>애그리거트에 속한 모든 객체가 일관된 상태를 유지하려면 애그리거트 전체를 관리할 주체가 필요한데 이 책임을 지는 것이 바로 **_애그리거트의 루트 엔티티_** 이다.</ins>
 애그리거트 루트 엔티티는 애그리거트의 대표 엔티티로 애그리거트에 속한 객체는 애그리거트 루트 엔티티에 직접 또는 간접적으로 속한다.
 
-<img>
+<p align="center">
+  <img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/the_root_of_order_aggregate_is_order.png" width="500" height="350"/>
+</p>
 
 &nbsp; 주문 애그리거트에서 루트 역할을 하는 엔티티는 `Order` 이다. `OrderLine`, `ShippingInfo`, `Orderer` 등 주문 애그리거트에 속한 모델은 `Order`에 직접 또는 간접적으로 속한다.
 
