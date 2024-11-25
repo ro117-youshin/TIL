@@ -24,12 +24,15 @@
 
 &nbsp;애그리거트는 관련된 객체를 하나의 군으로 묶어주는데, 수많은 객체를 애그리거트로 묶어서 바라보면 좀 더 상위 수준에서 도메인 모델 간의 관계를 파악할 수 있다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_individual_object_level.png"/>
+<p align="center">
+  <img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_individual_object_level.png" width="600" height="350"/>
+</p>
 
 &nbsp; 동일한 모델이지만 애그리거트를 사용함으로써 모델 간의 관계를 개별 모델 수준뿐만 아니라 상위 수준에서도 이해할 수 있게 된다.
 
-<img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_aggregate_level.png"/>
-
+<p align="center">
+  <img src="https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/img/models_at_aggregate_level.png" width="600" height="350"/>
+</p>
 &nbsp;애그리거트는 모델을 잘 이해하게 해줄 뿐만 아니라 <ins>일관성을 관리하는 기준이 된다.</ins>
 <ins>일관성을 관리하기 때문에 복잡한 도메인을 단순한 구조로 만들어주고, 복잡도가 낮아지는 만큼 도메인 기능을 확장하고 변경하는데 필요한 노력(개발 시간)도 줄어든다.</ins>
 
@@ -47,7 +50,8 @@
 &nbsp;흔히 'A가 B를 갖는다'로 설계할 수 있는 요구사항이 있다면 A와 B를 한 애그리거트에 묶어서 생각하기 쉽다. 
 주문의 경우 `Order`가 `ShippingInfo`와 `Orderer`를 가지므로 이는 어느 정도 타당해 보인다. 
 하지만, 'A가 B를 갖는다'로 해석되는 요구사항이라도 반드시 A와 B가 한 애그리거트에 속한다는 의미는 아니다.
-&nbps;좋은 예가 상품과 리뷰이다. 상품 상세 페이지에 보면 상품 상세 정보와 리뷰 내용을 보여줘야 한다. 
+
+&nbsp;좋은 예가 상품과 리뷰이다. 상품 상세 페이지에 보면 상품 상세 정보와 리뷰 내용을 보여줘야 한다. 
 이 요구사항이라면 `Product` 엔티티와 `Review` 엔티티가 한 애그리거트에 속한다고 생각할 수 있다. 
 하지만 `Product`와 `Review`는 함께 생성 및 변경되지 않는다. 그리고 `Product`를 변경하는 주체는 상품 담당자라면 `Review`는 고객이 생성 및 변경하는 주체다.
 `Review`의 변경과 `Product`의 변경이 서로에게 영향을 주지 않기 때문에 서로 다른 애그리거트에 속한다.
@@ -55,6 +59,16 @@
 ---
 
 ## 2. 애그리거트 루트와 역할
+
+&nbsp; 애그리거트는 여러 객체로 구성되기 때문에 한 객체만 상태가 정상이어서는 안된다. 
+<ins>도메인 규칙을 지키려면 애그리거트에 속한 모든 객체가 정상 상태를 가져야 한다.</ins>
+
+&nbsp; <ins>애그리거트에 속한 모든 객체가 일관된 상태를 유지하려면 애그리거트 전체를 관리할 주체가 필요한데 이 책임을 지는 것이 바로 **_애그리거트의 루트 엔티티_** 이다.</ins>
+애그리거트 루트 엔티티는 애그리거트의 대표 엔티티로 애그리거트에 속한 객체는 애그리거트 루트 엔티티에 직접 또는 간접적으로 속한다.
+
+<img>
+
+&nbsp; 주문 애그리거트에서 루트 역할을 하는 엔티티는 `Order` 이다. `OrderLine`, `ShippingInfo`, `Orderer` 등 주문 애그리거트에 속한 모델은 `Order`에 직접 또는 간접적으로 속한다.
 
 ---
 
