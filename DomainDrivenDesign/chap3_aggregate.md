@@ -73,6 +73,68 @@
 
 &nbsp; 주문 애그리거트에서 루트 역할을 하는 엔티티는 `Order` 이다. `OrderLine`, `ShippingInfo`, `Orderer` 등 주문 애그리거트에 속한 모델은 `Order`에 직접 또는 간접적으로 속한다.
 
+### 💡 도메인 규칙과 일관성
+
+&nbsp; <ins>애그리거트의 핵심 역할</ins>은 <ins>애그리거트의 일관성이 깨지지 않도록 하는 것이다.</ins> 
+이를 위해 <ins>애그리거트 루트는 애그리거트가 제공해야 할 도메인 기능을 구현한다.</ins>
+예를 들어, 주문 애그리거트는 배송지 변경, 상품 변경과 같은 기능을 제공하는데 애그리거트 루트인 `Order`가 이 기능을 구현한 메서드를 제공한다.
+
+&nbsp; <ins>애그리거트 루트가 제공하는 메서드는 도메인 규칙에 따라 애그리거트에 속한 객체의 일관성이 깨지지 않도록 구현해야 한다.</ins>
+예를 들어, 배송이 시작되기 전까지만 배송지 정보를 변경할 수 있다는 규칙이 있다면, 애그리거트 루트인 `Order`의 `changeShippingInfo()`메서드는 이 규칙에 따라 배송 시작 여부를 확인하고 변경이 가능한 경우에만 배송지 정보를 변경해야 한다.
+```java
+public class Order {
+    
+    // 애그리거트 루트는 도메인 규칙을 구현한 기능을 제공한다.
+    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+        verifyNotYetShipped();
+        setShippingInfo(newShippingInfo);
+    }
+    
+    private void verifyNotYetShipped() {
+        if(state != OrderState.PAYMENT_WAITING && state != OrderState.WAITING)
+            throw new IllegalStateException("already shipped");
+    }
+    
+    ...
+}
+```
+
+&nbsp; <ins>애그리거트 루트가 아닌 다른 객체가 애그리거트에 속한 객체를 직접 변경하면 안된다.</ins> 
+이는 애그리거트 루트가 강제하는 규칙을 적용할 수 없어 모델의 일관성을 깨는 원인이 된다.
+```java
+ShippingInfo si = order.getShippingInfo();
+si.setAddress(newAddress);
+```
+&nbsp;위 코드는 애그리거트 루트 `Order`에서 `ShippingInfo`를 가져와 직접 정보를 변경하고 있다.
+주문 상태에 상관없이 배송지 주소를 변경할 수 있는데, 이는 업무 규칙을 무시하고 DB 테이블에서 직접 데이터를 수정하는 것과 같은 결과를 만든다. 
+즉, 논리적인 데이터 일관성이 깨지게 되는 것이다. 일관성을 지키기 위해 아래와 같이 상태 확인 로직을 응용 서비스에 구현할 수도 있지만, 
+이렇게 되면 동일한 검사 로직을 여러 응용 서비스에서 중복해서 구현할 가능성이 높아져 상황을 더 악화시킬 수 있다.
+
+```java
+ShippingInfo si = order.getShippingInfo();
+
+// 주요 도메인 로직이 중복되는 문제, 여러 곳에 산재할 수 있는 코드...
+if(state != OrderState.PAYMENT_WAITING && state != OrderState.WAITING){
+    throw new IllegalArgumentException();    
+}
+    
+si.setAddress(newAddress);
+```
+
+&nbsp; <ins>불필요한 중복을 피하고 애그리거트 루트를 통해서만 도메인 로직을 구현</ins>하게 만들려면 도메인 모델에 대해 다음의 두 가지 습관을 적용해야 한다.
+* 단순히 필드를 변경하는 `set`메서드를 공개(public)범위로 만들지 않는다.
+* 벨류 타입은 불변으로 구현한다.
+
+```java
+// 도메인 모델에서 공개 set 메서드는 가급적 피해야 한다.
+public void setName(String name) {
+    this.name = name;
+}
+```
+
+&nbsp;공개 `set`메서드는 중요 도메인의 의미나 의도를 표현하지 못하고 도메인 로직이 도메인 객체가 아닌 응용 영역이나 표현 영역으로 분산되게 만드는 원인이 된다.
+도메인 로직이 한곳에 응집되어 있지 않게 되므로 코드를 유지보수할 때에도 분석하고 수정하는데 더 많은 시간을 들이게 된다.
+
 ---
 
 ## 3. 애그리거트와 리포지터리
