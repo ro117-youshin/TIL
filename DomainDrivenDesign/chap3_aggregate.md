@@ -101,10 +101,12 @@ public class Order {
 
 &nbsp; <ins>애그리거트 루트가 아닌 다른 객체가 애그리거트에 속한 객체를 직접 변경하면 안된다.</ins> 
 이는 애그리거트 루트가 강제하는 규칙을 적용할 수 없어 모델의 일관성을 깨는 원인이 된다.
+
 ```java
 ShippingInfo si = order.getShippingInfo();
 si.setAddress(newAddress);
 ```
+
 &nbsp;위 코드는 애그리거트 루트 `Order`에서 `ShippingInfo`를 가져와 직접 정보를 변경하고 있다.
 주문 상태에 상관없이 배송지 주소를 변경할 수 있는데, 이는 업무 규칙을 무시하고 DB 테이블에서 직접 데이터를 수정하는 것과 같은 결과를 만든다. 
 즉, 논리적인 데이터 일관성이 깨지게 되는 것이다. 일관성을 지키기 위해 아래와 같이 상태 확인 로직을 응용 서비스에 구현할 수도 있지만, 
@@ -134,6 +136,37 @@ public void setName(String name) {
 
 &nbsp;공개 `set`메서드는 중요 도메인의 의미나 의도를 표현하지 못하고 도메인 로직이 도메인 객체가 아닌 응용 영역이나 표현 영역으로 분산되게 만드는 원인이 된다.
 도메인 로직이 한곳에 응집되어 있지 않게 되므로 코드를 유지보수할 때에도 분석하고 수정하는데 더 많은 시간을 들이게 된다.
+
+&nbsp; 공개 `set`메서드를 만들지 않는 것의 연장으로 <ins>벨류는 '불변 타입'으로 구현한다.</ins>
+벨류 객체의 값을 변경할 수 없으면 애그리거트 루트에서 벨류 객체를 구해도 값을 변경할 수 없기 때문에 애그리거트 외부에서 벨류 객체의 상태를 변경할 수 없게 된다.
+
+```java
+ShippingInfo si = order.getShippingInfo();
+
+si.setAddress(newAddress); // ShippingInfo 벨류 객체가 불변이면, 이 코드는 컴파일 에러!
+```
+
+&nbsp; 애그리거트 외부에서 내부 상태를 함부로 바꾸지 못하므로 애그리거트의 일관성이 깨질 가능성이 줄어든다.
+<ins>벨류 객체가 불변이면 벨류 객체의 값을 변경하는 방법은 새로운 벨류 객체를 할당하는 것 뿐이다.</ins>
+
+```java
+public class Order {
+    
+    private ShippingInfo shippingInfo;
+    
+    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+        verifyNotYetShipped();
+        setShippingInfo(newShippingInfo);
+    }
+    // set 메서드의 접근 허용 범위는 private
+    private void setShippingInfo(ShippingInfo newShippingInfo) {
+        // 벨류가 불변이면, 새로운 객체를 할당해서 값을 변경해야 한다.
+        // 불변이므로 아래와 같은 코드는 사용할 수 없다.
+        // this.shippingInfo.setAddress(newShippingInfo.getAddress()) 
+        this.shippingInfo = newShippingInfo;
+    }
+}
+```
 
 ---
 
