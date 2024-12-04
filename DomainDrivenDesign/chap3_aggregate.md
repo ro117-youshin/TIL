@@ -168,6 +168,82 @@ public class Order {
 }
 ```
 
+### 💡 애그리거트 루트의 기능 구현
+&nbsp; **애그리거트 루트**는 <ins>애그리거트 내부의 다른 객체를 조합해서 기능을 완성한다.</ins>
+예를 들어, `Order`는 총 주문 금액을 구하기 위해 `OrderLine` 목록을 사용한다.
+
+```java
+public class Order {
+    private Money totalAmounts;
+    private List<OrderLine> orderLines;
+    
+    private void calculateTotalAmounts() {
+        int sum = orderLines.stream()
+                 .mapToInt(ol -> ol.getPrice() * ol.quantity())
+                 .sum();
+        this.totalAmounts = new Money(sum);
+    }
+}
+```
+
+&nbsp; 또 다른 예로 회원을 표현하는 `Member` 애그리거트 루트는 암호를 변경하기 위해 `Password`객체에 암호가 일치하는지 여부를 확인할 것이다.
+```java
+public class Member {
+    private Password password;
+    
+    public void changePassword(String currentPassword, String newPassword) {
+        if(!password.match(currentPassword)) {
+            throw new PasswordNotMatchException();
+        }
+        this.password = new Password(newPassword);
+    }
+}
+```
+
+&nbsp;애그리거트 루트가 구성요소의 상태만 참조하는 것은 아니다. <ins>기능 실행을 위임하기도 한다.</ins>
+예를 들어, 구현 기술의 제약이나 내부 모델링 규칙 때문에 `OrderLine` 목록을 별도 클래스로 분리했다고 해보자.
+
+```java
+public class OrderLines {
+    private List<OrderLine> lines;
+    
+    public Money getTotalAmounts() { ... }
+    public void changeOrderLines(List<OrderLine> newLines) {
+        this.lines = newLines;
+    }
+}
+```
+
+&nbsp 이 경우 `Order`의 `changeOrderLines()` 메서드는 아래 코드와 같이 내부의 `orderLines`필드에 상태 변경을 위임하는 방식으로 기능을 구현한다.
+
+```java
+public class Order {
+    private OrderLines orderLines;
+    
+    public void changeOrderLines(List<OrderLine> newLines) {
+        orderLines.changeOrderLines(newLines);
+        this.totalAmounts = orderLines.getTotalAmounts();
+    }
+}
+```
+
+&nbsp; `OrderLines`는 `changeOrderLines()`와 `getTotalAmounts()` 같은 기능을 제공하고 있다.
+만약 `Order`가 `getOrderLines()`와 같이 `OrderLines`를 구할 수 있는 메서드를 제공하면 애그리거트 외부에서 `OrderLines`의 기능을 실행할 수 있게 된다.
+
+```java
+OrderLines lines = order.getOrderLines();
+
+// 외부에서 애그리거트 내부 상태 변경!
+// order의 totalAmounts가 값이 OrderLines가 일치하지 않게 됨
+lines.changeOrderLines(newOrderLines);
+```
+
+&nbsp; 위 코드는 주문의 `OrderLine` 목록이 바뀌는데 총합은 계산하지 않는 버그를 만든다.
+이런 버그가 생기지 않도록 하려면 애초에 애그리거트 외부에서 `OrderLine` 목록을 변경할 수 없도록 `OrderLines`를 불변으로 구현하면 된다.
+
+&nbsp; 팀 표준이나 구현 기술 제약으로 `OrderLines`를 불변으로 구현할 수 없다면 `OrderLines`의 변경 기능을 패키지나 `protected` 범위로 한정해서 외부에서 실행할 수 없도록 제한하는 방법이 있다.
+
+
 ---
 
 ## 3. 애그리거트와 리포지터리
