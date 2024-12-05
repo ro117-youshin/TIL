@@ -243,6 +243,68 @@ lines.changeOrderLines(newOrderLines);
 
 &nbsp; 팀 표준이나 구현 기술 제약으로 `OrderLines`를 불변으로 구현할 수 없다면 `OrderLines`의 변경 기능을 패키지나 `protected` 범위로 한정해서 외부에서 실행할 수 없도록 제한하는 방법이 있다.
 
+### 💡 트랜잭션 범위
+
+&nbsp; <ins>트랜잭션 범위는 작을수록 좋다.</ins> 
+DB 테이블을 기준으로 한 트랜잭션이 한 개 테이블을 수정하는 것과 세 개의 테이블을 수정하는 것은 성능에서 차이가 발생한다.
+한 개 테이블을 수정할 때에는 트랜잭션 충돌을 막기 위해 잠그는 대상이 한 개의 테이블의 한 행으로 한정되지만, 세 개의 테이블을 수정하면 잠금 대상이 더 많아진다.
+<ins>잠금 대상이 많아진다는 것은 그만큼 동시에 처리할 수 있는 트랜잭션 개수가 줄어든다는 것을 뜻하고 이는 전체적인 성능(처리량)을 떨어뜨린다.
+
+&nbsp;<ins>동일하게 한 트랜잭션에는 한 개의 애그리거트만 수정해야 한다. 
+한 트랜잭션에서 두 개 이상의 애그리거트를 수정하면 트랜잭션 충돌이 발생할 가능성이 더 높아지기 때문에 한 번에 수정하는 애그리거트 개수가 많아질수록 전체 처리량이 떨어지게 된다.</ins>
+
+&nbsp; <ins>한 트랜잭션에서 한 애그리거트만 수정한다는 것</ins>은 <ins>애그리거트에서 다른 애그리거트를 변경하지 않는다는 것을 뜻한다.</ins>
+즉, <ins>두 개의 애그리거트를 한 트랜잭션에서 수정하게 되는데 한 애그리거트 내부에서 다른 애그리거트의 상태를 변경하는 기능을 실행하면 안된다.(MSA)</ins>
+예를 들어, 배송지 정보를 변경하면서 동시에 배송지 정보를 회원의 주소로 설정하는 기능이 있다고 해보자. 
+이 경우 주문 애그리거트는 아래 코드와 같이 회원 애그리거트의 정보를 변경하면 안된다.
+
+```java
+public class Order {
+    private Orderer orderer;
+    
+    public void shipTo(ShippingInfo newShippingInfo, 
+                       boolean useNewShippingAddrAsMemberAddr) {
+        verifyNotYetShipped();
+        setShippingInfo(newShippingInfo);
+        if(useNewShippingAddrAsMemberAddr) {
+            orderer.getCustomer().changeAddress(newShippingInfo.getAddress());
+        }
+    }
+    ...
+}
+```
+
+&nbsp; <ins>애그리거트에서 다른 애그리거트의 상태를 변경하지 말아야 한다.</ins> 애그리거트는 최대한 독립적이어야 한다. (= 의존도 낮은 -> 결합도가 낮은 (향후 수정 비용이 증가하지 않음))
+
+&nbsp; 만약 부득이하게 한 트랜잭션으로 두 개 이상의 애그리거트를 수정해야 한다면 애그리거트에서 다른 애그리거트를 직접 수정하지 말고 <ins>응용 서비스에서 두 애그리거트를 수정하도록 구현해야 한다.</ins>
+
+```java
+public class ChangeOrderService {
+    // 두 개 이상의 애그리거트를 변경해야 하면,
+    // 응용 서비스에서 각 애그리거트의 상태를 변경.
+    @Transactional
+    public void chagneShippingInfo(OrderId id, 
+                                   ShippingInfo newShippingInfo,
+                                   boolean useNewShippingAddrAsMemberAddr) {
+        
+        Order order = orderRepository.findById(id);
+        
+        if(order == null) throw new OrderNotFoundException();
+        order.shipTo(newShippingInfo);
+        
+        if(useNewShippingAddrAsMemberAddr) {
+            order.getOrderer().
+                    getCustomer().changeAddress(newShippingInfo.getAddress());
+        }
+    }
+}
+```
+
+&nbsp;한 트랜잭션에서 한 개의 애그리거트를 변경하는 것을 권장하지만 아래 3 가지 경우 한 트랜잭션에서 두 개 이상의 애그리거트를 변경하는 것을 교려할 수 있다.
+* 팀 표준: 팀에서 표준에 따라 사용자 유스케이스와 관련된 응용 서비스의 기능을 한 트랜잭션으로 실행해야 하는 경우가 있다. DB가 다른 경우 글로벌 트랜잭션을 반드시 사용하도록 규칙을 정하는 곳도 있다.
+* 기술 제약: 한 트랜잭션에서 두 개 이상의 애그리거트를 수정하는 대신 도메인 이벤트와 비동기를 사용하는 방식을 사용하는데, 기술적으로 이벤트 방식을 도입할 수 없는 경우 한 트랜잭션에서 다수의 애그리거트를 수정해서 일관성을 처리해야 한다.
+* UI 구현의 편리: 운영자의 편리함을 위해 주문 목록 화면에서 여러 주문의 상태를 한 번에 변경하고 싶을 것이다. 이 경우 한 트랜잭션에서 여러 주문 애그리거트의 상태를 변경할 수 있을 것이다.
+
 
 ---
 
