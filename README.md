@@ -35,6 +35,9 @@
 * [[제대로 파는 자바 (얄코)] Section 11. 멀티태스킹](https://github.com/ro117-youshin/TIL/blob/main/Java/java-practice-yalco/11_multitasking.md)
 * [[제대로 파는 자바 (얄코)] Section 12. 파일 입출력과 네트워킹](https://github.com/ro117-youshin/TIL/blob/main/Java/java-practice-yalco/12_data_input_output_and_networking.md)
 
+### Spring
+* [스프링 핵심 원리](https://github.com/ro117-youshin/Spring-core-basics)
+
 ### JavaScript
 * [[벨로퍼트와 함께하는 모던 자바스크립트] 자바스크립트의 핵심 개념](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/00_js_core_concepts.md)
 * [문서 객체 모델 DOM과 자바스크립트 | 생성 방식 및 접근 방법](https://github.com/ro117-youshin/TIL/blob/master/JavaScript/js_insight_dom.md)
@@ -44,8 +47,3 @@
 * [[모던 리액트 Deep Dive] 02장 리액트 핵심 요소 깊게 살펴보기](https://github.com/ro117-youshin/TIL/blob/master/React/02_exploring_core_elements_of_react.md)
 * [[모던 리액트 Deep Dive] 03장 리액트 훅 깊게 살펴보기](https://github.com/ro117-youshin/TIL/blob/main/React/03_exploring_hook_of_react.md)
 
-### Database
-
-### Algorithm
-
-### Etc
