@@ -34,6 +34,7 @@
 * [[제대로 파는 자바 (얄코)] Section 10. 오류에 대비하기](https://github.com/ro117-youshin/TIL/blob/main/Java/java-practice-yalco/10_preparing_for_errors.md)
 * [[제대로 파는 자바 (얄코)] Section 11. 멀티태스킹](https://github.com/ro117-youshin/TIL/blob/main/Java/java-practice-yalco/11_multitasking.md)
 * [[제대로 파는 자바 (얄코)] Section 12. 파일 입출력과 네트워킹](https://github.com/ro117-youshin/TIL/blob/main/Java/java-practice-yalco/12_data_input_output_and_networking.md)
+* [[모던자바인액션] CHAPTER 2. 동작 파라미터화 코드 전달하기](https://github.com/ro117-youshin/TIL/blob/main/Java/ModernJavaInAction/02_delivering_behavior_parameterization_code.md)
 
 ### Spring
 * [스프링 핵심 원리](https://github.com/ro117-youshin/Spring-core-basics)
