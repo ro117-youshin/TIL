@@ -19,6 +19,7 @@
 * [[DDD / 도메인 주도 설계] Chapter 1. 도메인 모델 시작](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap1_domain_model_start.md)
 * [[DDD / 도메인 주도 설계] Chapter 2. 아키텍처 개요](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap2_architecture_summary.md)
 * [[DDD / 도메인 주도 설계] Chapter 3. 애그리거트](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap3_aggregate.md)
+* [[DDD / 도메인 주도 설계] Chapter 6. 응용 서비스와 표현 영역](https://github.com/ro117-youshin/TIL/blob/main/DomainDrivenDesign/chap6.application_service_and_expression_area.md)
 
 ### SystemDesign
 * [[대규모 시스템 설계 기초] DESIGN A URL SHORTENER (URL 단축기 설계)](https://github.com/ro117-youshin/TIL/blob/main/SystemDesign/chap8_design_a_url_shortener.md)
