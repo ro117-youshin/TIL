@@ -172,9 +172,93 @@ Output:
 
 #### 💡 스트림의 각 요소에 함수 적용하기
 
+```java
+List<String> words = Arrays.asList("Morden", "Java", "In", "Action");
+List<Integer> wordLengths = words.stream()
+			         .map(String::length)
+			         .collect(Collectors.toList());
+       
+System.out.println(wordLengths);
+```
+```text
+Output:
+[6, 4, 2, 6]
+```
+
 #### 💡 스트림 평면화
+&nbsp; 리스트에서 고유 문자로 이루어진 리스트를 반환해보자.
+* ["Hello", "World"] 리스트가 있다면
+* 결과로 ["H", "e", "l", "o", "W", "r", "d"]를 포함하는 리스트가 반환되어야 한다.
+
+&nbsp; 그렇다면 리스트에 있는 각 단어를 문자로 매핑한 다음, `distinct`로 중복된 문자를 필터링해서 쉽게 문제를 해결할 수 있을까?
+```java
+List<String> words = Arrays.asList("Hello", "World");
+List<String[]> splitWord = words.stream()
+   .map(word -> word.split(""))
+   .distinct()
+   .collect(Collectors.toList());
+
+splitWord.forEach(array -> System.out.println(Arrays.toString(array)));
+```
+```text
+Output:
+[H, e, l, l, o]
+[W, o, r, l, d]
+```
+&nbsp; 위 코드에서 `map`으로 전달한 람다는 각 단어의 `String[]` 문자열 배열을 반환한다는 점이 문제다.
+따라서 `map`메서드가 반환한 스트림의 형식은 `Stream<String[]>` 이다. 
+우리가 원하는 것은 문자열의 스트림을 표현할 `Stream<String>` 이다.
+
+이 문제를 `flatMap` 메서드를 이용해서 해결해보자.
+
 * `map`과 `Arrays.stream` 활용
+&nbsp; 우선 배열 스트림 대신 문자열 스트림이 필요하다. 아래 코드에서 보여주는 것처럼 문자열을 받아 스트림을 만드는 `Arrays.stream()`메서드가 있다.
+```java
+List<Stream<String>> splitWord2 = words.stream()
+  .map(word -> word.split(""))
+  .map(Arrays::stream)
+  .distinct()
+  // .toList();
+  .collect(Collectors.toList());
+
+splitWord2.forEach(stream -> {
+System.out.println(stream.collect(Collectors.toList()));  
+});
+```
+```text
+Output:
+[H, e, l, l, o]
+[W, o, r, l, d]
+```
+&nbsp; 이 시도에서도 스트림 리스트(`List<Stream<String>>`)가 만들어지면서 문제가 해결되지 않았다.
+문제를 해결하려면 먼저 각 단어를 개별 문자열로 이루어진 배열로 만든 다음에 각 배열을 별도의 스트림으로 만들어야 한다.
+
 * flatMap 사용
+
+```java
+List<String> uniqueCharacters =
+words.stream()
+     .map(word -> word.split(""))
+     .flatMap(Arrays::stream)
+     .distinct()
+     .collect(Collectors.toList());
+
+uniqueCharacters.forEach(character -> System.out.println(character));
+```
+```text
+Output:
+
+H
+e
+l
+o
+W
+r
+d
+```
+
+`flatMap`은 각 배열을 스트림이 아니라 스트림의 콘텐츠로 매핑한다. 즉, `map` `(Arrays::stream)`과 달리 `flatMap`은 하나의 평면화된 스트림을 반환한다.
+`flatMap` 메서드는 스트림의 각 값을 다른 스트림으로 만든 다음에 모든 스트림을 하나의 스트림으로 연결하는 기능을 수행한다.
 
 ###### Quiz
 
