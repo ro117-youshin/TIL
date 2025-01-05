@@ -11,9 +11,10 @@
 
 ###### ex)
 ```java
-List<Dish> proteinMenu = menu.stream()
-							 .filter(Dish::isProtein)
-							 .collect(toList());
+List<Dish> proteinMenu
+	= menu.stream()
+	      .filter(Dish::isProtein)
+	      .collect(toList());
 ```
 
 #### 💡 고유 요소 필터링(distinct)
@@ -23,9 +24,9 @@ List<Dish> proteinMenu = menu.stream()
 ```java
 List<Integer> numbers = Arrays.asList(1,2,3,4,2,4);
 numbers.stream()
-	   .filter(i -> i % 2 == 0)
-	   .distinct()
-	   .forEach(System.out::println);
+       .filter(i -> i % 2 == 0)
+       .distinct()
+       .forEach(System.out::println);
 ```
 
 ### 📌 스트림 슬라이싱
@@ -39,18 +40,19 @@ numbers.stream()
 * `takeWhile`
 ###### ex) 기존 필터링
 ```java
-List<Dish> proteinMenu = Arrays.asList(
-						new Dish("fish", true, 15, Dish.Type.ANIMALPROTEIN),
-						new Dish("chicken", true, 20, Dish.Type.ANIMALPROTEIN),
-						new Dish("bean curd", true, 14, Dish.Type.VEGETABLEPROTEIN),
-						new Dish("beef", true, 35, Dish.Type.ANIMALPROTEIN),
-						new Dish("bean", true, 8, Dish.Type.VEGETABLEPROTEIN)
-						);
+List<Dish> proteinMenu
+	= Arrays.asList(
+		new Dish("fish", true, 15, Dish.Type.ANIMALPROTEIN),
+		new Dish("chicken", true, 20, Dish.Type.ANIMALPROTEIN),
+		new Dish("bean curd", true, 14, Dish.Type.VEGETABLEPROTEIN),
+		new Dish("beef", true, 35, Dish.Type.ANIMALPROTEIN),
+		new Dish("bean", true, 8, Dish.Type.VEGETABLEPROTEIN)
+	);
 
 List<Dish> filteredMenu = 
 	proteinMenu.stream()
 			   .filter(dish -> dish.getProtein() < 20)
-			   .collect(toList));								
+			   .collect(toList)); // 프로틴이 20미만인 모든 목록								
 ```
 
 &nbsp; 위 `List`는 이미 프로틴 순으로 정렬되어 있다. `filter`연산을 이용하면 전체 스트림을 반복하면서 각 요소에 프레디케이트를 적용하게 된다.
@@ -60,19 +62,107 @@ List<Dish> filteredMenu =
 
 ###### ex) takeWhile을 이용한 스트림 슬라이스
 ```java
-List<Dish> slicedMenu = 
-	proteinMenu.stream()
-			   .takeWhile(dish -> dish.getProtein() < 20)
-			   .collect(toList());
+List<Dish> slicedMenu
+	= proteinMenu.stream()
+		     .takeWhile(dish -> dish.getProtein() < 20)
+		     .collect(toList()); // NULL (첫 객체 'fish' 의 프로틴은 15이므로 false)
+```
+
+###### ex) filter() vs takeWhile()
+```java
+List<Integer> numbers = Arrays.asList(2,2,4,3,4,5,6,7,8,9);
+  
+      // Stream.of(1,2,3,4,5,6,7,8,9)
+      //       .filter(n -> n % 2 == 0)
+      //       .forEach(System.out::println);
+      
+      numbers.stream()
+             .filter(n -> n % 2 == 0)
+             .forEach(System.out::println);
+      
+      System.out.println("-------------");
+      
+      // Stream.of(2,6,3,4,5,6,7,8,9)
+      //       .takeWhile(n -> n % 2 == 0)
+      //       .forEach(System.out::println);
+      
+      numbers.stream()
+             .takeWhile(n -> n % 2 == 0)
+             .forEach(System.out::println);   
+```
+```text
+Output:
+2
+2
+4
+4
+6
+8
+-------------
+2
+2
+4
 ```
 
 * `dropWhile`
+&nbsp; 프레디케이트가 처음으로 거짓이 되는 지점까지 발견된 요소를 버린다. 프레디케이트가 거짓이 되면 그 지점에서 작업을 중단하고 남은 모든 요소를 반환한다.
+
+```java
+List<Integer> numbers = Arrays.asList(2,2,4,3,4,5,6,7,8,9);
+
+numbers.stream()
+       .dropWhile(n -> n % 2 == 0)
+       .forEach(System.out::println);
+```
+```text
+Output:
+3
+4
+5
+6
+7
+8
+9
+```
 
 #### 💡 스트림 축소
 * `limit(n)`
+&nbsp; 스트림이 정렬되어 있으면 최대 요소 n개를 반환.
+
+```java
+List<Integer> numbers = Arrays.asList(2,2,4,3,4,5,6,7,8,9);
+
+numbers.stream()
+       .dropWhile(n -> n % 2 == 0)
+       .limit(3)
+       .forEach(System.out::println);
+```
+```text
+Output:
+3
+4
+5
+```
 
 #### 💡 요소 건너뛰기
 * `skip(n)`
+&nbsp; 처음 n개 요소를 제외한 스트림을 반환하는 메서드. n개 이하의 요소를 포함하는 스트림에 skip(n)을 호출하면 빈 스트림이 반환된다.
+
+```java
+List<Integer> numbers = Arrays.asList(2,2,4,3,4,5,6,7,8,9);
+
+numbers.stream()
+       .dropWhile(n -> n % 2 == 0)
+       .skip(3)
+       .forEach(System.out::println);
+```
+```text
+Output:
+6
+7
+8
+9
+```
 
 ### 📌 매핑
 &nbsp; 특정 객체에서 특정 데이터를 선택하는 작업은 데이터 처리 과정에서 자주 수행되는 연산.
