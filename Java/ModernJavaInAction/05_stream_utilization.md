@@ -2,7 +2,7 @@
 
 > [모던자바인액션 - 라울-게이브리얼 우르마, 마리오 푸스코, 앨런 마이크로프트 지음, 우정은 옮김] 학습 후 기록
 
-### 📌 필터링(filter)
+`### 📌 필터링(filter)
 * 프레디케이트 필터링
 * 고유 요소만 필터링
 
@@ -261,6 +261,33 @@ d
 `flatMap` 메서드는 스트림의 각 값을 다른 스트림으로 만든 다음에 모든 스트림을 하나의 스트림으로 연결하는 기능을 수행한다.
 
 ###### Quiz
+```java
+// 1. 주어진 숫자 리스트의 각 숫자의 제곱근으로 리스트를 반환.
+// ex) [1,2,3,4,5] -> [1,4,9,16,25]
+List<Integer> numbers = Arrays.asList(1,2,3,4,5);
+List<Integer> squares = numbers.stream()
+                               .map(n -> n * n)
+                               .collect(Collectors.toList());
+System.out.println(squares);
+
+// 2. 두 개의 숫자 리스트가 있을 때 모든 숫자 쌍의 리스트를 반환.
+// ex) [1,2,3], [3,4]가 주어지면 [(1,3), (1,4), (2,3), (2,4) ...]
+List<Integer> numbersOne = Arrays.asList(1,2,3);
+List<Integer> numbersTwo = Arrays.asList(3,4);
+List<int[]> pairs1 = numbersOne.stream()
+                              .flatMap(i -> numbersTwo.stream()
+                                                      .map(j -> new int[]{i,j})
+                              ).collect(Collectors.toList());
+
+// 3. 이전 예제 합이 3으로 나누어 떨어지는 쌍만 반환.
+// ex) (2,4) (3,3)
+List<int[]> pairs2 = numbersOne.stream()
+                              .flatMap(i -> numbersTwo.stream()
+                                                      .filter(j -> (i+j) % 3 == 0)
+                                                      .map(j -> new int[]{i,j})
+                              ).collect(Collectors.toList());
+
+```
 
 ### 📌 검색과 매칭
 
